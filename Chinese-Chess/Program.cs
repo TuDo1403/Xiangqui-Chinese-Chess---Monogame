@@ -14,7 +14,7 @@ namespace Chinese_Chess
         [STAThread]
         static void Main()
         {
-            using (var game = new Xiangqui())
+            using (var game = new GamePlay())
                 game.Run();
         }
     }

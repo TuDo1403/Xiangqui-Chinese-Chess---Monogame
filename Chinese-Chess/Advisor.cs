@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace Chinese_Chess
 {
-    public class Horse : Piece
+    public class Advisor : Piece
     {
-
-        public Horse(Texture2D texture, Vector2 position) : base(texture, position)
+        public Advisor(Texture2D texture, Vector2 position) : base(texture, position)
         {
-               
         }
     }
 }

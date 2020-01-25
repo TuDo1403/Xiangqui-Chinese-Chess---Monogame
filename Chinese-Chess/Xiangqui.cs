@@ -1,127 +1,72 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 
 namespace Chinese_Chess
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
-    public class Xiangqui : Game
+    public class Xiangqui : GameModel
     {
-        private readonly GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
-        private Texture2D _board;
-        private Texture2D _redHorse;
-        private Texture2D _blackHorse;
+        private List<Piece> _pieces;
 
-        private Vector2 _position;
-        private Vector2 _position1;
-
-        private Horse _horse;
-
-
+        private float[][] _board = new float[10][]
+        {
+            new float[9] {-Piece.CHARIOT,  -Piece.HORSE, -Piece.ELEPHANT, -Piece.ADVISOR, -Piece.GENERAL, -Piece.ADVISOR, -Piece.ELEPHANT,  -Piece.HORSE, -Piece.CHARIOT},
+            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new float[9] {             0, -Piece.CANNON,               0,              0,              0,              0,               0, -Piece.CANNON,              0},
+            new float[9] {-Piece.SOLDIER,             0,  -Piece.SOLDIER,              0, -Piece.SOLDIER,              0,  -Piece.SOLDIER,             0, -Piece.SOLDIER},
+            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new float[9] { Piece.SOLDIER,             0,   Piece.SOLDIER,              0,  Piece.SOLDIER,              0,   Piece.SOLDIER,             0,  Piece.SOLDIER},
+            new float[9] {             0,  Piece.CANNON,               0,              0,              0,              0,               0,  Piece.CANNON,              0},
+            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new float[9] { Piece.CHARIOT,   Piece.HORSE,  Piece.ELEPHANT,  Piece.ADVISOR,  Piece.GENERAL,  Piece.ADVISOR,  Piece.ELEPHANT,   Piece.HORSE,  Piece.CHARIOT}
+        };
 
         public Xiangqui()
         {
-            IsMouseVisible = true;
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            _pieces = new List<Piece>();
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-            _position = new Vector2(0, 0);
-            _position1 = new Vector2(100, 0);
 
-            base.Initialize();
-            
+        public void LoadContent(ContentManager contentManager)
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                for (int j = 0; j < 9; ++j)
+                {
+                    if (_board[i][j] != 0)
+                    {
+                        var piece = PieceFactory.CreatePiece(_board[i][j], new Vector2(j, i), contentManager);
+                        _pieces.Add(piece);
+                    }
+                }
+            }
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
-        protected override void LoadContent()
+
+        public override void Update(MouseState mouseState)
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            _board = Content.Load<Texture2D>("board");
-            //_redHorse = Content.Load<Texture2D>("red-horse");
-            //_blackHorse = Content.Load<Texture2D>("black-horse");
-            _horse = new Horse(Content.Load<Texture2D>("red-horse"), new Vector2(0, 0), 10);
-
-            graphics.PreferredBackBufferWidth = _board.Width;
-            graphics.PreferredBackBufferHeight = _board.Height;
-            graphics.ApplyChanges();
-            // TODO: use this.Content to load your game content here
+            foreach (var piece in _pieces)
+            {
+                piece.Update(mouseState);
+            }
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
+
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
-        {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
-            //var mouseState = Mouse.GetState();
-            //if (mouseState.LeftButton == ButtonState.Pressed)
-            //{
-            //    if (mouseState.Position.X <= _position.X+_redHorse.Width &&
-            //        mouseState.Position.Y <= _position.Y+_redHorse.Height)
-            //    {
-            //        _position.X = mouseState.Position.X - (_redHorse.Width / 2);
-            //        _position.Y = mouseState.Position.Y - (_redHorse.Height / 2);
-            //    }
-
-            //    else if (mouseState.Position.X <= _position1.X + _blackHorse.Width &&
-            //        mouseState.Position.Y <= _position1.Y + _blackHorse.Height)
-            //    {
-            //        _position1.X = mouseState.Position.X - (_blackHorse.Width / 2);
-            //        _position1.Y = mouseState.Position.Y - (_blackHorse.Height / 2);
-            //    }
-            //}
-
-            base.Update(gameTime);
-        }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-            spriteBatch.Begin();
-            spriteBatch.Draw(_board, new Vector2(0, 0), Color.White);
-            spriteBatch.Draw(_redHorse, _position, null, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(_blackHorse, _position1, null, Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, 0f);
-            spriteBatch.End();
-            base.Draw(gameTime);
+            foreach (var piece in _pieces)
+            {
+                piece.Draw(spriteBatch);
+            }
         }
     }
 }

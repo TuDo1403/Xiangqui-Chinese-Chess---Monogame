@@ -48,11 +48,23 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Advisor.cs" />
+    <Compile Include="Board.cs" />
+    <Compile Include="Cannon.cs" />
+    <Compile Include="Chariot.cs" />
+    <Compile Include="Elephant.cs" />
+    <Compile Include="General.cs" />
+    <Compile Include="PieceFactory.cs" />
+    <Compile Include="Pieces.cs" />
+    <Compile Include="GameModel.cs" />
     <Compile Include="Horse.cs" />
     <Compile Include="Piece.cs" />
-    <Compile Include="Xiangqui.cs" />
+    <Compile Include="GamePlay.cs" />
+    <Compile Include="PositionHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Soldier.cs" />
+    <Compile Include="Xiangqui.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
