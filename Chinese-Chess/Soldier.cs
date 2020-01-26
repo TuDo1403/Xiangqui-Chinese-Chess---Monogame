@@ -13,5 +13,20 @@ namespace Chinese_Chess
         public Soldier(Texture2D texture, Vector2 position) : base(texture, position)
         {
         }
+
+        protected override void FindHorizontalMoves()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void FindNextMoves()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void FindVerticalMoves()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

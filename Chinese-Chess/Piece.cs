@@ -11,38 +11,89 @@ namespace Chinese_Chess
 {
     public abstract class Piece : GameModel
     {
-        private List<Vector2> _validMoves;
 
-        public const int CHARIOT = 1;
-        public const int HORSE = 2;
-        public const int ELEPHANT = 3;
-        public const int ADVISOR = 4;
-        public const int GENERAL = 5;
-        public const int CANNON = 6;
-        public const int SOLDIER = 7;
+        private bool _isDragging = false;
+
+
+        protected List<Vector2> validMoves { get; set; } = new List<Vector2>();
+
+        protected Vector2 matrixPos { get; set; }
 
 
         public Rectangle Bounds { get; set; }
+
+
+        protected virtual void FindNextMoves()
+        {
+            validMoves.Clear();
+            matrixPos = Position.ToMatrixPos();
+        }
+
+        protected abstract void FindVerticalMoves();
+
+        protected abstract void FindHorizontalMoves();
+
+        protected virtual bool StillHasValidMoves(int x, int y)
+        {
+            if (Xiangqui.Board[x][y] > 0)
+            {
+                return false;
+            }
+            else
+            {
+                validMoves.Add(new Vector2(x, y));
+                if (Xiangqui.Board[x][y] < 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
 
 
         public Piece(Texture2D texture, Vector2 position) : base(texture)
         {
             Position = position;
+            //PreviousPosition = Position;
             SetBounds();
         }
 
 
         public override void Update(MouseState mouseState)
         {
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            if (Bounds.Contains(mouseState.Position))
             {
-                if (Bounds.Contains(mouseState.Position))
+                if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    SetPosition(mouseState.X - (texture.Width / 2), mouseState.Y - (texture.Height / 2));
+                    _isDragging = true;
+                    SetPosition(mouseState.Position.X - (texture.Width / 2), mouseState.Position.Y - (texture.Height / 2));
                     SetBounds();
+
+                }
+                else if (mouseState.LeftButton == ButtonState.Released && _isDragging == true)
+                {
+                    SetMove(mouseState.Position.ToVector2());
+                    
+                    _isDragging = false;
                 }
             }
+        }
+
+        private void SetMove(Vector2 mousePos)
+        {
+            var validPos = mousePos.GetValidMovePosition(validMoves);
+            if (validPos != Vector2.Zero)
+            {
+                Position = validPos;
+                //PreviousPosition = Position;
+                FindNextMoves();
+            }
+            else
+            {
+                Position = matrixPos.ToSpritePos();
+            }
+            SetBounds();
         }
 
         private void SetBounds()

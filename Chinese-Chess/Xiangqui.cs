@@ -16,18 +16,18 @@ namespace Chinese_Chess
 
         private List<Piece> _pieces;
 
-        private float[][] _board = new float[10][]
+        public static float[][] Board { get; private set; } = new float[10][]
         {
-            new float[9] {-Piece.CHARIOT,  -Piece.HORSE, -Piece.ELEPHANT, -Piece.ADVISOR, -Piece.GENERAL, -Piece.ADVISOR, -Piece.ELEPHANT,  -Piece.HORSE, -Piece.CHARIOT},
+            new float[9] {-Rules.CHARIOT,  -Rules.HORSE, -Rules.ELEPHANT, -Rules.ADVISOR, -Rules.GENERAL, -Rules.ADVISOR, -Rules.ELEPHANT,  -Rules.HORSE, -Rules.CHARIOT},
             new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] {             0, -Piece.CANNON,               0,              0,              0,              0,               0, -Piece.CANNON,              0},
-            new float[9] {-Piece.SOLDIER,             0,  -Piece.SOLDIER,              0, -Piece.SOLDIER,              0,  -Piece.SOLDIER,             0, -Piece.SOLDIER},
+            new float[9] {             0, -Rules.CANNON,               0,              0,              0,              0,               0, -Rules.CANNON,              0},
+            new float[9] {-Rules.SOLDIER,             0,  -Rules.SOLDIER,              0, -Rules.SOLDIER,              0,  -Rules.SOLDIER,             0, -Rules.SOLDIER},
             new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
             new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] { Piece.SOLDIER,             0,   Piece.SOLDIER,              0,  Piece.SOLDIER,              0,   Piece.SOLDIER,             0,  Piece.SOLDIER},
-            new float[9] {             0,  Piece.CANNON,               0,              0,              0,              0,               0,  Piece.CANNON,              0},
+            new float[9] { Rules.SOLDIER,             0,   Rules.SOLDIER,              0,  Rules.SOLDIER,              0,   Rules.SOLDIER,             0,  Rules.SOLDIER},
+            new float[9] {             0,  Rules.CANNON,               0,              0,              0,              0,               0,  Rules.CANNON,              0},
             new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] { Piece.CHARIOT,   Piece.HORSE,  Piece.ELEPHANT,  Piece.ADVISOR,  Piece.GENERAL,  Piece.ADVISOR,  Piece.ELEPHANT,   Piece.HORSE,  Piece.CHARIOT}
+            new float[9] { Rules.CHARIOT,   Rules.HORSE,  Rules.ELEPHANT,  Rules.ADVISOR,  Rules.GENERAL,  Rules.ADVISOR,  Rules.ELEPHANT,   Rules.HORSE,  Rules.CHARIOT}
         };
 
         public Xiangqui()
@@ -38,13 +38,13 @@ namespace Chinese_Chess
 
         public void LoadContent(ContentManager contentManager)
         {
-            for (int i = 0; i < 10; ++i)
+            for (int i = 0; i < Rules.ROWS; ++i)
             {
-                for (int j = 0; j < 9; ++j)
+                for (int j = 0; j < Rules.COLUMNS; ++j)
                 {
-                    if (_board[i][j] != 0)
+                    if (Board[i][j] != 0)
                     {
-                        var piece = PieceFactory.CreatePiece(_board[i][j], new Vector2(j, i), contentManager);
+                        var piece = PieceFactory.CreatePiece(Board[i][j], new Vector2(i, j), contentManager);
                         _pieces.Add(piece);
                     }
                 }

@@ -18,34 +18,34 @@ namespace Chinese_Chess
                 throw new ArgumentNullException(nameof(contentManager));
             }
             var texture = contentManager.Load<Texture2D>(Pieces.PieceDictionary[key]);
-            var spritePos = PositionHandler.MatrixPosToSpritePos(matrixPos);
+            var spritePos = matrixPos.ToSpritePos();
 
             key = Math.Abs(key);
-            if (key == Piece.CHARIOT)
+            if (key == Rules.CHARIOT)
             {
                 return new Chariot(texture, spritePos);
             }
-            if (key == Piece.HORSE)
+            if (key == Rules.HORSE)
             {
                 return new Horse(texture, spritePos);
             }
-            if (key == Piece.ADVISOR)
+            if (key == Rules.ADVISOR)
             {
                 return new Advisor(texture, spritePos);
             }
-            if (key == Piece.CANNON)
+            if (key == Rules.CANNON)
             {
                 return new Cannon(texture, spritePos);
             }
-            if (key == Piece.GENERAL)
+            if (key == Rules.GENERAL)
             {
                 return new General(texture, spritePos);
             }
-            if (key == Piece.SOLDIER)
+            if (key == Rules.SOLDIER)
             {
                 return new General(texture, spritePos);
             }
-            if (key == Piece.ELEPHANT)
+            if (key == Rules.ELEPHANT)
             {
                 return new Elephant(texture, spritePos);
             }

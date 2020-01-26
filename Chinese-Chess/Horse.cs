@@ -16,5 +16,15 @@ namespace Chinese_Chess
         {
                
         }
+
+        protected override void FindHorizontalMoves()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void FindVerticalMoves()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
