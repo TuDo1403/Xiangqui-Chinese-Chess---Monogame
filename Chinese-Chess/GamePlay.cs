@@ -100,10 +100,8 @@ namespace Chinese_Chess
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.FrontToBack);
             _board.Draw(spriteBatch);
-            //_redHorse.Draw(spriteBatch);
-            //_blackHorse.Draw(spriteBatch);
             _game.Draw(spriteBatch);
             spriteBatch.End();
             base.Draw(gameTime);

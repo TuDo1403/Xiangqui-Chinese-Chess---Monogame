@@ -11,7 +11,7 @@ namespace Chinese_Chess
 {
     public abstract class GameModel
     {
-        protected Texture2D texture { get; set; }
+        protected Texture2D Texture { get; set; }
 
 
         public Vector2 Position { get; set; } = new Vector2(0, 0);
@@ -20,7 +20,7 @@ namespace Chinese_Chess
 
         public GameModel(Texture2D texture)
         {
-            this.texture = texture;
+            this.Texture = texture ?? throw new ArgumentNullException(nameof(texture));
         }
 
         public GameModel()
@@ -36,7 +36,7 @@ namespace Chinese_Chess
         {
             if (spriteBatch != null)
             {
-                spriteBatch.Draw(texture, Position, Color.White);
+                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {

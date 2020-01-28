@@ -55,7 +55,6 @@
     <Compile Include="Elephant.cs" />
     <Compile Include="General.cs" />
     <Compile Include="PieceFactory.cs" />
-    <Compile Include="Pieces.cs" />
     <Compile Include="GameModel.cs" />
     <Compile Include="Horse.cs" />
     <Compile Include="Piece.cs" />

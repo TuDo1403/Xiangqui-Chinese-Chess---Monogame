@@ -11,22 +11,27 @@ namespace Chinese_Chess
 {
     public abstract class Piece : GameModel
     {
-
+        private bool _isFocusing = false;
         private bool _isDragging = false;
 
 
-        protected List<Vector2> validMoves { get; set; } = new List<Vector2>();
+        protected List<Point> ValidMoves { get; private set; } = new List<Point>();
 
-        protected Vector2 matrixPos { get; set; }
 
+        public int Type { get; protected set; }
+
+        public Point MatrixPos { get; set; }
 
         public Rectangle Bounds { get; set; }
 
 
+        public event EventHandler<Point> Moved;
+        public event EventHandler Focused;
+
+
         protected virtual void FindNextMoves()
         {
-            validMoves.Clear();
-            matrixPos = Position.ToMatrixPos();
+            ValidMoves.Clear();
         }
 
         protected abstract void FindVerticalMoves();
@@ -41,7 +46,7 @@ namespace Chinese_Chess
             }
             else
             {
-                validMoves.Add(new Vector2(x, y));
+                ValidMoves.Add(new Point(x, y));
                 if (Xiangqui.Board[x][y] < 0)
                 {
                     return false;
@@ -55,8 +60,26 @@ namespace Chinese_Chess
         public Piece(Texture2D texture, Vector2 position) : base(texture)
         {
             Position = position;
-            //PreviousPosition = Position;
+            MatrixPos = Position.ToMatrixPos();
             SetBounds();
+        }
+
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (spriteBatch != null)
+            {
+                var layerDepth = 0.5f;
+                if (_isFocusing)
+                {
+                    layerDepth = 1f;
+                }
+                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
+            }
+            else
+            {
+                throw new ArgumentNullException(nameof(spriteBatch));
+            }
         }
 
 
@@ -66,44 +89,69 @@ namespace Chinese_Chess
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
-                    _isDragging = true;
-                    SetPosition(mouseState.Position.X - (texture.Width / 2), mouseState.Position.Y - (texture.Height / 2));
-                    SetBounds();
-
+                    MovePieceAlongCursor(mouseState);
                 }
                 else if (mouseState.LeftButton == ButtonState.Released && _isDragging == true)
                 {
-                    SetMove(mouseState.Position.ToVector2());
-                    
-                    _isDragging = false;
+                    SetNewMovePosition(mouseState);
                 }
             }
         }
 
-        private void SetMove(Vector2 mousePos)
+        private void SetNewMovePosition(MouseState mouseState)
         {
-            var validPos = mousePos.GetValidMovePosition(validMoves);
+            var spritePos = mouseState.Position.ToSpritePosition(Texture.Width, Texture.Height);
+            SetMove(spritePos);
+            _isFocusing = false;
+            _isDragging = false;
+        }
+
+        private void MovePieceAlongCursor(MouseState mouseState)
+        {
+            _isFocusing = true;
+            OnFocusing();
+            _isDragging = true;
+            SetPosition(mouseState.Position);
+            SetBounds();
+        }
+
+        private void OnMoving(Point newMatrixPosition)
+        {
+            (Moved as EventHandler<Point>)?.Invoke(this, newMatrixPosition);
+        }
+
+        private void OnFocusing()
+        {
+            (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SetMove(Vector2 spritePos)
+        {
+            var validPos = spritePos.GetValidMovePosition(ValidMoves);
             if (validPos != Vector2.Zero)
             {
+                var newMatrixPos = validPos.ToMatrixPos();
+                OnMoving(newMatrixPos);
+                MatrixPos = newMatrixPos;
                 Position = validPos;
-                //PreviousPosition = Position;
                 FindNextMoves();
             }
             else
             {
-                Position = matrixPos.ToSpritePos();
+                Position = MatrixPos.ToSpritePos();
             }
             SetBounds();
         }
 
         private void SetBounds()
         {
-            Bounds = new Rectangle((int)Position.X, (int)Position.Y, texture.Width, texture.Height);
+            Bounds = new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
         }
 
-        private void SetPosition(int x, int y)
+        private void SetPosition(Point mousePosition)
         {
-            var position = new Vector2(x, y);
+
+            var position = mousePosition.ToSpritePosition(Texture.Width, Texture.Height);
             Position = position;
         }
     }

@@ -12,6 +12,7 @@ namespace Chinese_Chess
     {
         public Chariot(Texture2D texture, Vector2 position) : base(texture, position)
         {
+            Type = Rules.CHARIOT;
             FindNextMoves();
         }
 
@@ -26,8 +27,8 @@ namespace Chinese_Chess
 
         protected override void FindHorizontalMoves()
         {
-            int posX = (int)matrixPos.X;
-            for (int i = (int)matrixPos.Y+1; i < Rules.COLUMNS; ++i)
+            int posX = MatrixPos.X;
+            for (int i = MatrixPos.Y + 1; i < Rules.COLUMNS; ++i)
             {
                 if (!StillHasValidMoves(posX, i))
                 {
@@ -35,8 +36,8 @@ namespace Chinese_Chess
                 }
             }
 
-            if ((int)matrixPos.Y-1 < 0) return;
-            for (int i = (int)matrixPos.Y - 1; i >= 0; --i)
+            if (MatrixPos.Y - 1 < 0) return;
+            for (int i = MatrixPos.Y - 1; i >= 0; --i)
             {
                 if (!StillHasValidMoves(posX, i))
                 {
@@ -47,8 +48,8 @@ namespace Chinese_Chess
 
         protected override void FindVerticalMoves()
         {
-            int posY = (int)matrixPos.Y;
-            for (int i = (int)matrixPos.X + 1; i < Rules.ROWS; ++i)
+            int posY = MatrixPos.Y;
+            for (int i = MatrixPos.X + 1; i < Rules.ROWS; ++i)
             {
                 if (!StillHasValidMoves(i, posY))
                 {
@@ -56,8 +57,8 @@ namespace Chinese_Chess
                 }
             }
 
-            if ((int)matrixPos.X - 1 < 0) return;
-            for (int i = (int)matrixPos.X-1; i >= 0; --i)
+            if (MatrixPos.X - 1 < 0) return;
+            for (int i = MatrixPos.X - 1; i >= 0; --i)
             {
                 if (!StillHasValidMoves(i, posY))
                 {

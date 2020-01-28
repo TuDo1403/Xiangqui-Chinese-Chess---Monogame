@@ -11,13 +11,13 @@ namespace Chinese_Chess
 {
     public static class PieceFactory
     {
-        public static Piece CreatePiece(float key, Vector2 matrixPos, ContentManager contentManager)
+        public static Piece CreatePiece(float key, Point matrixPos, ContentManager contentManager)
         {
             if (contentManager == null)
             {
                 throw new ArgumentNullException(nameof(contentManager));
             }
-            var texture = contentManager.Load<Texture2D>(Pieces.PieceDictionary[key]);
+            var texture = contentManager.Load<Texture2D>(Rules.PieceDictionary[key]);
             var spritePos = matrixPos.ToSpritePos();
 
             key = Math.Abs(key);
@@ -43,7 +43,7 @@ namespace Chinese_Chess
             }
             if (key == Rules.SOLDIER)
             {
-                return new General(texture, spritePos);
+                return new Soldier(texture, spritePos);
             }
             if (key == Rules.ELEPHANT)
             {

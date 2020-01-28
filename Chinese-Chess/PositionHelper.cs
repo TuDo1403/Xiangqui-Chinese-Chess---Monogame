@@ -12,6 +12,7 @@ namespace Chinese_Chess
         private const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
         private const int X_OFFSET_PIECE = 97;
         private const int Y_OFFSET_PIECE = 102;
+        private const int DISTANCE_BETWEEN_CENTER_AND_CORNERS = 84;
 
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace Chinese_Chess
         /// </summary>
         /// <param name="matrixPos"></param>
         /// <returns></returns>
-        public static Vector2 ToSpritePos(this Vector2 matrixPos)
+        public static Vector2 ToSpritePos(this Point matrixPos)
         {
             var spritePos = new Vector2(matrixPos.Y, matrixPos.X);
             spritePos.X = (spritePos.X* X_OFFSET_PIECE) + X_OFFSET_FROM_TOP_LEFT_WIN;
@@ -32,16 +33,16 @@ namespace Chinese_Chess
         /// </summary>
         /// <param name="spritePos"></param>
         /// <returns></returns>
-        public static Vector2 ToMatrixPos(this Vector2 spritePos)
+        public static Point ToMatrixPos(this Vector2 spritePos)
         {
             var matrixPos = new Vector2(spritePos.Y, spritePos.X);
             matrixPos.X = (float)Math.Round((matrixPos.X - X_OFFSET_FROM_TOP_LEFT_WIN) / X_OFFSET_PIECE);
             matrixPos.Y = (float)Math.Round(matrixPos.Y / Y_OFFSET_PIECE);
-            return matrixPos;
+            return matrixPos.ToPoint();
         }
 
 
-        public static Vector2 GetValidMovePosition(this Vector2 releasedPosition, List<Vector2> validMoves)
+        public static Vector2 GetValidMovePosition(this Vector2 releasedPosition, List<Point> validMoves)
         {
             if (validMoves == null)
             {
@@ -53,13 +54,19 @@ namespace Chinese_Chess
             }
 
             var minDistance = validMoves.Min(c => Vector2.Distance(releasedPosition, c.ToSpritePos()));
-            if (minDistance <= 70)
+            if (minDistance <= DISTANCE_BETWEEN_CENTER_AND_CORNERS)
             {
                 var nearestMatrixPos = validMoves.Where(c => Vector2.Distance(releasedPosition, c.ToSpritePos()) == minDistance)
                                                  .SingleOrDefault();
                 return nearestMatrixPos.ToSpritePos();
             }
             return Vector2.Zero;
+        }
+
+
+        public static Vector2 ToSpritePosition(this Point centerPosition, int textureWidth, int textureHeight)
+        {
+            return new Vector2(centerPosition.X - (textureWidth / 2), centerPosition.Y - (textureHeight / 2));
         }
     }
 }
