@@ -12,6 +12,7 @@ namespace Chinese_Chess
     {
         public Advisor(Texture2D texture, Vector2 position) : base(texture, position)
         {
+            Type = Rules.ADVISOR;
         }
 
         protected override void FindHorizontalMoves()

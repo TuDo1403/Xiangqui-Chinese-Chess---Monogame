@@ -34,9 +34,9 @@ namespace Chinese_Chess
             ValidMoves.Clear();
         }
 
-        protected abstract void FindVerticalMoves();
+        protected virtual void FindVerticalMoves() { }
 
-        protected abstract void FindHorizontalMoves();
+        protected virtual void FindHorizontalMoves() { }
 
         protected virtual bool StillHasValidMoves(int x, int y)
         {
@@ -62,6 +62,7 @@ namespace Chinese_Chess
             Position = position;
             MatrixPos = Position.ToMatrixPos();
             SetBounds();
+            //indNextMoves();
         }
 
 
