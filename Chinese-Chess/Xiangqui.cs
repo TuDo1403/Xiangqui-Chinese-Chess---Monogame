@@ -20,18 +20,20 @@ namespace Chinese_Chess
         private readonly List<Piece> _pieces;
 
 
-        public static float[][] Board { get; private set; } = new float[10][]
+        public static event EventHandler BoardUpdated;
+
+        public static int[][] Board { get; private set; } = new int[10][]
         {
-            new float[9] {-Rules.CHARIOT,  -Rules.HORSE, -Rules.ELEPHANT, -Rules.ADVISOR, -Rules.GENERAL, -Rules.ADVISOR, -Rules.ELEPHANT,  -Rules.HORSE, -Rules.CHARIOT},
-            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] {             0, -Rules.CANNON,               0,              0,              0,              0,               0, -Rules.CANNON,              0},
-            new float[9] {-Rules.SOLDIER,             0,  -Rules.SOLDIER,              0, -Rules.SOLDIER,              0,  -Rules.SOLDIER,             0, -Rules.SOLDIER},
-            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] { Rules.SOLDIER,             0,   Rules.SOLDIER,              0,  Rules.SOLDIER,              0,   Rules.SOLDIER,             0,  Rules.SOLDIER},
-            new float[9] {             0,  Rules.CANNON,               0,              0,              0,              0,               0,  Rules.CANNON,              0},
-            new float[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new float[9] { Rules.CHARIOT,   Rules.HORSE,  Rules.ELEPHANT,  Rules.ADVISOR,  Rules.GENERAL,  Rules.ADVISOR,  Rules.ELEPHANT,   Rules.HORSE,  Rules.CHARIOT}
+            new int[9] {-Rules.CHARIOT,  -Rules.HORSE, -Rules.ELEPHANT, -Rules.ADVISOR, -Rules.GENERAL, -Rules.ADVISOR, -Rules.ELEPHANT,  -Rules.HORSE, -Rules.CHARIOT},
+            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new int[9] {             0, -Rules.CANNON,               0,              0,              0,              0,               0, -Rules.CANNON,              0},
+            new int[9] {-Rules.SOLDIER,             0,  -Rules.SOLDIER,              0, -Rules.SOLDIER,              0,  -Rules.SOLDIER,             0, -Rules.SOLDIER},
+            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new int[9] { Rules.SOLDIER,             0,   Rules.SOLDIER,              0,  Rules.SOLDIER,              0,   Rules.SOLDIER,             0,  Rules.SOLDIER},
+            new int[9] {             0,  Rules.CANNON,               0,              0,              0,              0,               0,  Rules.CANNON,              0},
+            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
+            new int[9] { Rules.CHARIOT,   Rules.HORSE,  Rules.ELEPHANT,  Rules.ADVISOR,  Rules.GENERAL,  Rules.ADVISOR,  Rules.ELEPHANT,   Rules.HORSE,  Rules.CHARIOT}
         };
 
         public Xiangqui()
@@ -48,15 +50,16 @@ namespace Chinese_Chess
                 {
                     if (Board[i][j] != 0)
                     {
-                        PutPieceOnBoard(contentManager, i, j);
+                        PutPieceOnBoard(contentManager, new Point(j, i));
                     }
                 }
             }
+            OnBoardUpdating();
         }
 
-        private void PutPieceOnBoard(ContentManager contentManager, int i, int j)
+        private void PutPieceOnBoard(ContentManager contentManager, Point matrixPos)
         {
-            var piece = PieceFactory.CreatePiece(Board[i][j], new Point(i, j), contentManager);
+            var piece = PieceFactory.CreatePiece(Board[matrixPos.Y][matrixPos.X], matrixPos, contentManager);
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
             _pieces.Add(piece);
@@ -72,15 +75,21 @@ namespace Chinese_Chess
         {
             UpdatePieces(movedPiece, e);
             UpdatePosition(movedPiece, e);
+            OnBoardUpdating();
+        }
+
+        private void OnBoardUpdating()
+        {
+            (BoardUpdated as EventHandler)?.Invoke(this, EventArgs.Empty);
         }
 
         private void UpdatePosition(Piece movedPiece, Point newMatrixPos)
         {
             var oldMatrixPos = _focusingPiece.MatrixPos;
-            Board[oldMatrixPos.X][oldMatrixPos.Y] = 0;
-            Board[newMatrixPos.X][newMatrixPos.Y] = movedPiece.Type;
+            Board[oldMatrixPos.Y][oldMatrixPos.X] = 0;
+            Board[newMatrixPos.Y][newMatrixPos.X] = movedPiece.Type;
 
-            //PrintBoard();
+            PrintBoard();
         }
 
         private void PrintBoard()
@@ -97,11 +106,7 @@ namespace Chinese_Chess
 
         private void UpdatePieces(Piece movedPiece, Point e)
         {
-            foreach (var piece in _pieces.Where(piece => piece != movedPiece && piece.MatrixPos == e))
-            {
-                _pieces.Remove(piece);
-                break;
-            }
+            _pieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)

@@ -10,23 +10,56 @@ namespace Chinese_Chess
 {
     public class General : Piece
     {
-        public General(Texture2D texture, Vector2 position) : base(texture, position)
+        
+        public General(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
+        }
+
+        
+
+        protected override void FindNextMoves()
+        {
+            base.FindNextMoves();
+            FindVerticalMoves();
+            FindHorizontalMoves();
         }
 
         protected override void FindHorizontalMoves()
         {
-            throw new NotImplementedException();
-        }
-
-        protected override void FindNextMoves()
-        {
-            throw new NotImplementedException();
+            if (MatrixPos.X + 1 <= 5)
+            {
+                StillHasValidMoves(MatrixPos.Y, MatrixPos.X + 1);
+            }
+            if (MatrixPos.X - 1 >= 3)
+            {
+                StillHasValidMoves(MatrixPos.Y, MatrixPos.X - 1);
+            }
         }
 
         protected override void FindVerticalMoves()
         {
-            throw new NotImplementedException();
+            if (Type > 0)
+            {
+                if (MatrixPos.Y + 1 <= 9)
+                {
+                    StillHasValidMoves(MatrixPos.Y + 1, MatrixPos.X);
+                }
+                if (MatrixPos.Y - 1 >= 7)
+                {
+                    StillHasValidMoves(MatrixPos.Y - 1, MatrixPos.X);
+                }
+            }
+            else
+            {
+                if (MatrixPos.Y + 1 <= 2)
+                {
+                    StillHasValidMoves(MatrixPos.Y + 1, MatrixPos.X);
+                }
+                if (MatrixPos.Y - 1 >= 0)
+                {
+                    StillHasValidMoves(MatrixPos.Y - 1, MatrixPos.X);
+                }
+            }
         }
     }
 }

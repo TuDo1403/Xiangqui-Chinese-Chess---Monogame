@@ -10,19 +10,44 @@ namespace Chinese_Chess
 {
     public class Advisor : Piece
     {
-        public Advisor(Texture2D texture, Vector2 position) : base(texture, position)
+        public Advisor(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
-            Type = Rules.ADVISOR;
         }
 
-        protected override void FindHorizontalMoves()
+
+        protected override void FindNextMoves()
         {
-            throw new NotImplementedException();
+            base.FindNextMoves();
+
+            var matrixPosToVector2 = MatrixPos.ToVector2();
+            FindCrossMove(matrixPosToVector2);
+            RemoveInvalidMoves();
+            
         }
 
-        protected override void FindVerticalMoves()
+        private void FindCrossMove(Vector2 currentPos)
         {
-            throw new NotImplementedException();
+            ValidMoves.Add(Vector2.Add(currentPos, new Vector2(1, 1)).ToPoint());
+            ValidMoves.Add(Vector2.Add(currentPos, new Vector2(1, -1)).ToPoint());
+
+            ValidMoves.Add(Vector2.Add(currentPos, new Vector2(-1, 1)).ToPoint());
+            ValidMoves.Add(Vector2.Add(currentPos, new Vector2(-1, -1)).ToPoint());
+        }
+
+        protected override void RemoveInvalidMoves()
+        {
+            ValidMoves.RemoveAll(OutOfRangeMove());
+
+            var advisorValue = Xiangqui.Board[MatrixPos.Y][MatrixPos.X];
+            ValidMoves.RemoveAll(c => Xiangqui.Board[c.Y][c.X] * advisorValue > 0);
+        }
+
+        protected override Predicate<Point> OutOfRangeMove()
+        {
+            return c => c.Y < 0 || c.Y > 9 ||
+                        c.X > 5 || c.X < 3 ||
+                        Type > 0 && c.Y < 7 ||
+                        Type < 0 && c.Y > 2;
         }
     }
 }

@@ -29,25 +29,35 @@ namespace Chinese_Chess
         public event EventHandler Focused;
 
 
+        protected virtual Predicate<Point> OutOfRangeMove()
+        {
+            return c => false;
+        }
+
         protected virtual void FindNextMoves()
         {
             ValidMoves.Clear();
+            MatrixPos = Position.ToMatrixPos();
         }
+
+        protected virtual void RemoveInvalidMoves() { }
 
         protected virtual void FindVerticalMoves() { }
 
         protected virtual void FindHorizontalMoves() { }
 
-        protected virtual bool StillHasValidMoves(int x, int y)
+        protected virtual bool IsBlockedMove(Point point) => false;
+
+        protected bool StillHasValidMoves(int row, int column)
         {
-            if (Xiangqui.Board[x][y] > 0)
+            if (Xiangqui.Board[row][column] * Type > 0)
             {
                 return false;
             }
             else
             {
-                ValidMoves.Add(new Point(x, y));
-                if (Xiangqui.Board[x][y] < 0)
+                ValidMoves.Add(new Point(column, row));
+                if (Xiangqui.Board[row][column] * Type < 0)
                 {
                     return false;
                 }
@@ -56,15 +66,31 @@ namespace Chinese_Chess
         }
 
 
-
-        public Piece(Texture2D texture, Vector2 position) : base(texture)
+        protected void PrintValidMove()
         {
+            Console.WriteLine();
+            foreach (var move in ValidMoves)
+            {
+                Console.WriteLine($"{GetType().ToString()}[{MatrixPos.Y}][{MatrixPos.X}]: ({move.Y}, {move.X})");
+            }
+        }
+
+
+
+        public Piece(Texture2D texture, Vector2 position, int type) : base(texture)
+        {
+            Type = type;
+            Xiangqui.BoardUpdated += Xiangqui_BoardUpdatedHandler;
             Position = position;
             MatrixPos = Position.ToMatrixPos();
             SetBounds();
-            //indNextMoves();
+            //FindNextMoves();
         }
 
+        private void Xiangqui_BoardUpdatedHandler(object sender, EventArgs e)
+        {
+            FindNextMoves();
+        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -131,15 +157,17 @@ namespace Chinese_Chess
             var validPos = spritePos.GetValidMovePosition(ValidMoves);
             if (validPos != Vector2.Zero)
             {
-                var newMatrixPos = validPos.ToMatrixPos();
-                OnMoving(newMatrixPos);
-                MatrixPos = newMatrixPos;
+                //var newMatrixPos = validPos.ToMatrixPos();
+                //OnMoving(newMatrixPos);
+                //MatrixPos = newMatrixPos;
                 Position = validPos;
-                FindNextMoves();
+                OnMoving(validPos.ToMatrixPos());
+                //FindNextMoves();
             }
             else
             {
                 Position = MatrixPos.ToSpritePos();
+                OnMoving(MatrixPos);
             }
             SetBounds();
         }

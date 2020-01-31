@@ -22,7 +22,7 @@ namespace Chinese_Chess
         /// <returns></returns>
         public static Vector2 ToSpritePos(this Point matrixPos)
         {
-            var spritePos = new Vector2(matrixPos.Y, matrixPos.X);
+            var spritePos = new Vector2(matrixPos.X, matrixPos.Y);
             spritePos.X = (spritePos.X* X_OFFSET_PIECE) + X_OFFSET_FROM_TOP_LEFT_WIN;
             spritePos.Y *= Y_OFFSET_PIECE;
             return spritePos;
@@ -35,7 +35,7 @@ namespace Chinese_Chess
         /// <returns></returns>
         public static Point ToMatrixPos(this Vector2 spritePos)
         {
-            var matrixPos = new Vector2(spritePos.Y, spritePos.X);
+            var matrixPos = new Vector2(spritePos.X, spritePos.Y);
             matrixPos.X = (float)Math.Round((matrixPos.X - X_OFFSET_FROM_TOP_LEFT_WIN) / X_OFFSET_PIECE);
             matrixPos.Y = (float)Math.Round(matrixPos.Y / Y_OFFSET_PIECE);
             return matrixPos.ToPoint();

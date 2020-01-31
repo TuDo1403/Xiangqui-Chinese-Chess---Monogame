@@ -10,10 +10,8 @@ namespace Chinese_Chess
 {
     public class Chariot : Piece
     {
-        public Chariot(Texture2D texture, Vector2 position) : base(texture, position)
+        public Chariot(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
-            Type = Rules.CHARIOT;
-            FindNextMoves();
         }
 
         
@@ -23,35 +21,15 @@ namespace Chinese_Chess
             base.FindNextMoves();
             FindHorizontalMoves();
             FindVerticalMoves();
+            //PrintValidMove();
         }
 
         protected override void FindHorizontalMoves()
         {
-            int posX = MatrixPos.X;
-            for (int i = MatrixPos.Y + 1; i < Rules.COLUMNS; ++i)
-            {
-                if (!StillHasValidMoves(posX, i))
-                {
-                    break;
-                }
-            }
-
-            if (MatrixPos.Y - 1 < 0) return;
-            for (int i = MatrixPos.Y - 1; i >= 0; --i)
-            {
-                if (!StillHasValidMoves(posX, i))
-                {
-                    break;
-                }
-            }
-        }
-
-        protected override void FindVerticalMoves()
-        {
             int posY = MatrixPos.Y;
-            for (int i = MatrixPos.X + 1; i < Rules.ROWS; ++i)
+            for (int i = MatrixPos.X + 1; i < Rules.COLUMNS; ++i)
             {
-                if (!StillHasValidMoves(i, posY))
+                if (!StillHasValidMoves(posY, i))
                 {
                     break;
                 }
@@ -60,7 +38,28 @@ namespace Chinese_Chess
             if (MatrixPos.X - 1 < 0) return;
             for (int i = MatrixPos.X - 1; i >= 0; --i)
             {
-                if (!StillHasValidMoves(i, posY))
+                if (!StillHasValidMoves(posY, i))
+                {
+                    break;
+                }
+            }
+        }
+
+        protected override void FindVerticalMoves()
+        {
+            int posX = MatrixPos.X;
+            for (int i = MatrixPos.Y + 1; i < Rules.ROWS; ++i)
+            {
+                if (!StillHasValidMoves(i, posX))
+                {
+                    break;
+                }
+            }
+
+            if (MatrixPos.Y - 1 < 0) return;
+            for (int i = MatrixPos.Y - 1; i >= 0; --i)
+            {
+                if (!StillHasValidMoves(i, posX))
                 {
                     break;
                 }

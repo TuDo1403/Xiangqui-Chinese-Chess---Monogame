@@ -12,10 +12,8 @@ namespace Chinese_Chess
     public class Horse : Piece
     {
 
-        public Horse(Texture2D texture, Vector2 position) : base(texture, position)
+        public Horse(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
-            Type = Rules.HORSE;
-            FindNextMoves();
         }
 
 
@@ -28,38 +26,35 @@ namespace Chinese_Chess
             RemoveInvalidMoves();
         }
 
-        private void RemoveInvalidMoves()
+        protected override void RemoveInvalidMoves()
         {
             ValidMoves.RemoveAll(OutOfRangeMove());
 
-            var horseValue = Xiangqui.Board[MatrixPos.X][MatrixPos.Y];
-            ValidMoves.RemoveAll(c => Xiangqui.Board[c.X][c.Y] * horseValue > 0);
+            var horseValue = Xiangqui.Board[MatrixPos.Y][MatrixPos.X];
+            ValidMoves.RemoveAll(c => Xiangqui.Board[c.Y][c.X] * horseValue > 0);
 
             ValidMoves.RemoveAll(IsBlockedMove);
         }
 
-        private static Predicate<Point> OutOfRangeMove()
+        protected override Predicate<Point> OutOfRangeMove()
         {
-            return c => c.X < 0 || c.X > 9 || c.Y < 0 || c.Y > 8;
+            return c => c.Y < 0 || c.Y > 9 || c.X < 0 || c.X > 8;
         }
 
-        private bool IsBlockedMove(Point move)
+        protected override bool IsBlockedMove(Point move)
         {
-            var offsetX = (move.X - MatrixPos.X) / Math.Abs(move.X - MatrixPos.X);
-            var offsetY = (move.Y - MatrixPos.Y) / Math.Abs(move.Y - MatrixPos.Y);
-            if (Math.Abs(move.X - MatrixPos.X) > Math.Abs(move.Y - MatrixPos.Y))
+            if (Math.Abs(MatrixPos.X - move.X) == 2)
             {
-                return Xiangqui.Board[move.X - offsetX][MatrixPos.Y] != 0;
+                return Xiangqui.Board[MatrixPos.Y][(MatrixPos.X + move.X) / 2] != 0;
             }
             else
             {
-                return Xiangqui.Board[MatrixPos.X][move.Y - offsetY] != 0;
+                return Xiangqui.Board[(MatrixPos.Y + move.Y) / 2][MatrixPos.X] != 0;
             }
         }
 
         private void FindLShapedMoves(Vector2 currentPos)
         {
-            var currentLocation = MatrixPos.ToVector2();
             ValidMoves.Add(Vector2.Add(currentPos, new Vector2(2, 1)).ToPoint());
             ValidMoves.Add(Vector2.Add(currentPos, new Vector2(-2, 1)).ToPoint());
             ValidMoves.Add(Vector2.Add(currentPos, new Vector2(2, -1)).ToPoint());

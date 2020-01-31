@@ -11,7 +11,7 @@ namespace Chinese_Chess
 {
     public static class PieceFactory
     {
-        public static Piece CreatePiece(float key, Point matrixPos, ContentManager contentManager)
+        public static Piece CreatePiece(int key, Point matrixPos, ContentManager contentManager)
         {
             if (contentManager == null)
             {
@@ -20,34 +20,35 @@ namespace Chinese_Chess
             var texture = contentManager.Load<Texture2D>(Rules.PieceDictionary[key]);
             var spritePos = matrixPos.ToSpritePos();
 
+            var type = key;
             key = Math.Abs(key);
             if (key == Rules.CHARIOT)
             {
-                return new Chariot(texture, spritePos);
+                return new Chariot(texture, spritePos, type);
             }
             if (key == Rules.HORSE)
             {
-                return new Horse(texture, spritePos);
+                return new Horse(texture, spritePos, type);
             }
             if (key == Rules.ADVISOR)
             {
-                return new Advisor(texture, spritePos);
+                return new Advisor(texture, spritePos, type);
             }
             if (key == Rules.CANNON)
             {
-                return new Cannon(texture, spritePos);
+                return new Cannon(texture, spritePos, type);
             }
             if (key == Rules.GENERAL)
             {
-                return new General(texture, spritePos);
+                return new General(texture, spritePos, type);
             }
             if (key == Rules.SOLDIER)
             {
-                return new Soldier(texture, spritePos);
+                return new Soldier(texture, spritePos, type);
             }
             if (key == Rules.ELEPHANT)
             {
-                return new Elephant(texture, spritePos);
+                return new Elephant(texture, spritePos, type);
             }
             throw new ArgumentException($"Create piece error: key values {key}");
         }
