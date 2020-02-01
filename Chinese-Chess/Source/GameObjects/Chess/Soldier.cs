@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Helper;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Soldier : Piece
+    public sealed class Soldier : Piece
     {
         public Soldier(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
@@ -27,7 +28,7 @@ namespace Chinese_Chess
 
         private bool RiverCrossed()
         {
-            return (Type < 0 && MatrixPos.Y >= 5) || (Type > 0 && MatrixPos.Y <= 4);
+            return Type < 0 && MatrixPos.Y >= 5 || Type > 0 && MatrixPos.Y <= 4;
         }
 
         protected override void FindHorizontalMoves()

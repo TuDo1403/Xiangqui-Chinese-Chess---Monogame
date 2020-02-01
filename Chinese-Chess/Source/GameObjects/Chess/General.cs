@@ -6,16 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class General : Piece
+    public sealed class General : Piece
     {
-        
+
         public General(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
         }
 
-        
+
 
         protected override void FindNextMoves()
         {

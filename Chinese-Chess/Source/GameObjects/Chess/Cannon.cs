@@ -1,14 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Main;
+using ChineseChess.Source.Helper;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Cannon : Piece
+    public sealed class Cannon : Piece
     {
         public Cannon(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
@@ -27,16 +24,16 @@ namespace Chinese_Chess
             int posY = MatrixPos.Y;
             for (int i = MatrixPos.X + 1; i < Rules.COLUMNS; ++i)
             {
-                if (Xiangqui.Board[posY][i] != 0)
+                if (ChessBoard.MatrixBoard[posY][i] != 0)
                 {
-                    while (i < Rules.COLUMNS-1)
+                    while (i < Rules.COLUMNS - 1)
                     {
                         ++i;
-                        if (Xiangqui.Board[posY][i] * Type > 0)
+                        if (ChessBoard.MatrixBoard[posY][i] * Type > 0)
                         {
                             break;
                         }
-                        if (Xiangqui.Board[posY][i] * Type < 0)
+                        if (ChessBoard.MatrixBoard[posY][i] * Type < 0)
                         {
                             ValidMoves.Add(new Point(i, posY));
                             break;
@@ -52,16 +49,16 @@ namespace Chinese_Chess
             if (MatrixPos.X - 1 < 0) return;
             for (int i = MatrixPos.X - 1; i >= 0; --i)
             {
-                if (Xiangqui.Board[posY][i] != 0)
+                if (ChessBoard.MatrixBoard[posY][i] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (Xiangqui.Board[posY][i] * Type > 0)
+                        if (ChessBoard.MatrixBoard[posY][i] * Type > 0)
                         {
                             break;
                         }
-                        if (Xiangqui.Board[posY][i] * Type < 0)
+                        if (ChessBoard.MatrixBoard[posY][i] * Type < 0)
                         {
                             ValidMoves.Add(new Point(i, posY));
                             break;
@@ -80,16 +77,16 @@ namespace Chinese_Chess
             int posX = MatrixPos.X;
             for (int i = MatrixPos.Y + 1; i < Rules.ROWS; ++i)
             {
-                if (Xiangqui.Board[i][posX] != 0)
+                if (ChessBoard.MatrixBoard[i][posX] != 0)
                 {
                     while (i < Rules.ROWS - 1)
                     {
                         ++i;
-                        if (Xiangqui.Board[i][posX] * Type > 0)
+                        if (ChessBoard.MatrixBoard[i][posX] * Type > 0)
                         {
                             break;
                         }
-                        if (Xiangqui.Board[i][posX] * Type < 0)
+                        if (ChessBoard.MatrixBoard[i][posX] * Type < 0)
                         {
                             ValidMoves.Add(new Point(posX, i));
                             break;
@@ -105,16 +102,16 @@ namespace Chinese_Chess
             if (MatrixPos.Y - 1 < 0) return;
             for (int i = MatrixPos.Y - 1; i >= 0; --i)
             {
-                if (Xiangqui.Board[i][posX] != 0)
+                if (ChessBoard.MatrixBoard[i][posX] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (Xiangqui.Board[i][posX] * Type > 0)
+                        if (ChessBoard.MatrixBoard[i][posX] * Type > 0)
                         {
                             break;
                         }
-                        if (Xiangqui.Board[i][posX] * Type < 0)
+                        if (ChessBoard.MatrixBoard[i][posX] * Type < 0)
                         {
                             ValidMoves.Add(new Point(posX, i));
                             break;

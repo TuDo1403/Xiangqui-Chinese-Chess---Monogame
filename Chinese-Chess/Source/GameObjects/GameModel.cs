@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects
 {
     public abstract class GameModel
     {
@@ -20,7 +20,7 @@ namespace Chinese_Chess
 
         public GameModel(Texture2D texture)
         {
-            this.Texture = texture ?? throw new ArgumentNullException(nameof(texture));
+            Texture = texture ?? throw new ArgumentNullException(nameof(texture));
         }
 
         public GameModel()

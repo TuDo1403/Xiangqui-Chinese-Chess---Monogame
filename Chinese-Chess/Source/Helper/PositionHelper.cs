@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.Helper
 {
     public static class PositionHelper
     {
-        private const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
+        public const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
+
+
         private const int X_OFFSET_PIECE = 97;
         private const int Y_OFFSET_PIECE = 102;
         private const int DISTANCE_BETWEEN_CENTER_AND_CORNERS = 84;
@@ -23,7 +25,7 @@ namespace Chinese_Chess
         public static Vector2 ToSpritePos(this Point matrixPos)
         {
             var spritePos = new Vector2(matrixPos.X, matrixPos.Y);
-            spritePos.X = (spritePos.X* X_OFFSET_PIECE) + X_OFFSET_FROM_TOP_LEFT_WIN;
+            spritePos.X = spritePos.X * X_OFFSET_PIECE + X_OFFSET_FROM_TOP_LEFT_WIN;
             spritePos.Y *= Y_OFFSET_PIECE;
             return spritePos;
         }
@@ -64,9 +66,15 @@ namespace Chinese_Chess
         }
 
 
-        public static Vector2 ToSpritePosition(this Point centerPosition, int textureWidth, int textureHeight)
+        public static Vector2 ToSpriteTopLeftPosition(this Point centerPosition, int textureWidth, int textureHeight)
         {
-            return new Vector2(centerPosition.X - (textureWidth / 2), centerPosition.Y - (textureHeight / 2));
+            return new Vector2(centerPosition.X - textureWidth / 2, centerPosition.Y - textureHeight / 2);
+        }
+
+
+        public static Vector2 ToSpriteCenterPosition(this Vector2 topLeftPosition, int textureWidth, int textureHeight)
+        {
+            return new Vector2(topLeftPosition.X + textureWidth / 2, topLeftPosition.Y + textureHeight / 2);
         }
     }
 }

@@ -1,27 +1,22 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Helper;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Chariot : Piece
+    public sealed class Chariot : Piece
     {
         public Chariot(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
         }
 
-        
+
 
         protected override void FindNextMoves()
         {
             base.FindNextMoves();
             FindHorizontalMoves();
             FindVerticalMoves();
-            //PrintValidMove();
         }
 
         protected override void FindHorizontalMoves()

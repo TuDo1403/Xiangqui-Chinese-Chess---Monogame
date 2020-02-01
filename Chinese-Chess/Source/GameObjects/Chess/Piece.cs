@@ -1,13 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Helper;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ChineseChess.Source.Main;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
     public abstract class Piece : GameModel
     {
@@ -27,6 +26,7 @@ namespace Chinese_Chess
 
         public event EventHandler<Point> Moved;
         public event EventHandler Focused;
+        public event EventHandler CheckMated;
 
 
         protected virtual Predicate<Point> OutOfRangeMove()
@@ -50,14 +50,14 @@ namespace Chinese_Chess
 
         protected bool StillHasValidMoves(int row, int column)
         {
-            if (Xiangqui.Board[row][column] * Type > 0)
+            if (ChessBoard.MatrixBoard[row][column] * Type > 0)
             {
                 return false;
             }
             else
             {
                 ValidMoves.Add(new Point(column, row));
-                if (Xiangqui.Board[row][column] * Type < 0)
+                if (ChessBoard.MatrixBoard[row][column] * Type < 0)
                 {
                     return false;
                 }
@@ -65,6 +65,21 @@ namespace Chinese_Chess
             return true;
         }
 
+        protected void HasCheckMateMove()
+        {
+            foreach (var move in ValidMoves)
+            {
+                if (Math.Abs(ChessBoard.MatrixBoard[move.Y][move.X]) == Rules.GENERAL)
+                {
+                    OnCheckMating();
+                }
+            }
+        }
+
+        private void OnCheckMating()
+        {
+            (CheckMated as EventHandler)?.Invoke(this, EventArgs.Empty);
+        }
 
         protected void PrintValidMove()
         {
@@ -80,16 +95,16 @@ namespace Chinese_Chess
         public Piece(Texture2D texture, Vector2 position, int type) : base(texture)
         {
             Type = type;
-            Xiangqui.BoardUpdated += Xiangqui_BoardUpdatedHandler;
+            ChessBoard.BoardUpdated += Xiangqui_BoardUpdatedHandler;
             Position = position;
             MatrixPos = Position.ToMatrixPos();
             SetBounds();
-            //FindNextMoves();
         }
 
         private void Xiangqui_BoardUpdatedHandler(object sender, EventArgs e)
         {
             FindNextMoves();
+            HasCheckMateMove();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -125,9 +140,9 @@ namespace Chinese_Chess
             }
         }
 
-        private void SetNewMovePosition(MouseState mouseState)
+        private void SetNewMovePosition(MouseState centerSpritePos)
         {
-            var spritePos = mouseState.Position.ToSpritePosition(Texture.Width, Texture.Height);
+            var spritePos = centerSpritePos.Position.ToSpriteTopLeftPosition(Texture.Width, Texture.Height);
             SetMove(spritePos);
             _isFocusing = false;
             _isDragging = false;
@@ -157,12 +172,8 @@ namespace Chinese_Chess
             var validPos = spritePos.GetValidMovePosition(ValidMoves);
             if (validPos != Vector2.Zero)
             {
-                //var newMatrixPos = validPos.ToMatrixPos();
-                //OnMoving(newMatrixPos);
-                //MatrixPos = newMatrixPos;
                 Position = validPos;
                 OnMoving(validPos.ToMatrixPos());
-                //FindNextMoves();
             }
             else
             {
@@ -179,8 +190,7 @@ namespace Chinese_Chess
 
         private void SetPosition(Point mousePosition)
         {
-
-            var position = mousePosition.ToSpritePosition(Texture.Width, Texture.Height);
+            var position = mousePosition.ToSpriteTopLeftPosition(Texture.Width, Texture.Height);
             Position = position;
         }
     }

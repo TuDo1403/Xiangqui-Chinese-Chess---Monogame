@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Main;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -7,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Horse : Piece
+    public sealed class Horse : Piece
     {
 
         public Horse(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
@@ -30,8 +31,8 @@ namespace Chinese_Chess
         {
             ValidMoves.RemoveAll(OutOfRangeMove());
 
-            var horseValue = Xiangqui.Board[MatrixPos.Y][MatrixPos.X];
-            ValidMoves.RemoveAll(c => Xiangqui.Board[c.Y][c.X] * horseValue > 0);
+            var horseValue = ChessBoard.MatrixBoard[MatrixPos.Y][MatrixPos.X];
+            ValidMoves.RemoveAll(c => ChessBoard.MatrixBoard[c.Y][c.X] * horseValue > 0);
 
             ValidMoves.RemoveAll(IsBlockedMove);
         }
@@ -45,11 +46,11 @@ namespace Chinese_Chess
         {
             if (Math.Abs(MatrixPos.X - move.X) == 2)
             {
-                return Xiangqui.Board[MatrixPos.Y][(MatrixPos.X + move.X) / 2] != 0;
+                return ChessBoard.MatrixBoard[MatrixPos.Y][(MatrixPos.X + move.X) / 2] != 0;
             }
             else
             {
-                return Xiangqui.Board[(MatrixPos.Y + move.Y) / 2][MatrixPos.X] != 0;
+                return ChessBoard.MatrixBoard[(MatrixPos.Y + move.Y) / 2][MatrixPos.X] != 0;
             }
         }
 

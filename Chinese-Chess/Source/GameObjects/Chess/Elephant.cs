@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Main;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Elephant : Piece
+    public sealed class Elephant : Piece
     {
         public Elephant(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
@@ -29,15 +30,15 @@ namespace Chinese_Chess
         {
             ValidMoves.RemoveAll(OutOfRangeMove());
 
-            var elephantValue = Xiangqui.Board[MatrixPos.Y][MatrixPos.X];
-            ValidMoves.RemoveAll(c => Xiangqui.Board[c.Y][c.X] * elephantValue > 0);
+            var elephantValue = ChessBoard.MatrixBoard[MatrixPos.Y][MatrixPos.X];
+            ValidMoves.RemoveAll(c => ChessBoard.MatrixBoard[c.Y][c.X] * elephantValue > 0);
 
             ValidMoves.RemoveAll(IsBlockedMove);
         }
 
         protected override bool IsBlockedMove(Point move)
         {
-            return Xiangqui.Board[(MatrixPos.Y + move.Y)/2][(MatrixPos.X + move.X)/2] != 0;
+            return ChessBoard.MatrixBoard[(MatrixPos.Y + move.Y) / 2][(MatrixPos.X + move.X) / 2] != 0;
         }
 
         protected override Predicate<Point> OutOfRangeMove()

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ChineseChess.Source.Main;
+using System;
 
-namespace Chinese_Chess
+namespace ChineseChess
 {
 #if WINDOWS || LINUX
     /// <summary>
@@ -14,8 +15,10 @@ namespace Chinese_Chess
         [STAThread]
         static void Main()
         {
-            using (var game = new GamePlay())
+            using (var game = new ChessGame())
+            {
                 game.Run();
+            }
         }
     }
 #endif

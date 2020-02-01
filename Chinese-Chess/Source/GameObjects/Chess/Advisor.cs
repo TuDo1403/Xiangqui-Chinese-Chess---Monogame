@@ -1,14 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.Main;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.GameObjects.Chess
 {
-    public class Advisor : Piece
+    public sealed class Advisor : Piece
     {
         public Advisor(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
         {
@@ -22,7 +19,7 @@ namespace Chinese_Chess
             var matrixPosToVector2 = MatrixPos.ToVector2();
             FindCrossMove(matrixPosToVector2);
             RemoveInvalidMoves();
-            
+
         }
 
         private void FindCrossMove(Vector2 currentPos)
@@ -38,8 +35,8 @@ namespace Chinese_Chess
         {
             ValidMoves.RemoveAll(OutOfRangeMove());
 
-            var advisorValue = Xiangqui.Board[MatrixPos.Y][MatrixPos.X];
-            ValidMoves.RemoveAll(c => Xiangqui.Board[c.Y][c.X] * advisorValue > 0);
+            var advisorValue = ChessBoard.MatrixBoard[MatrixPos.Y][MatrixPos.X];
+            ValidMoves.RemoveAll(c => ChessBoard.MatrixBoard[c.Y][c.X] * advisorValue > 0);
         }
 
         protected override Predicate<Point> OutOfRangeMove()

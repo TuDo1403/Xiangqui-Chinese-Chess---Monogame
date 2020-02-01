@@ -193,3 +193,10 @@
 /processorParam:TextureFormat=Color
 /build:../Data/red-soldier.png;red-soldier.png
 
+#begin Font/GameEnd.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/GameEnd.spritefont
+

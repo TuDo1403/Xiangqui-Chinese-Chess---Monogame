@@ -1,27 +1,23 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Chinese_Chess
+namespace ChineseChess.Source.Main
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class GamePlay : Game
+    public class ChessGame : Game
     {
         private readonly GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
-
-        private Board _board;
-
-        private Xiangqui _game;
+        private ChessBoard _game;
 
 
 
-
-
-        public GamePlay()
+        public ChessGame()
         {
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
@@ -38,7 +34,7 @@ namespace Chinese_Chess
         {
             // TODO: Add your initialization logic here
 
-            _game = new Xiangqui();
+            _game = ChessBoard.GetInstance();
             base.Initialize();
         }
 
@@ -51,15 +47,10 @@ namespace Chinese_Chess
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _board = new Board(Content.Load<Texture2D>("board"));
-
-
-            //_redHorse = new Horse(Content.Load<Texture2D>("red-horse"), new Vector2(10, 0));
-            //_blackHorse = new Horse(Content.Load<Texture2D>("black-horse"), new Vector2(299.5f, 300));
             _game.LoadContent(Content);
 
-            graphics.PreferredBackBufferWidth = _board.Width;
-            graphics.PreferredBackBufferHeight = _board.Height;
+            graphics.PreferredBackBufferWidth = _game.Board.Width + 100;
+            graphics.PreferredBackBufferHeight = _game.Board.Height;
             graphics.ApplyChanges();
             // TODO: use this.Content to load your game content here
         }
@@ -84,8 +75,6 @@ namespace Chinese_Chess
                 Exit();
 
             // TODO: Add your update logic here
-            //_redHorse.Update(Mouse.GetState());
-            //_blackHorse.Update(Mouse.GetState());
             _game.Update(Mouse.GetState());
 
             base.Update(gameTime);
@@ -101,8 +90,9 @@ namespace Chinese_Chess
 
             // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.FrontToBack);
-            _board.Draw(spriteBatch);
+
             _game.Draw(spriteBatch);
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
