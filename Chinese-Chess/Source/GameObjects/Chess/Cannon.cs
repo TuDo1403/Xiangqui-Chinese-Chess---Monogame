@@ -39,6 +39,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                             break;
                         }
                     }
+                    break;
                 }
                 else
                 {
@@ -64,6 +65,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                             break;
                         }
                     }
+                    break;
                 }
                 else
                 {
@@ -92,6 +94,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                             break;
                         }
                     }
+                    break;
                 }
                 else
                 {
@@ -117,6 +120,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                             break;
                         }
                     }
+                    break;
                 }
                 else
                 {

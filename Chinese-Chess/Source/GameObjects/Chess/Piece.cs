@@ -71,15 +71,13 @@ namespace ChineseChess.Source.GameObjects.Chess
             {
                 if (Math.Abs(ChessBoard.MatrixBoard[move.Y][move.X]) == Rules.GENERAL)
                 {
+                    Console.WriteLine($"{GetType()}[{MatrixPos.Y}][{MatrixPos.X}] move[{move.Y}][{move.X}]");
                     OnCheckMating();
                 }
             }
         }
 
-        private void OnCheckMating()
-        {
-            (CheckMated as EventHandler)?.Invoke(this, EventArgs.Empty);
-        }
+        private void OnCheckMating() => (CheckMated as EventHandler)?.Invoke(this, EventArgs.Empty);
 
         protected void PrintValidMove()
         {

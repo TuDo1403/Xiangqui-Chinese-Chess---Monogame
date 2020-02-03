@@ -11,14 +11,13 @@ namespace ChineseChess.Source.GameObjects
 {
     public class Message
     {
-        private SpriteFont _spriteFont;
+        private readonly SpriteFont _spriteFont;
 
         private Vector2 _position;
 
         public int CurrentFrame { get; set; } = 0;
         public int TotalFrames { get; set; } = 50;
 
-        private Color _color = Color.Black;
 
 
 
@@ -38,6 +37,12 @@ namespace ChineseChess.Source.GameObjects
         }
 
 
+        public void ResetTimer()
+        {
+            CurrentFrame = 0;
+        }
+
+
         public void DrawString(SpriteBatch spriteBatch, string message, Color color)
         {
             if (spriteBatch == null)
@@ -46,7 +51,7 @@ namespace ChineseChess.Source.GameObjects
             }
             if (CurrentFrame < TotalFrames)
             {
-                spriteBatch.DrawString(_spriteFont, message, _position, _color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(_spriteFont, message, _position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
             }
         }
     }

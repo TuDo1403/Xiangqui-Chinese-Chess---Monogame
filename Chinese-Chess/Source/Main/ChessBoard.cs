@@ -13,10 +13,16 @@ namespace ChineseChess.Source.Main
 {
     public class ChessBoard : GameModel
     {
+        private const int RED_TURN = 1;
+
         private static ChessBoard _instance;
 
+        private int _turn;
+
+        private uint _checkCount = 0;
+
         private bool _isCheckMate = false;
-        private bool _gameEnd = false;
+        private bool _gameOver = false;
         private bool _isFocusing = false;
 
 
@@ -24,7 +30,8 @@ namespace ChineseChess.Source.Main
 
         private Piece _focusingPiece;
 
-        private readonly List<Piece> _pieces;
+        private readonly List<Piece> _redPieces;
+        private readonly List<Piece> _blackPieces;
 
 
         public Board Board { get; private set; }
@@ -58,7 +65,9 @@ namespace ChineseChess.Source.Main
 
         private ChessBoard()
         {
-            _pieces = new List<Piece>();
+            _redPieces = new List<Piece>();
+            _blackPieces = new List<Piece>();
+            _turn = new Random().Next(0, 1);
         }
 
 
@@ -83,7 +92,8 @@ namespace ChineseChess.Source.Main
             Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
 
             _gameMessage = new Message(contentManager.Load<SpriteFont>(@"Font\GameEnd"), 
-                                   new Vector2(PositionHelper.X_OFFSET_FROM_TOP_LEFT_WIN, Board.Height/2));
+                                       new Vector2(PositionHelper.X_OFFSET_FROM_TOP_LEFT_WIN, 
+                                       Board.Height/2));
 
             OnBoardUpdating();
         }
@@ -94,19 +104,43 @@ namespace ChineseChess.Source.Main
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
             piece.CheckMated += Piece_CheckMatedHandler;
-            _pieces.Add(piece);
+
+            if (piece.Type > 0)
+            {
+                _redPieces.Add(piece);
+            }
+            else
+            {
+                _blackPieces.Add(piece);
+            }
         }
 
         private void Piece_CheckMatedHandler(object sender, EventArgs e)
         {
-            _isCheckMate = true;
+            _checkCount++;
+            // Quadruple check
+            if (_checkCount >= 4)
+            {
+                _gameOver = true;
+            }
+            else
+            {
+                _isCheckMate = true;
+            }
         }
 
         private void Piece_MovedHandler(object sender, Point e)
         {
             _isFocusing = false;
-            _gameMessage.CurrentFrame = 0;
-            UpdateBoard(sender as Piece, e);
+
+            if (e != _focusingPiece.MatrixPos)
+            {
+                _checkCount = 0;
+                _turn = -_turn + 1; // switch side
+                _isCheckMate = false;
+                _gameMessage.ResetTimer();
+                UpdateBoard(sender as Piece, e);
+            }
         }
 
         private void UpdateBoard(Piece movedPiece, Point e)
@@ -116,10 +150,7 @@ namespace ChineseChess.Source.Main
             OnBoardUpdating();
         }
 
-        private void OnBoardUpdating()
-        {
-            (BoardUpdated as EventHandler)?.Invoke(this, EventArgs.Empty);
-        }
+        private void OnBoardUpdating() => (BoardUpdated as EventHandler)?.Invoke(this, EventArgs.Empty);
 
         private void UpdatePosition(Piece movedPiece, Point newMatrixPos)
         {
@@ -127,7 +158,7 @@ namespace ChineseChess.Source.Main
             MatrixBoard[oldMatrixPos.Y][oldMatrixPos.X] = 0;
             MatrixBoard[newMatrixPos.Y][newMatrixPos.X] = movedPiece.Type;
 
-            PrintBoard();
+            //PrintBoard();
         }
 
         private static void PrintBoard()
@@ -146,9 +177,10 @@ namespace ChineseChess.Source.Main
         {
             if (Math.Abs(MatrixBoard[e.Y][e.X]) == Rules.GENERAL)
             {
-                _gameEnd = true;
+                _gameOver = true;
             }
-            _pieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
+            _redPieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
+            _blackPieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)
@@ -160,7 +192,7 @@ namespace ChineseChess.Source.Main
 
         public override void Update(MouseState mouseState)
         {
-            if (!_gameEnd)
+            if (!_gameOver)
             {
                 CheckMateCheck();
                 if (_isFocusing)
@@ -185,12 +217,31 @@ namespace ChineseChess.Source.Main
 
         private void UpdatePieces(MouseState mouseState)
         {
-            foreach (var piece in _pieces)
+            if (_turn == RED_TURN)
+            {
+                UpdateRedPieces(mouseState);
+            }
+            else
+            {
+                UpdateBlackPieces(mouseState);
+            }
+        }
+
+        private void UpdateBlackPieces(MouseState mouseState)
+        {
+            foreach (var piece in _blackPieces)
             {
                 piece.Update(mouseState);
             }
         }
 
+        private void UpdateRedPieces(MouseState mouseState)
+        {
+            foreach (var piece in _redPieces)
+            {
+                piece.Update(mouseState);
+            }
+        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -200,18 +251,36 @@ namespace ChineseChess.Source.Main
             }
 
             Board.Draw(spriteBatch);
+            DrawRedPieces(spriteBatch);
+            DrawBlackPieces(spriteBatch);
+            if (_gameOver)
+            {
+                DrawGameOverMessage(spriteBatch);
+            }
+            else if (_isCheckMate)
+            {
+                _gameMessage.DrawString(spriteBatch, Resources.checkMate, Color.Red);
+            }
+        }
 
-            foreach (var piece in _pieces)
+        private void DrawGameOverMessage(SpriteBatch spriteBatch)
+        {
+            _gameMessage.DrawString(spriteBatch, Resources.blackWins, Color.Red);
+        }
+
+        private void DrawBlackPieces(SpriteBatch spriteBatch)
+        {
+            foreach (var piece in _blackPieces)
             {
                 piece.Draw(spriteBatch);
             }
-            if (_gameEnd)
+        }
+
+        private void DrawRedPieces(SpriteBatch spriteBatch)
+        {
+            foreach (var piece in _redPieces)
             {
-                _gameMessage.DrawString(spriteBatch, Resources.blackWins, Color.Red);
-            }
-            if (_isCheckMate)
-            {
-                _gameMessage.DrawString(spriteBatch, Resources.checkMate, Color.Red);
+                piece.Draw(spriteBatch);
             }
         }
     }
