@@ -75,17 +75,21 @@
     <Compile Include="Source\GameObjects\Chess\Elephant.cs" />
     <Compile Include="Source\GameObjects\Chess\General.cs" />
     <Compile Include="Source\GameObjects\Message.cs" />
+    <Compile Include="Source\GameRule\BoardRule.cs" />
+    <Compile Include="Source\GameRule\Pieces.cs" />
     <Compile Include="Source\Helper\PieceFactory.cs" />
     <Compile Include="Source\GameObjects\GameModel.cs" />
     <Compile Include="Source\GameObjects\Chess\Horse.cs" />
     <Compile Include="Source\GameObjects\Chess\Piece.cs" />
     <Compile Include="Source\Main\ChessGame.cs" />
-    <Compile Include="Source\Helper\Rules.cs" />
+    <Compile Include="Source\Helper\PieceLoader.cs" />
     <Compile Include="Source\Helper\PositionHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\GameObjects\Chess\Soldier.cs" />
     <Compile Include="Source\Main\ChessBoard.cs" />
+    <Compile Include="Source\GameRule\GameState.cs" />
+    <Compile Include="Source\GameRule\GameTeam.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

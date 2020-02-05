@@ -1,4 +1,4 @@
-﻿using ChineseChess.Source.Helper;
+﻿using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -28,12 +28,13 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         private bool RiverCrossed()
         {
-            return Type < 0 && MatrixPos.Y >= 5 || Type > 0 && MatrixPos.Y <= 4;
+            return Type < 0 && MatrixPos.Y > (int)BoardRule.BlackBorder ||
+                   Type > 0 && MatrixPos.Y < (int)BoardRule.RedBorder;
         }
 
         protected override void FindHorizontalMoves()
         {
-            if (MatrixPos.X + 1 < Rules.COLUMNS)
+            if (MatrixPos.X + 1 < (int)BoardRule.Columns)
             {
                 StillHasValidMoves(MatrixPos.Y, MatrixPos.X + 1);
             }

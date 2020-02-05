@@ -61,6 +61,15 @@ namespace ChineseChess.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Black Turn.
+        /// </summary>
+        internal static string blackTurn {
+            get {
+                return ResourceManager.GetString("blackTurn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Black Wins!.
         /// </summary>
         internal static string blackWins {
@@ -75,6 +84,15 @@ namespace ChineseChess.Properties {
         internal static string checkMate {
             get {
                 return ResourceManager.GetString("checkMate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Red Turn.
+        /// </summary>
+        internal static string redTurn {
+            get {
+                return ResourceManager.GetString("redTurn", resourceCulture);
             }
         }
         

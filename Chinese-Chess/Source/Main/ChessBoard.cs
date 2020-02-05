@@ -8,49 +8,34 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using ChineseChess.Properties;
+using System.Linq;
+using ChineseChess.Source.GameRule;
 
 namespace ChineseChess.Source.Main
 {
     public class ChessBoard : GameModel
     {
-        private const int RED_TURN = 1;
-
         private static ChessBoard _instance;
 
+        private GameState _gameState;
+
         private int _turn;
+        private int _checkMateSide;
 
-        private uint _checkCount = 0;
+        private uint _checkCount;
 
-        private bool _isCheckMate = false;
-        private bool _gameOver = false;
-        private bool _isFocusing = false;
-
-
-        private Message _gameMessage;
+        private readonly Message[] _messages;
 
         private Piece _focusingPiece;
 
-        private readonly List<Piece> _redPieces;
-        private readonly List<Piece> _blackPieces;
 
+        public List<Piece>[] Pieces { get; private set; }
 
         public Board Board { get; private set; }
 
         public static event EventHandler BoardUpdated;
 
-        public static int[][] MatrixBoard { get; private set; } = new int[10][]
-        {
-            new int[9] {-Rules.CHARIOT,  -Rules.HORSE, -Rules.ELEPHANT, -Rules.ADVISOR, -Rules.GENERAL, -Rules.ADVISOR, -Rules.ELEPHANT,  -Rules.HORSE, -Rules.CHARIOT},
-            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new int[9] {             0, -Rules.CANNON,               0,              0,              0,              0,               0, -Rules.CANNON,              0},
-            new int[9] {-Rules.SOLDIER,             0,  -Rules.SOLDIER,              0, -Rules.SOLDIER,              0,  -Rules.SOLDIER,             0, -Rules.SOLDIER},
-            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new int[9] { Rules.SOLDIER,             0,   Rules.SOLDIER,              0,  Rules.SOLDIER,              0,   Rules.SOLDIER,             0,  Rules.SOLDIER},
-            new int[9] {             0,  Rules.CANNON,               0,              0,              0,              0,               0,  Rules.CANNON,              0},
-            new int[9] {             0,             0,               0,              0,              0,              0,               0,             0,              0},
-            new int[9] { Rules.CHARIOT,   Rules.HORSE,  Rules.ELEPHANT,  Rules.ADVISOR,  Rules.GENERAL,  Rules.ADVISOR,  Rules.ELEPHANT,   Rules.HORSE,  Rules.CHARIOT}
-        };
+        public static int[][] MatrixBoard { get; private set; }
 
 
 
@@ -65,9 +50,29 @@ namespace ChineseChess.Source.Main
 
         private ChessBoard()
         {
-            _redPieces = new List<Piece>();
-            _blackPieces = new List<Piece>();
-            _turn = new Random().Next(0, 1);
+            _gameState = GameState.Idle;
+            _checkCount = 0;
+
+            _turn = new Random().Next(0, 2);
+            _messages = new Message[5];
+
+            Pieces = new List<Piece>[2];
+            Pieces[(int)GameTeam.Black] = new List<Piece>();
+            Pieces[(int)GameTeam.Red] = new List<Piece>();
+
+            MatrixBoard = new int[10][]
+            {
+                new int[9] { (int)GameRule.Pieces.B_Chariot,  (int)GameRule.Pieces.B_Horse, (int)GameRule.Pieces.B_Elephant, (int)GameRule.Pieces.B_Advisor, (int)GameRule.Pieces.B_General, (int)GameRule.Pieces.B_Advisor, (int)GameRule.Pieces.B_Elephant,  (int)GameRule.Pieces.B_Horse, (int)GameRule.Pieces.B_Chariot},
+                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
+                new int[9] {                     0, (int)GameRule.Pieces.B_Cannon,                      0,                     0,                     0,                     0,                      0, (int)GameRule.Pieces.B_Cannon,                     0},
+                new int[9] { (int)GameRule.Pieces.B_Soldier,                    0,  (int)GameRule.Pieces.B_Soldier,                     0, (int)GameRule.Pieces.B_Soldier,                     0,  (int)GameRule.Pieces.B_Soldier,                    0, (int)GameRule.Pieces.B_Soldier},
+                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
+                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
+                new int[9] { (int)GameRule.Pieces.R_Soldier,                    0,  (int)GameRule.Pieces.R_Soldier,                     0, (int)GameRule.Pieces.R_Soldier,                     0,  (int)GameRule.Pieces.R_Soldier,                    0, (int)GameRule.Pieces.R_Soldier},
+                new int[9] {                     0, (int)GameRule.Pieces.R_Cannon,                      0,                     0,                     0,                     0,                      0, (int)GameRule.Pieces.R_Cannon,                     0},
+                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
+                new int[9] { (int)GameRule.Pieces.R_Chariot,  (int)GameRule.Pieces.R_Horse, (int)GameRule.Pieces.R_Elephant, (int)GameRule.Pieces.R_Advisor, (int)GameRule.Pieces.R_General, (int)GameRule.Pieces.R_Advisor, (int)GameRule.Pieces.R_Elephant,  (int)GameRule.Pieces.R_Horse, (int)GameRule.Pieces.R_Chariot}
+            };
         }
 
 
@@ -78,9 +83,9 @@ namespace ChineseChess.Source.Main
                 throw new ArgumentNullException(nameof(contentManager));
             }
 
-            for (int i = 0; i < Rules.ROWS; ++i)
+            for (int i = 0; i < (int)BoardRule.Rows; ++i)
             {
-                for (int j = 0; j < Rules.COLUMNS; ++j)
+                for (int j = 0; j < (int)BoardRule.Columns; ++j)
                 {
                     if (MatrixBoard[i][j] != 0)
                     {
@@ -90,62 +95,75 @@ namespace ChineseChess.Source.Main
             }
 
             Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
-
-            _gameMessage = new Message(contentManager.Load<SpriteFont>(@"Font\GameEnd"), 
-                                       new Vector2(PositionHelper.X_OFFSET_FROM_TOP_LEFT_WIN, 
-                                       Board.Height/2));
+            LoadMessage(contentManager);
 
             OnBoardUpdating();
         }
 
+        private void LoadMessage(ContentManager contentManager)
+        {
+            var font = contentManager.Load<SpriteFont>(@"Font\GameEnd");
+            var boardCenterPos = new Point(Board.Width / 2, Board.Height / 2);
+            _messages[(int)GameState.BlackWins] = new Message(font, Resources.blackWins, boardCenterPos);
+            _messages[(int)GameState.RedWins] = new Message(font, Resources.redWins, boardCenterPos);
+            _messages[(int)GameState.CheckMate] = new Message(font, Resources.checkMate, boardCenterPos);
+            _messages[(int)GameState.RedTurn] = new Message(font, Resources.redTurn, boardCenterPos);
+            _messages[(int)GameState.BlackTurn] = new Message(font, Resources.blackTurn, boardCenterPos);
+        }
+
         private void PutPieceOnBoard(ContentManager contentManager, Point matrixPos)
         {
-            var piece = PieceFactory.CreatePiece(MatrixBoard[matrixPos.Y][matrixPos.X], matrixPos, contentManager);
+            var piece = PieceFactory.CreatePiece(MatrixBoard[matrixPos.Y][matrixPos.X], 
+                                                 matrixPos, 
+                                                 contentManager);
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
             piece.CheckMated += Piece_CheckMatedHandler;
 
             if (piece.Type > 0)
             {
-                _redPieces.Add(piece);
+                Pieces[(int)GameTeam.Red].Add(piece);
             }
             else
             {
-                _blackPieces.Add(piece);
+                Pieces[(int)GameTeam.Black].Add(piece);
             }
         }
 
-        private void Piece_CheckMatedHandler(object sender, EventArgs e)
+        private void Piece_CheckMatedHandler(object sender, int e)
         {
             _checkCount++;
+
             // Quadruple check
             if (_checkCount >= 4)
             {
-                _gameOver = true;
+                _gameState = GameState.GameOver;
             }
             else
             {
-                _isCheckMate = true;
+                _gameState = GameState.CheckMate;
+                _checkMateSide = e;
             }
         }
 
         private void Piece_MovedHandler(object sender, Point e)
         {
-            _isFocusing = false;
+            _gameState = GameState.Idle;
 
             if (e != _focusingPiece.MatrixPos)
             {
                 _checkCount = 0;
-                _turn = -_turn + 1; // switch side
-                _isCheckMate = false;
-                _gameMessage.ResetTimer();
+                _turn = -(_turn) + 1; // switch side
+                _messages[(int)GameState.CheckMate].ResetTimer();
+                _messages[_turn + 3].ResetTimer();
                 UpdateBoard(sender as Piece, e);
             }
         }
 
+
         private void UpdateBoard(Piece movedPiece, Point e)
         {
-            UpdatePieces(movedPiece, e);
+            UpdatePieces(e);
             UpdatePosition(movedPiece, e);
             OnBoardUpdating();
         }
@@ -163,9 +181,9 @@ namespace ChineseChess.Source.Main
 
         private static void PrintBoard()
         {
-            for (int i = 0; i < Rules.ROWS; ++i)
+            for (int i = 0; i < (int)BoardRule.Rows; ++i)
             {
-                for (int j = 0; j < Rules.COLUMNS; ++j)
+                for (int j = 0; j < (int)BoardRule.Columns; ++j)
                 {
                     Console.Write($"{MatrixBoard[i][j]}\t");
                 }
@@ -173,75 +191,64 @@ namespace ChineseChess.Source.Main
             }
         }
 
-        private void UpdatePieces(Piece movedPiece, Point e)
+        private void UpdatePieces(Point e)
         {
-            if (Math.Abs(MatrixBoard[e.Y][e.X]) == Rules.GENERAL)
+            if (Math.Abs(MatrixBoard[e.Y][e.X]) == (int)GameRule.Pieces.R_General)
             {
-                _gameOver = true;
+                _gameState = GameState.GameOver;
             }
-            _redPieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
-            _blackPieces.RemoveAll(piece => piece != movedPiece && piece.MatrixPos == e);
+
+            var p = Pieces[_turn].Where(c => c.MatrixPos == e)
+                                  .SingleOrDefault();
+            if (p != null)
+            {
+                p.RemoveBoardUpdatedEventHandler();
+            }
+            
+            Pieces[_turn].RemoveAll(piece => piece.MatrixPos == e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)
         {
-            _isFocusing = true;
-            _focusingPiece = (Piece)sender;
+            _gameState = GameState.PieceMoving;
+            _focusingPiece = sender as Piece;
         }
 
 
         public override void Update(MouseState mouseState)
         {
-            if (!_gameOver)
+            if (_gameState != GameState.GameOver)
             {
-                CheckMateCheck();
-                if (_isFocusing)
+                CheckMateUpdate();
+                if (_gameState == GameState.PieceMoving)
                 {
                     _focusingPiece.Update(mouseState);
                 }
                 else
                 {
-                    UpdatePieces(mouseState);
+                    UpdatePiecesInTurn(mouseState);
                 }
             }
 
         }
 
-        private void CheckMateCheck()
+        private void CheckMateUpdate()
         {
-            if (_isCheckMate)
+            if (_gameState == GameState.CheckMate)
             {
-                _gameMessage.Update();
+                _messages[(int)_gameState].Update();
             }
         }
 
-        private void UpdatePieces(MouseState mouseState)
+        private void UpdatePiecesInTurn(MouseState mouseState)
         {
-            if (_turn == RED_TURN)
-            {
-                UpdateRedPieces(mouseState);
-            }
-            else
-            {
-                UpdateBlackPieces(mouseState);
-            }
-        }
-
-        private void UpdateBlackPieces(MouseState mouseState)
-        {
-            foreach (var piece in _blackPieces)
+            _messages[_turn + 3].Update();
+            foreach (var piece in Pieces[_turn])
             {
                 piece.Update(mouseState);
             }
         }
 
-        private void UpdateRedPieces(MouseState mouseState)
-        {
-            foreach (var piece in _redPieces)
-            {
-                piece.Update(mouseState);
-            }
-        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -251,36 +258,61 @@ namespace ChineseChess.Source.Main
             }
 
             Board.Draw(spriteBatch);
-            DrawRedPieces(spriteBatch);
-            DrawBlackPieces(spriteBatch);
-            if (_gameOver)
+            DrawPieces(spriteBatch);
+
+            if (_gameState == GameState.GameOver)
             {
                 DrawGameOverMessage(spriteBatch);
             }
-            else if (_isCheckMate)
+            else if (_gameState == GameState.CheckMate)
             {
-                _gameMessage.DrawString(spriteBatch, Resources.checkMate, Color.Red);
+                DrawCheckMateMessage(spriteBatch);
             }
+            else
+            {
+                DrawTurnMessage(spriteBatch);
+            }
+        }
+
+        private void DrawTurnMessage(SpriteBatch spriteBatch)
+        {
+            var color = Color.Red;
+            if (_turn + 3 == (int)GameState.BlackTurn)
+            {
+                color = Color.Black;
+            }
+            _messages[_turn + 3].DrawString(spriteBatch, color);
+        }
+
+        private void DrawPieces(SpriteBatch spriteBatch)
+        {
+            foreach (var piece in from team in Pieces
+                                  from piece in team
+                                  select piece)
+            {
+                piece.Draw(spriteBatch);
+            }
+        }
+
+        private void DrawCheckMateMessage(SpriteBatch spriteBatch)
+        {
+            var color = Color.Red;
+            if (_checkMateSide < 0)
+            {
+                color = Color.Black;
+            }
+            _messages[(int)_gameState].DrawString(spriteBatch, color);
         }
 
         private void DrawGameOverMessage(SpriteBatch spriteBatch)
         {
-            _gameMessage.DrawString(spriteBatch, Resources.blackWins, Color.Red);
-        }
-
-        private void DrawBlackPieces(SpriteBatch spriteBatch)
-        {
-            foreach (var piece in _blackPieces)
+            if (_focusingPiece.Type < 0)
             {
-                piece.Draw(spriteBatch);
+                _messages[(int)GameState.BlackWins].DrawString(spriteBatch, Color.Black);
             }
-        }
-
-        private void DrawRedPieces(SpriteBatch spriteBatch)
-        {
-            foreach (var piece in _redPieces)
+            else
             {
-                piece.Draw(spriteBatch);
+                _messages[(int)GameState.RedWins].DrawString(spriteBatch, Color.Red);
             }
         }
     }

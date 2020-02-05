@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.Main;
+﻿using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -41,10 +42,11 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         protected override Predicate<Point> OutOfRangeMove()
         {
-            return c => c.Y < 0 || c.Y > 9 ||
-                        c.X > 5 || c.X < 3 ||
-                        Type > 0 && c.Y < 7 ||
-                        Type < 0 && c.Y > 2;
+            return c => c.Y < 0 || c.Y >= (int)BoardRule.Rows ||
+                        c.X > (int)BoardRule.RightCastle || 
+                        c.X < (int)BoardRule.LeftCastle ||
+                        Type > 0 && c.Y < (int)BoardRule.FrontRedCastle ||
+                        Type < 0 && c.Y > (int)BoardRule.FrontBlackCastle;
         }
     }
 }

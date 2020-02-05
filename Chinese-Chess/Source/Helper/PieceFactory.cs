@@ -1,4 +1,5 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,36 +15,36 @@ namespace ChineseChess.Source.Helper
             {
                 throw new ArgumentNullException(nameof(contentManager));
             }
-            var texture = contentManager.Load<Texture2D>(Rules.PieceDictionary[key]);
+            var texture = contentManager.Load<Texture2D>(PieceLoader.TextureLoader[key]);
             var spritePos = matrixPos.ToSpritePos();
 
             var type = key;
             key = Math.Abs(key);
-            if (key == Rules.CHARIOT)
+            if (key == (int)Pieces.R_Chariot)
             {
                 return new Chariot(texture, spritePos, type);
             }
-            if (key == Rules.HORSE)
+            if (key == (int)Pieces.R_Horse)
             {
                 return new Horse(texture, spritePos, type);
             }
-            if (key == Rules.ADVISOR)
+            if (key == (int)Pieces.R_Advisor)
             {
                 return new Advisor(texture, spritePos, type);
             }
-            if (key == Rules.CANNON)
+            if (key == (int)Pieces.R_Cannon)
             {
                 return new Cannon(texture, spritePos, type);
             }
-            if (key == Rules.GENERAL)
+            if (key == (int)Pieces.R_General)
             {
                 return new General(texture, spritePos, type);
             }
-            if (key == Rules.SOLDIER)
+            if (key == (int)Pieces.R_Soldier)
             {
                 return new Soldier(texture, spritePos, type);
             }
-            if (key == Rules.ELEPHANT)
+            if (key == (int)Pieces.R_Elephant)
             {
                 return new Elephant(texture, spritePos, type);
             }

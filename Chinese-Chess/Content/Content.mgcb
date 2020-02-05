@@ -193,6 +193,12 @@
 /processorParam:TextureFormat=Color
 /build:../Data/red-soldier.png;red-soldier.png
 
+#begin Audio/ChineseChessThemeSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/ChineseChessThemeSong.mp3
+
 #begin Font/GameEnd.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

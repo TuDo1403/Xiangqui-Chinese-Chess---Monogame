@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using ChineseChess.Source.Main;
+using ChineseChess.Source.GameRule;
 
 namespace ChineseChess.Source.GameObjects.Chess
 {
@@ -26,7 +27,7 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         public event EventHandler<Point> Moved;
         public event EventHandler Focused;
-        public event EventHandler CheckMated;
+        public event EventHandler<int> CheckMated;
 
 
         protected virtual Predicate<Point> OutOfRangeMove()
@@ -69,7 +70,7 @@ namespace ChineseChess.Source.GameObjects.Chess
         {
             foreach (var move in ValidMoves)
             {
-                if (Math.Abs(ChessBoard.MatrixBoard[move.Y][move.X]) == Rules.GENERAL)
+                if (Math.Abs(ChessBoard.MatrixBoard[move.Y][move.X]) == (int)Pieces.R_General)
                 {
                     Console.WriteLine($"{GetType()}[{MatrixPos.Y}][{MatrixPos.X}] move[{move.Y}][{move.X}]");
                     OnCheckMating();
@@ -77,7 +78,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             }
         }
 
-        private void OnCheckMating() => (CheckMated as EventHandler)?.Invoke(this, EventArgs.Empty);
+        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Type);
 
         protected void PrintValidMove()
         {
@@ -103,6 +104,12 @@ namespace ChineseChess.Source.GameObjects.Chess
         {
             FindNextMoves();
             HasCheckMateMove();
+        }
+
+
+        public void RemoveBoardUpdatedEventHandler()
+        {
+            ChessBoard.BoardUpdated -= Xiangqui_BoardUpdatedHandler;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

@@ -9,9 +9,7 @@ namespace ChineseChess.Source.Helper
 {
     public static class PositionHelper
     {
-        public const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
-
-
+        private const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
         private const int X_OFFSET_PIECE = 97;
         private const int Y_OFFSET_PIECE = 102;
         private const int DISTANCE_BETWEEN_CENTER_AND_CORNERS = 84;

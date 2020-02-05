@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.Main;
+﻿using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -39,7 +40,8 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         protected override Predicate<Point> OutOfRangeMove()
         {
-            return c => c.Y < 0 || c.Y > 9 || c.X < 0 || c.X > 8;
+            return c => c.Y < 0 || c.Y >= (int)BoardRule.Rows ||
+                        c.X < 0 || c.X >= (int)BoardRule.Columns;
         }
 
         protected override bool IsBlockedMove(Point move)

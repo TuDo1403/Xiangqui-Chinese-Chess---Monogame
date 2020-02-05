@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace ChineseChess.Source.Main
 {
@@ -14,6 +15,8 @@ namespace ChineseChess.Source.Main
         private SpriteBatch spriteBatch;
 
         private ChessBoard _game;
+
+        private Song _themeSong;
 
 
 
@@ -48,6 +51,11 @@ namespace ChineseChess.Source.Main
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _game.LoadContent(Content);
+
+            _themeSong = Content.Load<Song>(@"Audio\ChineseChessThemeSong");
+            MediaPlayer.Volume = 25;
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(_themeSong);
 
             graphics.PreferredBackBufferWidth = _game.Board.Width + 100;
             graphics.PreferredBackBufferHeight = _game.Board.Height;

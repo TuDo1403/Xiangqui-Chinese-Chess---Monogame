@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="blackTurn" xml:space="preserve">
+    <value>Black Turn</value>
+  </data>
   <data name="blackWins" xml:space="preserve">
     <value>Black Wins!</value>
   </data>
   <data name="checkMate" xml:space="preserve">
     <value>Check Mate!</value>
+  </data>
+  <data name="redTurn" xml:space="preserve">
+    <value>Red Turn</value>
   </data>
   <data name="redWins" xml:space="preserve">
     <value>Red Wins!</value>

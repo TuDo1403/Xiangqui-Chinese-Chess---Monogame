@@ -1,7 +1,7 @@
 ﻿using ChineseChess.Source.Main;
-using ChineseChess.Source.Helper;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ChineseChess.Source.GameRule;
 
 namespace ChineseChess.Source.GameObjects.Chess
 {
@@ -22,11 +22,11 @@ namespace ChineseChess.Source.GameObjects.Chess
         protected override void FindHorizontalMoves()
         {
             int posY = MatrixPos.Y;
-            for (int i = MatrixPos.X + 1; i < Rules.COLUMNS; ++i)
+            for (int i = MatrixPos.X + 1; i < (int)BoardRule.Columns; ++i)
             {
                 if (ChessBoard.MatrixBoard[posY][i] != 0)
                 {
-                    while (i < Rules.COLUMNS - 1)
+                    while (i < (int)BoardRule.Columns - 1)
                     {
                         ++i;
                         if (ChessBoard.MatrixBoard[posY][i] * Type > 0)
@@ -77,11 +77,11 @@ namespace ChineseChess.Source.GameObjects.Chess
         protected override void FindVerticalMoves()
         {
             int posX = MatrixPos.X;
-            for (int i = MatrixPos.Y + 1; i < Rules.ROWS; ++i)
+            for (int i = MatrixPos.Y + 1; i < (int)BoardRule.Rows; ++i)
             {
                 if (ChessBoard.MatrixBoard[i][posX] != 0)
                 {
-                    while (i < Rules.ROWS - 1)
+                    while (i < (int)BoardRule.Rows - 1)
                     {
                         ++i;
                         if (ChessBoard.MatrixBoard[i][posX] * Type > 0)
