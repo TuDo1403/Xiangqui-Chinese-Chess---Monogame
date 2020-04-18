@@ -11,8 +11,8 @@ namespace ChineseChess.Source.Main
     /// </summary>
     public class ChessGame : Game
     {
-        private readonly GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
+        private readonly GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
 
         private ChessBoard _game;
 
@@ -23,7 +23,14 @@ namespace ChineseChess.Source.Main
         public ChessGame()
         {
             IsMouseVisible = true;
-            graphics = new GraphicsDeviceManager(this);
+
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                SynchronizeWithVerticalRetrace = false
+            };
+
+            IsFixedTimeStep = false;
+
             Content.RootDirectory = "Content";
         }
 
@@ -48,18 +55,18 @@ namespace ChineseChess.Source.Main
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _game.LoadContent(Content);
 
             _themeSong = Content.Load<Song>(@"Audio\ChineseChessThemeSong");
-            MediaPlayer.Volume = 25;
+            MediaPlayer.Volume = 0;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_themeSong);
 
-            graphics.PreferredBackBufferWidth = _game.Board.Width + 100;
-            graphics.PreferredBackBufferHeight = _game.Board.Height;
-            graphics.ApplyChanges();
+            _graphics.PreferredBackBufferWidth = _game.Board.Width;
+            _graphics.PreferredBackBufferHeight = _game.Board.Height;
+            _graphics.ApplyChanges();
             // TODO: use this.Content to load your game content here
         }
 
@@ -97,11 +104,11 @@ namespace ChineseChess.Source.Main
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(SpriteSortMode.FrontToBack);
+            _spriteBatch.Begin(SpriteSortMode.FrontToBack);
 
-            _game.Draw(spriteBatch);
+            _game.Draw(_spriteBatch);
 
-            spriteBatch.End();
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }

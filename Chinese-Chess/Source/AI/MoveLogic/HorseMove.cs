@@ -1,34 +1,34 @@
 ﻿using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChineseChess.Source.GameObjects.Chess
+namespace ChineseChess.Source.AI.MoveLogic
 {
-    public sealed class Horse : Piece
+    public class HorseMove : IMovable
     {
+        public int Value { get; }
+        public List<Point> LegalMoves { get; }
+        public Point Index { get; set; }
 
-        public Horse(Texture2D texture, Vector2 position, int type, ChessBoard board) : base(texture, position, type, board)
+        public List<Point> FindLegalMoves(int[][] board)
         {
-        }
-
-
-        protected override void FindLegalMoves(int[][] board)
-        {
-            base.FindLegalMoves(board);
-
             var IdxToVector2 = Index.ToVector2();
             FindLShapedMoves(IdxToVector2);
             RemoveIllegalMoves(board);
+            return LegalMoves;
         }
 
-        protected override void RemoveIllegalMoves(int[][] board)
+        public HorseMove(Point idx)
+        {
+            Index = idx;
+            LegalMoves = new List<Point>();
+        }
+
+        private void RemoveIllegalMoves(int[][] board)
         {
             LegalMoves.RemoveAll(OutOfRangeMove());
 
@@ -37,13 +37,13 @@ namespace ChineseChess.Source.GameObjects.Chess
             LegalMoves.RemoveAll(c => IsBlockedMove(c, board));
         }
 
-        protected override Predicate<Point> OutOfRangeMove()
+        private Predicate<Point> OutOfRangeMove()
         {
             return c => c.Y < 0 || c.Y >= (int)BoardRule.ROW ||
                         c.X < 0 || c.X >= (int)BoardRule.COL;
         }
 
-        protected override bool IsBlockedMove(Point move, int[][] board)
+        private bool IsBlockedMove(Point move, int[][] board)
         {
             if (Math.Abs(Index.X - move.X) == 2)
                 return board[Index.Y][(Index.X + move.X) / 2] != 0;

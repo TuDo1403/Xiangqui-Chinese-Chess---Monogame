@@ -1,24 +1,38 @@
 ﻿using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ChineseChess.Source.GameObjects.Chess
+namespace ChineseChess.Source.AI.MoveLogic
 {
-    public sealed class Advisor : Piece
+    public class AdvisorMove : IMovable
     {
-        public Advisor(Texture2D txt, Vector2 pos, int val, ChessBoard board) : base(txt, pos, val, board) { }
+        public Point Index { get; set; }
+
+        public List<Point> LegalMoves { get; }
 
 
-        protected override void FindLegalMoves(int[][] board)
+        public int Value { get; } = 2;
+
+
+
+        public AdvisorMove(Point idx)
         {
-            base.FindLegalMoves(board);
+            LegalMoves = new List<Point>();
+            Index = idx;
+        }
 
+        public List<Point> FindLegalMoves(int[][] board)
+        {
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
 
             RemoveIllegalMoves(board);
+
+            return LegalMoves;
         }
 
         private void FindCrossMove(Vector2 currentPosition)
@@ -30,17 +44,17 @@ namespace ChineseChess.Source.GameObjects.Chess
             LegalMoves.Add(Vector2.Add(currentPosition, new Vector2(-1, -1)).ToPoint());
         }
 
-        protected override void RemoveIllegalMoves(int[][] board)
+        protected void RemoveIllegalMoves(int[][] board)
         {
             LegalMoves.RemoveAll(OutOfRangeMove());
 
             LegalMoves.RemoveAll(c => board[c.Y][c.X] * Value > 0);
         }
 
-        protected override Predicate<Point> OutOfRangeMove()
+        protected Predicate<Point> OutOfRangeMove()
         {
             return c => c.Y < 0 || c.Y >= (int)BoardRule.ROW ||
-                        c.X > (int)BoardRule.R_CASTLE || 
+                        c.X > (int)BoardRule.R_CASTLE ||
                         c.X < (int)BoardRule.L_CASTLE ||
                         Value > 0 && c.Y < (int)BoardRule.FR_CASTLE ||
                         Value < 0 && c.Y > (int)BoardRule.FB_CASTLE;

@@ -33,46 +33,63 @@ namespace ChineseChess.Source.Main
 
         public Board Board { get; private set; }
 
-        public static event EventHandler BoardUpdated;
+        public event EventHandler<int[][]> BoardUpdated;
 
-        public static int[][] MatrixBoard { get; private set; }
+        public int[][] ArrayBoard { get; private set; }
 
 
 
         public static ChessBoard GetInstance()
         {
             if (_instance == null)
-            {
                 _instance = new ChessBoard();
-            }
             return _instance;
         }
 
+        private void LoadArrayBoard()
+        {
+            ArrayBoard = new int[10][];
+            for (int i = 0; i < 10; ++i)
+            {
+                ArrayBoard[i] = new int[9];
+                for (int j = 0; j < 9; ++j)
+                    ArrayBoard[i][j] = 0;
+            }
+
+            ArrayBoard[0][0] = ArrayBoard[0][8] = -8;
+            ArrayBoard[0][1] = ArrayBoard[0][7] = -4;
+            ArrayBoard[0][2] = ArrayBoard[0][6] = -3;
+            ArrayBoard[0][3] = ArrayBoard[0][5] = -2;
+            ArrayBoard[0][4] = -100;
+            ArrayBoard[2][1] = ArrayBoard[2][7] = -5;
+            ArrayBoard[3][0] = ArrayBoard[3][2] = -1;
+            ArrayBoard[3][4] = ArrayBoard[3][6] = ArrayBoard[3][8] = -1;
+
+            ArrayBoard[9][0] = ArrayBoard[9][8] = 8;
+            ArrayBoard[9][1] = ArrayBoard[9][7] = 4;
+            ArrayBoard[9][2] = ArrayBoard[9][6] = 3;
+            ArrayBoard[9][3] = ArrayBoard[9][5] = 2;
+            ArrayBoard[9][4] = 100;
+            ArrayBoard[7][1] = ArrayBoard[7][7] = 5;
+            ArrayBoard[6][0] = ArrayBoard[6][2] = 1;
+            ArrayBoard[6][4] = ArrayBoard[6][6] = ArrayBoard[6][8] = 1;
+
+        }
+
+
         private ChessBoard()
         {
-            _gameState = GameState.Idle;
+            _gameState = GameState.IDLE;
             _checkCount = 0;
 
             _turn = new Random().Next(0, 2);
             _messages = new Message[5];
 
             Pieces = new List<Piece>[2];
-            Pieces[(int)GameTeam.Black] = new List<Piece>();
-            Pieces[(int)GameTeam.Red] = new List<Piece>();
+            Pieces[(int)GameTeam.BLACK] = new List<Piece>();
+            Pieces[(int)GameTeam.RED] = new List<Piece>();
 
-            MatrixBoard = new int[10][]
-            {
-                new int[9] { (int)GameRule.Pieces.B_Chariot,  (int)GameRule.Pieces.B_Horse, (int)GameRule.Pieces.B_Elephant, (int)GameRule.Pieces.B_Advisor, (int)GameRule.Pieces.B_General, (int)GameRule.Pieces.B_Advisor, (int)GameRule.Pieces.B_Elephant,  (int)GameRule.Pieces.B_Horse, (int)GameRule.Pieces.B_Chariot},
-                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
-                new int[9] {                     0, (int)GameRule.Pieces.B_Cannon,                      0,                     0,                     0,                     0,                      0, (int)GameRule.Pieces.B_Cannon,                     0},
-                new int[9] { (int)GameRule.Pieces.B_Soldier,                    0,  (int)GameRule.Pieces.B_Soldier,                     0, (int)GameRule.Pieces.B_Soldier,                     0,  (int)GameRule.Pieces.B_Soldier,                    0, (int)GameRule.Pieces.B_Soldier},
-                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
-                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
-                new int[9] { (int)GameRule.Pieces.R_Soldier,                    0,  (int)GameRule.Pieces.R_Soldier,                     0, (int)GameRule.Pieces.R_Soldier,                     0,  (int)GameRule.Pieces.R_Soldier,                    0, (int)GameRule.Pieces.R_Soldier},
-                new int[9] {                     0, (int)GameRule.Pieces.R_Cannon,                      0,                     0,                     0,                     0,                      0, (int)GameRule.Pieces.R_Cannon,                     0},
-                new int[9] {                     0,                    0,                      0,                     0,                     0,                     0,                      0,                    0,                     0},
-                new int[9] { (int)GameRule.Pieces.R_Chariot,  (int)GameRule.Pieces.R_Horse, (int)GameRule.Pieces.R_Elephant, (int)GameRule.Pieces.R_Advisor, (int)GameRule.Pieces.R_General, (int)GameRule.Pieces.R_Advisor, (int)GameRule.Pieces.R_Elephant,  (int)GameRule.Pieces.R_Horse, (int)GameRule.Pieces.R_Chariot}
-            };
+            LoadArrayBoard();
         }
 
 
@@ -83,16 +100,10 @@ namespace ChineseChess.Source.Main
                 throw new ArgumentNullException(nameof(contentManager));
             }
 
-            for (int i = 0; i < (int)BoardRule.Rows; ++i)
-            {
-                for (int j = 0; j < (int)BoardRule.Columns; ++j)
-                {
-                    if (MatrixBoard[i][j] != 0)
-                    {
+            for (int i = 0; i < (int)BoardRule.ROW; ++i)
+                for (int j = 0; j < (int)BoardRule.COL; ++j)
+                    if (ArrayBoard[i][j] != 0)
                         PutPieceOnBoard(contentManager, new Point(j, i));
-                    }
-                }
-            }
 
             Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
             LoadMessage(contentManager);
@@ -103,31 +114,27 @@ namespace ChineseChess.Source.Main
         private void LoadMessage(ContentManager contentManager)
         {
             var font = contentManager.Load<SpriteFont>(@"Font\GameEnd");
-            var boardCenterPos = new Point(Board.Width / 2, Board.Height / 2);
-            _messages[(int)GameState.BlackWins] = new Message(font, Resources.blackWins, boardCenterPos);
-            _messages[(int)GameState.RedWins] = new Message(font, Resources.redWins, boardCenterPos);
-            _messages[(int)GameState.CheckMate] = new Message(font, Resources.checkMate, boardCenterPos);
-            _messages[(int)GameState.RedTurn] = new Message(font, Resources.redTurn, boardCenterPos);
-            _messages[(int)GameState.BlackTurn] = new Message(font, Resources.blackTurn, boardCenterPos);
+            var boardCenter = new Point(Board.Width / 2, Board.Height / 2);
+            _messages[(int)GameState.B_WIN] = new Message(font, Resources.blackWins, boardCenter);
+            _messages[(int)GameState.R_WIN] = new Message(font, Resources.redWins, boardCenter);
+            _messages[(int)GameState.CHECKMATE] = new Message(font, Resources.checkMate, boardCenter);
+            _messages[(int)GameState.R_TURN] = new Message(font, Resources.redTurn, boardCenter);
+            _messages[(int)GameState.B_TURN] = new Message(font, Resources.blackTurn, boardCenter);
         }
 
-        private void PutPieceOnBoard(ContentManager contentManager, Point matrixPos)
+        private void PutPieceOnBoard(ContentManager contentManager, Point boardIdx)
         {
-            var piece = PieceFactory.CreatePiece(MatrixBoard[matrixPos.Y][matrixPos.X], 
-                                                 matrixPos, 
+            var piece = PieceFactory.CreatePiece(ArrayBoard[boardIdx.Y][boardIdx.X], 
+                                                 boardIdx, _instance, 
                                                  contentManager);
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
             piece.CheckMated += Piece_CheckMatedHandler;
 
-            if (piece.Type > 0)
-            {
-                Pieces[(int)GameTeam.Red].Add(piece);
-            }
+            if (piece.Value > 0)
+                Pieces[(int)GameTeam.RED].Add(piece);
             else
-            {
-                Pieces[(int)GameTeam.Black].Add(piece);
-            }
+                Pieces[(int)GameTeam.BLACK].Add(piece);
         }
 
         private void Piece_CheckMatedHandler(object sender, int e)
@@ -136,151 +143,130 @@ namespace ChineseChess.Source.Main
 
             // Quadruple check
             if (_checkCount >= 4)
-            {
-                _gameState = GameState.GameOver;
-            }
+                _gameState = GameState.GAMEOVER;
             else
             {
-                _gameState = GameState.CheckMate;
+                _gameState = GameState.CHECKMATE;
                 _checkMateSide = e;
             }
         }
 
-        private void Piece_MovedHandler(object sender, Point e)
+        private void Piece_MovedHandler(object sender, PositionTransitionEventArgs e)
         {
-            _gameState = GameState.Idle;
+            _gameState = GameState.IDLE;
 
-            if (e != _focusingPiece.MatrixPos)
+            if (e.NewIdx != _focusingPiece.Index)
             {
                 _checkCount = 0;
                 _turn = -(_turn) + 1; // switch side
-                _messages[(int)GameState.CheckMate].ResetTimer();
+
+                _messages[(int)GameState.CHECKMATE].ResetTimer();
                 _messages[_turn + 3].ResetTimer();
-                UpdateBoard(sender as Piece, e);
+                UpdateBoard(e);
             }
         }
 
 
-        private void UpdateBoard(Piece movedPiece, Point e)
+        private void UpdateBoard(PositionTransitionEventArgs e)
         {
-            UpdatePieces(e);
-            UpdatePosition(movedPiece, e);
+            UpdatePieces(e.NewIdx);
+            UpdatePosition(e.CurrentIdx, e.NewIdx, e.Value);
             OnBoardUpdating();
         }
 
-        private void OnBoardUpdating() => (BoardUpdated as EventHandler)?.Invoke(this, EventArgs.Empty);
-
-        private void UpdatePosition(Piece movedPiece, Point newMatrixPos)
+        private void OnBoardUpdating()
         {
-            var oldMatrixPos = _focusingPiece.MatrixPos;
-            MatrixBoard[oldMatrixPos.Y][oldMatrixPos.X] = 0;
-            MatrixBoard[newMatrixPos.Y][newMatrixPos.X] = movedPiece.Type;
-
-            //PrintBoard();
+            (BoardUpdated as EventHandler<int[][]>)?.Invoke(this, ArrayBoard);
         }
 
-        private static void PrintBoard()
+        private void UpdatePosition(Point oldIdx, Point newIdx, int value)
         {
-            for (int i = 0; i < (int)BoardRule.Rows; ++i)
+            ArrayBoard[oldIdx.Y][oldIdx.X] = 0;
+            ArrayBoard[newIdx.Y][newIdx.X] = value;
+
+            // PrintBoard();
+        }
+
+        private void PrintBoard()
+        {
+            for (int i = 0; i < (int)BoardRule.ROW; ++i)
             {
-                for (int j = 0; j < (int)BoardRule.Columns; ++j)
-                {
-                    Console.Write($"{MatrixBoard[i][j]}\t");
-                }
+                for (int j = 0; j < (int)BoardRule.COL; ++j)
+                    Console.Write($"{ArrayBoard[i][j]}\t");
+
                 Console.WriteLine();
             }
         }
 
         private void UpdatePieces(Point e)
         {
-            if (Math.Abs(MatrixBoard[e.Y][e.X]) == (int)GameRule.Pieces.R_General)
-            {
-                _gameState = GameState.GameOver;
-            }
+            // Check if attacking General
+            if (Math.Abs(ArrayBoard[e.Y][e.X]) == (int)GameRule.Pieces.R_General)
+                _gameState = GameState.GAMEOVER;
 
-            var p = Pieces[_turn].Where(c => c.MatrixPos == e)
-                                  .SingleOrDefault();
+            var p = Pieces[_turn].Where(c => c.Index == e)
+                                 .SingleOrDefault();
             if (p != null)
-            {
-                p.RemoveBoardUpdatedEventHandler();
-            }
+                p.RemoveBoardUpdatedEventHandler(this);
             
-            Pieces[_turn].RemoveAll(piece => piece.MatrixPos == e);
+            Pieces[_turn].RemoveAll(piece => piece.Index == e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)
         {
-            _gameState = GameState.PieceMoving;
+            _gameState = GameState.MOVING;
             _focusingPiece = sender as Piece;
         }
 
 
         public override void Update(MouseState mouseState)
         {
-            if (_gameState != GameState.GameOver)
+            if (_gameState != GameState.GAMEOVER)
             {
                 CheckMateUpdate();
-                if (_gameState == GameState.PieceMoving)
-                {
+                if (_gameState == GameState.MOVING)
                     _focusingPiece.Update(mouseState);
-                }
                 else
-                {
                     UpdatePiecesInTurn(mouseState);
-                }
             }
 
         }
 
         private void CheckMateUpdate()
         {
-            if (_gameState == GameState.CheckMate)
-            {
+            if (_gameState == GameState.CHECKMATE) 
                 _messages[(int)_gameState].Update();
-            }
         }
 
         private void UpdatePiecesInTurn(MouseState mouseState)
         {
             _messages[_turn + 3].Update();
             foreach (var piece in Pieces[_turn])
-            {
                 piece.Update(mouseState);
-            }
         }
 
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (spriteBatch == null)
-            {
-                throw new ArgumentNullException(nameof(spriteBatch));
-            }
+            if (spriteBatch == null) throw new ArgumentNullException(nameof(spriteBatch));
 
             Board.Draw(spriteBatch);
             DrawPieces(spriteBatch);
 
-            if (_gameState == GameState.GameOver)
-            {
+            if (_gameState == GameState.GAMEOVER)
                 DrawGameOverMessage(spriteBatch);
-            }
-            else if (_gameState == GameState.CheckMate)
-            {
+            else if (_gameState == GameState.CHECKMATE)
                 DrawCheckMateMessage(spriteBatch);
-            }
             else
-            {
                 DrawTurnMessage(spriteBatch);
-            }
         }
 
         private void DrawTurnMessage(SpriteBatch spriteBatch)
         {
             var color = Color.Red;
-            if (_turn + 3 == (int)GameState.BlackTurn)
-            {
+            if (_turn + 3 == (int)GameState.B_TURN)
                 color = Color.Black;
-            }
+
             _messages[_turn + 3].DrawString(spriteBatch, color);
         }
 
@@ -298,22 +284,17 @@ namespace ChineseChess.Source.Main
         {
             var color = Color.Red;
             if (_checkMateSide < 0)
-            {
                 color = Color.Black;
-            }
+
             _messages[(int)_gameState].DrawString(spriteBatch, color);
         }
 
         private void DrawGameOverMessage(SpriteBatch spriteBatch)
         {
-            if (_focusingPiece.Type < 0)
-            {
-                _messages[(int)GameState.BlackWins].DrawString(spriteBatch, Color.Black);
-            }
+            if (_focusingPiece.Value < 0)
+                _messages[(int)GameState.B_WIN].DrawString(spriteBatch, Color.Black);
             else
-            {
-                _messages[(int)GameState.RedWins].DrawString(spriteBatch, Color.Red);
-            }
+                _messages[(int)GameState.R_WIN].DrawString(spriteBatch, Color.Red);
         }
     }
 }

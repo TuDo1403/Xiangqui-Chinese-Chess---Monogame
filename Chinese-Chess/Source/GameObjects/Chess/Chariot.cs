@@ -1,4 +1,5 @@
 ﻿using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,59 +7,37 @@ namespace ChineseChess.Source.GameObjects.Chess
 {
     public sealed class Chariot : Piece
     {
-        public Chariot(Texture2D texture, Vector2 position, int type) : base(texture, position, type)
+        public Chariot(Texture2D texture, Vector2 position, int type, ChessBoard board) : base(texture, position, type, board) { }
+
+
+
+        protected override void FindLegalMoves(int[][] board)
         {
+            base.FindLegalMoves(board);
+            FindHorizontalMoves(board);
+            FindVerticalMoves(board);
         }
 
-
-
-        protected override void FindNextMoves()
+        protected override void FindHorizontalMoves(int[][] board)
         {
-            base.FindNextMoves();
-            FindHorizontalMoves();
-            FindVerticalMoves();
+            int posY = Index.Y;
+            for (int i = Index.X + 1; i < (int)BoardRule.COL; ++i)
+                if (!StillHasLegalMoves(posY, i, board)) break;
+
+            if (Index.X - 1 < 0) return;
+            for (int i = Index.X - 1; i >= 0; --i)
+                if (!StillHasLegalMoves(posY, i, board)) break;
         }
 
-        protected override void FindHorizontalMoves()
+        protected override void FindVerticalMoves(int[][] board)
         {
-            int posY = MatrixPos.Y;
-            for (int i = MatrixPos.X + 1; i < (int)BoardRule.Columns; ++i)
-            {
-                if (!StillHasValidMoves(posY, i))
-                {
-                    break;
-                }
-            }
+            int posX = Index.X;
+            for (int i = Index.Y + 1; i < (int)BoardRule.ROW; ++i)
+                if (!StillHasLegalMoves(i, posX, board)) break;
 
-            if (MatrixPos.X - 1 < 0) return;
-            for (int i = MatrixPos.X - 1; i >= 0; --i)
-            {
-                if (!StillHasValidMoves(posY, i))
-                {
-                    break;
-                }
-            }
-        }
-
-        protected override void FindVerticalMoves()
-        {
-            int posX = MatrixPos.X;
-            for (int i = MatrixPos.Y + 1; i < (int)BoardRule.Rows; ++i)
-            {
-                if (!StillHasValidMoves(i, posX))
-                {
-                    break;
-                }
-            }
-
-            if (MatrixPos.Y - 1 < 0) return;
-            for (int i = MatrixPos.Y - 1; i >= 0; --i)
-            {
-                if (!StillHasValidMoves(i, posX))
-                {
-                    break;
-                }
-            }
+            if (Index.Y - 1 < 0) return;
+            for (int i = Index.Y - 1; i >= 0; --i)
+                if (!StillHasLegalMoves(i, posX, board)) break;
         }
     }
 }

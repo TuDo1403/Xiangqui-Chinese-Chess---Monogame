@@ -1,30 +1,36 @@
 ﻿using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChineseChess.Source.GameObjects.Chess
+namespace ChineseChess.Source.AI.MoveLogic
 {
-    public sealed class Soldier : Piece
+    public class SoldierMove : IMovable
     {
-        public Soldier(Texture2D texture, Vector2 position, int type, ChessBoard board) : base(texture, position, type, board)
-        {
-        }
+        public int Value { get ; }
 
+        public List<Point> LegalMoves { get; }
 
-        protected override void FindLegalMoves(int[][] board)
+        public Point Index { get; set; }
+
+        public List<Point> FindLegalMoves(int[][] board)
         {
-            base.FindLegalMoves(board);
             FindVerticalMoves(board);
             if (RiverCrossed())
             {
                 FindHorizontalMoves(board);
             }
+
+            return LegalMoves;
+        }
+
+        public SoldierMove(Point idx)
+        {
+            Index = idx;
+            LegalMoves = new List<Point>();
         }
 
         private bool RiverCrossed()
@@ -33,7 +39,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                    Value > 0 && Index.Y < (int)BoardRule.R_BORD;
         }
 
-        protected override void FindHorizontalMoves(int[][] board)
+        private void FindHorizontalMoves(int[][] board)
         {
             if (Index.X + 1 < (int)BoardRule.COL)
             {
@@ -45,7 +51,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             }
         }
 
-        protected override void FindVerticalMoves(int[][] board)
+        private void FindVerticalMoves(int[][] board)
         {
             var step = 1;
             if (Value > 0)
@@ -53,6 +59,19 @@ namespace ChineseChess.Source.GameObjects.Chess
                 step = -step;
             }
             StillHasLegalMoves(Index.Y + step, Index.X, board);
+        }
+
+        protected bool StillHasLegalMoves(int row, int column, int[][] board)
+        {
+            if (board == null) throw new ArgumentNullException(nameof(board));
+
+            if (board[row][column] * Value > 0) return false;
+            else
+            {
+                LegalMoves.Add(new Point(column, row));
+                if (board[row][column] * Value < 0) return false;
+            }
+            return true;
         }
     }
 }

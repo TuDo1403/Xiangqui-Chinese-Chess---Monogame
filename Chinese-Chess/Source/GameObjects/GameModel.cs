@@ -18,15 +18,9 @@ namespace ChineseChess.Source.GameObjects
 
 
 
-        public GameModel(Texture2D texture)
-        {
-            Texture = texture ?? throw new ArgumentNullException(nameof(texture));
-        }
+        public GameModel(Texture2D txt) => Texture = txt ?? throw new ArgumentNullException(nameof(txt));
 
-        public GameModel()
-        {
-
-        }
+        public GameModel() { }
 
 
         public virtual void Update(MouseState mouseState) { }
@@ -35,13 +29,10 @@ namespace ChineseChess.Source.GameObjects
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (spriteBatch != null)
-            {
-                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            }
+                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 
+                                0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             else
-            {
                 throw new ArgumentNullException(nameof(spriteBatch));
-            }
         }
     }
 }

@@ -15,118 +15,107 @@ namespace ChineseChess.Source.GameObjects.Chess
         private bool _isDragging = false;
 
 
-        protected List<Point> ValidMoves { get; private set; } = new List<Point>();
+        protected List<Point> LegalMoves { get; private set; } = new List<Point>();
 
 
-        public int Type { get; protected set; }
+        public int Value { get; protected set; }
 
-        public Point MatrixPos { get; set; }
+        public Point Index { get; set; }
 
         public Rectangle Bounds { get; set; }
 
 
-        public event EventHandler<Point> Moved;
+        public event EventHandler<PositionTransitionEventArgs> Moved;
         public event EventHandler Focused;
         public event EventHandler<int> CheckMated;
 
 
-        protected virtual Predicate<Point> OutOfRangeMove()
+        protected virtual Predicate<Point> OutOfRangeMove() => c => false;
+
+        protected virtual void FindLegalMoves(int[][] board)
         {
-            return c => false;
+            LegalMoves.Clear();
+            Index = Position.ToIndex();
         }
 
-        protected virtual void FindNextMoves()
+        protected virtual void RemoveIllegalMoves(int[][] board) { }
+
+        protected virtual void FindVerticalMoves(int[][] board) { }
+
+        protected virtual void FindHorizontalMoves(int[][] board) { }
+
+        protected virtual bool IsBlockedMove(Point point, int[][] board) => false;
+
+        protected bool StillHasLegalMoves(int row, int column, int[][] board)
         {
-            ValidMoves.Clear();
-            MatrixPos = Position.ToMatrixPos();
-        }
+            if (board == null) throw new ArgumentNullException(nameof(board));
 
-        protected virtual void RemoveInvalidMoves() { }
-
-        protected virtual void FindVerticalMoves() { }
-
-        protected virtual void FindHorizontalMoves() { }
-
-        protected virtual bool IsBlockedMove(Point point) => false;
-
-        protected bool StillHasValidMoves(int row, int column)
-        {
-            if (ChessBoard.MatrixBoard[row][column] * Type > 0)
-            {
-                return false;
-            }
+            if (board[row][column] * Value > 0) return false;
             else
             {
-                ValidMoves.Add(new Point(column, row));
-                if (ChessBoard.MatrixBoard[row][column] * Type < 0)
-                {
-                    return false;
-                }
+                LegalMoves.Add(new Point(column, row));
+                if (board[row][column] * Value < 0) return false;
             }
             return true;
         }
 
-        protected void HasCheckMateMove()
+        protected void HasCheckMateMove(int [][] board)
         {
-            foreach (var move in ValidMoves)
-            {
-                if (Math.Abs(ChessBoard.MatrixBoard[move.Y][move.X]) == (int)Pieces.R_General)
+            if (board == null) throw new ArgumentNullException(nameof(board));
+
+            foreach (var move in LegalMoves)
+                if (Math.Abs(board[move.Y][move.X]) == (int)Pieces.R_General)
                 {
-                    Console.WriteLine($"{GetType()}[{MatrixPos.Y}][{MatrixPos.X}] move[{move.Y}][{move.X}]");
+                    Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}] move[{move.Y}][{move.X}]");
                     OnCheckMating();
                 }
-            }
         }
 
-        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Type);
+        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Value);
 
-        protected void PrintValidMove()
+        protected void PrintLegalMove()
         {
             Console.WriteLine();
-            foreach (var move in ValidMoves)
-            {
-                Console.WriteLine($"{GetType().ToString()}[{MatrixPos.Y}][{MatrixPos.X}]: ({move.Y}, {move.X})");
-            }
+            foreach (var move in LegalMoves)
+                Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}]: ({move.Y}, {move.X})");
         }
 
 
 
-        public Piece(Texture2D texture, Vector2 position, int type) : base(texture)
+        public Piece(Texture2D txt, Vector2 position, int val, ChessBoard board) : base(txt)
         {
-            Type = type;
-            ChessBoard.BoardUpdated += Xiangqui_BoardUpdatedHandler;
+            if (board == null) throw new ArgumentNullException(nameof(board));
+
+            Value = val;
+            board.BoardUpdated += Xiangqui_BoardUpdatedHandler;
             Position = position;
-            MatrixPos = Position.ToMatrixPos();
+            Index = Position.ToIndex();
             SetBounds();
         }
 
-        private void Xiangqui_BoardUpdatedHandler(object sender, EventArgs e)
+        private void Xiangqui_BoardUpdatedHandler(object sender, int[][] board)
         {
-            FindNextMoves();
-            HasCheckMateMove();
+            FindLegalMoves(board);
+            HasCheckMateMove(board);
         }
 
 
-        public void RemoveBoardUpdatedEventHandler()
+        public void RemoveBoardUpdatedEventHandler(ChessBoard board)
         {
-            ChessBoard.BoardUpdated -= Xiangqui_BoardUpdatedHandler;
+            if (board == null) throw new ArgumentNullException(nameof(board));
+
+            board.BoardUpdated -= Xiangqui_BoardUpdatedHandler;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             if (spriteBatch != null)
             {
-                var layerDepth = 0.5f;
-                if (_isFocusing)
-                {
-                    layerDepth = 1f;
-                }
+                var layerDepth = _isFocusing ? 1f : 0.5f;
                 spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
             }
             else
-            {
                 throw new ArgumentNullException(nameof(spriteBatch));
-            }
         }
 
 
@@ -135,25 +124,20 @@ namespace ChineseChess.Source.GameObjects.Chess
             if (Bounds.Contains(mouseState.Position))
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
-                {
-                    MovePieceAlongCursor(mouseState);
-                }
+                    DragPiece(mouseState);
                 else if (mouseState.LeftButton == ButtonState.Released && _isDragging == true)
-                {
                     SetNewMovePosition(mouseState);
-                }
             }
         }
 
-        private void SetNewMovePosition(MouseState centerSpritePos)
+        private void SetNewMovePosition(MouseState tileCenter)
         {
-            var spritePos = centerSpritePos.Position.ToSpriteTopLeftPosition(Texture.Width, Texture.Height);
-            SetMove(spritePos);
-            _isFocusing = false;
-            _isDragging = false;
+            var tilePos = tileCenter.Position.ToTopLeftPosition(Texture.Width, Texture.Height);
+            SetMove(tilePos);
+            _isFocusing = _isDragging = false;
         }
 
-        private void MovePieceAlongCursor(MouseState mouseState)
+        private void DragPiece(MouseState mouseState)
         {
             _isFocusing = true;
             OnFocusing();
@@ -162,40 +146,39 @@ namespace ChineseChess.Source.GameObjects.Chess
             SetBounds();
         }
 
-        private void OnMoving(Point newMatrixPosition)
-        {
-            (Moved as EventHandler<Point>)?.Invoke(this, newMatrixPosition);
-        }
 
-        private void OnFocusing()
-        {
-            (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
-        }
+        private void OnFocusing() => (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
 
-        private void SetMove(Vector2 spritePos)
+        private void SetMove(Vector2 tilePos)
         {
-            var validPos = spritePos.GetValidMovePosition(ValidMoves);
+            var validPos = tilePos.GetLegalMovePosition(LegalMoves);
             if (validPos != Vector2.Zero)
             {
+                var currentIdx = Index;
+                var newIdx = validPos.ToIndex();
                 Position = validPos;
-                OnMoving(validPos.ToMatrixPos());
+                
+                OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx, Value));
             }
             else
             {
-                Position = MatrixPos.ToSpritePos();
-                OnMoving(MatrixPos);
+                Position = Index.ToPosition();
+                OnMoving(new PositionTransitionEventArgs(Point.Zero, Index, 0));
             }
             SetBounds();
         }
 
+        private void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
+
         private void SetBounds()
         {
-            Bounds = new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
+            Bounds = new Rectangle((int)Position.X, (int)Position.Y, 
+                                    Texture.Width, Texture.Height);
         }
 
         private void SetPosition(Point mousePosition)
         {
-            var position = mousePosition.ToSpriteTopLeftPosition(Texture.Width, Texture.Height);
+            var position = mousePosition.ToTopLeftPosition(Texture.Width, Texture.Height);
             Position = position;
         }
     }

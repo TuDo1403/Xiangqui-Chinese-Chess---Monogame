@@ -9,70 +9,70 @@ namespace ChineseChess.Source.Helper
 {
     public static class PositionHelper
     {
-        private const int X_OFFSET_FROM_TOP_LEFT_WIN = 12;
-        private const int X_OFFSET_PIECE = 97;
-        private const int Y_OFFSET_PIECE = 102;
-        private const int DISTANCE_BETWEEN_CENTER_AND_CORNERS = 84;
+        private const int X_OFFS_TOPLEFT_WIN = 12;
+        private const int X_GAP = 97;
+        private const int Y_GAP = 102;
+        private const int CENTER_TOPLEFT_GAP = 84;
 
 
         /// <summary>
         /// Vector2 Extension Method for converting position in the matrix to position in the game window
         /// </summary>
-        /// <param name="matrixPos"></param>
+        /// <param name="idx"></param>
         /// <returns></returns>
-        public static Vector2 ToSpritePos(this Point matrixPos)
+        public static Vector2 ToPosition(this Point idx)
         {
-            var spritePos = new Vector2(matrixPos.X, matrixPos.Y);
-            spritePos.X = spritePos.X * X_OFFSET_PIECE + X_OFFSET_FROM_TOP_LEFT_WIN;
-            spritePos.Y *= Y_OFFSET_PIECE;
-            return spritePos;
+            var position = new Vector2(idx.X, idx.Y);
+            position.X = position.X * X_GAP + X_OFFS_TOPLEFT_WIN;
+            position.Y *= Y_GAP;
+            return position;
         }
 
         /// <summary>
         /// Vector2 Extension Method for converting position in the game window to position in the matrix
         /// </summary>
-        /// <param name="spritePos"></param>
+        /// <param name="position"></param>
         /// <returns></returns>
-        public static Point ToMatrixPos(this Vector2 spritePos)
+        public static Point ToIndex(this Vector2 position)
         {
-            var matrixPos = new Vector2(spritePos.X, spritePos.Y);
-            matrixPos.X = (float)Math.Round((matrixPos.X - X_OFFSET_FROM_TOP_LEFT_WIN) / X_OFFSET_PIECE);
-            matrixPos.Y = (float)Math.Round(matrixPos.Y / Y_OFFSET_PIECE);
-            return matrixPos.ToPoint();
+            var idx = new Vector2(position.X, position.Y);
+            idx.X = (float)Math.Round((idx.X - X_OFFS_TOPLEFT_WIN) / X_GAP);
+            idx.Y = (float)Math.Round(idx.Y / Y_GAP);
+            return idx.ToPoint();
         }
 
 
-        public static Vector2 GetValidMovePosition(this Vector2 releasedPosition, List<Point> validMoves)
+        public static Vector2 GetLegalMovePosition(this Vector2 releasedPosition, List<Point> legalMoves)
         {
-            if (validMoves == null)
+            if (legalMoves == null)
             {
-                throw new ArgumentNullException(nameof(validMoves));
+                throw new ArgumentNullException(nameof(legalMoves));
             }
-            if (validMoves.Count == 0)
+            if (legalMoves.Count == 0)
             {
                 return Vector2.Zero;
             }
 
-            var minDistance = validMoves.Min(c => Vector2.Distance(releasedPosition, c.ToSpritePos()));
-            if (minDistance <= DISTANCE_BETWEEN_CENTER_AND_CORNERS)
+            var minDistance = legalMoves.Min(c => Vector2.Distance(releasedPosition, c.ToPosition()));
+            if (minDistance <= CENTER_TOPLEFT_GAP)
             {
-                var nearestMatrixPos = validMoves.Where(c => Vector2.Distance(releasedPosition, c.ToSpritePos()) == minDistance)
+                var nearestMatrixPos = legalMoves.Where(c => Vector2.Distance(releasedPosition, c.ToPosition()) == minDistance)
                                                  .SingleOrDefault();
-                return nearestMatrixPos.ToSpritePos();
+                return nearestMatrixPos.ToPosition();
             }
             return Vector2.Zero;
         }
 
 
-        public static Vector2 ToSpriteTopLeftPosition(this Point centerPosition, int textureWidth, int textureHeight)
+        public static Vector2 ToTopLeftPosition(this Point ctPosition, int txtWidth, int txtHeight)
         {
-            return new Vector2(centerPosition.X - textureWidth / 2, centerPosition.Y - textureHeight / 2);
+            return new Vector2(ctPosition.X - txtWidth / 2, ctPosition.Y - txtHeight / 2);
         }
 
 
-        public static Vector2 ToSpriteCenterPosition(this Vector2 topLeftPosition, int textureWidth, int textureHeight)
+        public static Vector2 ToCenterPosition(this Vector2 tlPosition, int txtWidth, int txtHeight)
         {
-            return new Vector2(topLeftPosition.X + textureWidth / 2, topLeftPosition.Y + textureHeight / 2);
+            return new Vector2(tlPosition.X + txtWidth / 2, tlPosition.Y + txtHeight / 2);
         }
     }
 }

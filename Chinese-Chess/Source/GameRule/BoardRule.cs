@@ -8,13 +8,13 @@ namespace ChineseChess.Source.GameRule
 {
     enum BoardRule
     {
-        Columns = 9, // X-axis
-        Rows, // Y-axis
-        LeftCastle = 3,
-        RightCastle = 5,
-        FrontBlackCastle = 2,
-        FrontRedCastle = 7,
-        BlackBorder = 4,
-        RedBorder = 5
+        COL = 9, // X-axis
+        ROW, // Y-axis
+        L_CASTLE = 3,
+        R_CASTLE = 5,
+        FB_CASTLE = 2,
+        FR_CASTLE = 7,
+        B_BORD = 4,
+        R_BORD = 5
     }
 }

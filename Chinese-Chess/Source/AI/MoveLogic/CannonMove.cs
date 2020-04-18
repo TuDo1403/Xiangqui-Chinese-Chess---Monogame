@@ -1,23 +1,33 @@
-﻿using ChineseChess.Source.Main;
+﻿using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ChineseChess.Source.GameRule;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ChineseChess.Source.GameObjects.Chess
+namespace ChineseChess.Source.AI.MoveLogic
 {
-    public sealed class Cannon : Piece
+    public class CannonMove : IMovable
     {
-        public Cannon(Texture2D texture, Vector2 position, int type, ChessBoard board) : base(texture, position, type, board) { }
+        public int Value { get; } = 5;
+        public List<Point> LegalMoves { get; }
+        public Point Index { get; set; }
 
-
-        protected override void FindLegalMoves(int[][] board)
+        public List<Point> FindLegalMoves(int[][] board)
         {
-            base.FindLegalMoves(board);
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
+            return LegalMoves;
         }
 
-        protected override void FindHorizontalMoves(int[][] board)
+        public CannonMove(Point idx)
+        {
+            LegalMoves = new List<Point>();
+            Index = idx;
+        }
+
+        private void FindHorizontalMoves(int[][] board)
         {
             int posY = Index.Y;
             for (int i = Index.X + 1; i < (int)BoardRule.COL; ++i)
@@ -30,7 +40,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                         if (board[posY][i] * Value > 0) break;
                         if (board[posY][i] * Value < 0)
                             LegalMoves.Add(new Point(i, posY));
-                            break;
+                        break;
                     }
                     break;
                 }
@@ -49,7 +59,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                         if (board[posY][i] * Value > 0) break;
                         if (board[posY][i] * Value < 0)
                             LegalMoves.Add(new Point(i, posY));
-                            break;
+                        break;
                     }
                     break;
                 }
@@ -58,7 +68,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             }
         }
 
-        protected override void FindVerticalMoves(int[][] board)
+        private void FindVerticalMoves(int[][] board)
         {
             int posX = Index.X;
             for (int i = Index.Y + 1; i < (int)BoardRule.ROW; ++i)
@@ -71,7 +81,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                         if (board[i][posX] * Value > 0) break;
                         if (board[i][posX] * Value < 0)
                             LegalMoves.Add(new Point(posX, i));
-                            break;
+                        break;
                     }
                     break;
                 }
@@ -90,7 +100,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                         if (board[i][posX] * Value > 0) break;
                         if (board[i][posX] * Value < 0)
                             LegalMoves.Add(new Point(posX, i));
-                            break;
+                        break;
                     }
                     break;
                 }
@@ -100,3 +110,4 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
     }
 }
+

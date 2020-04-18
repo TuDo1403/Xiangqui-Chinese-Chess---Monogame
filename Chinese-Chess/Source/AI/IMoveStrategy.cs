@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChineseChess.Source.GameRule
+namespace ChineseChess.Source.AI
 {
-    enum GameTeam
+    interface IMoveStrategy
     {
-        BLACK,
-        RED
+        int BoardEvaluator(int[][] board, int depth);
     }
 }

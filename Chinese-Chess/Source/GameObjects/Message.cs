@@ -19,18 +19,18 @@ namespace ChineseChess.Source.GameObjects
         private readonly string _text;
 
         public int CurrentFrame { get; set; } = 0;
-        public int TotalFrames { get; set; } = 50;
+        public int TotalFrames { get; set; } = 300;
 
 
 
-        public Message(SpriteFont spriteFont, string text, Point boardCenterPos)
+        public Message(SpriteFont spriteFont, string text, Point centerPosition)
         {
             _spriteFont = spriteFont ?? throw new ArgumentNullException(nameof(spriteFont));
             _text = text;
 
             var width = _spriteFont.MeasureString(_text).X;
             var height = _spriteFont.MeasureString(_text).Y;
-            _position = boardCenterPos.ToSpriteTopLeftPosition((int)width, (int)height);
+            _position = centerPosition.ToTopLeftPosition((int)width, (int)height);
         }
 
 

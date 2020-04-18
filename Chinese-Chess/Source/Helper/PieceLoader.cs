@@ -10,20 +10,20 @@ namespace ChineseChess.Source.Helper
     {
         public static Dictionary<float, string> TextureLoader { get; private set; } = new Dictionary<float, string>()
         {
-            { 1, "red-chariot" },
-            { 2, "red-horse" },
+            { 8, "red-chariot" },
+            { 4, "red-horse" },
             { 3, "red-elephant"},
-            { 4, "red-advisor" },
-            { 5, "red-general" },
-            { 6, "red-cannon" },
-            { 7, "red-soldier" },
-            { -1, "black-chariot" },
-            { -2, "black-horse" },
+            { 2, "red-advisor" },
+            { 100, "red-general" },
+            { 5, "red-cannon" },
+            { 1, "red-soldier" },
+            { -8, "black-chariot" },
+            { -4, "black-horse" },
             { -3, "black-elephant"},
-            { -4, "black-advisor" },
-            { -5, "black-general" },
-            { -6, "black-cannon" },
-            { -7, "black-soldier" },
+            { -2, "black-advisor" },
+            { -100, "black-general" },
+            { -5, "black-cannon" },
+            { -1, "black-soldier" },
         };
     }
 }
