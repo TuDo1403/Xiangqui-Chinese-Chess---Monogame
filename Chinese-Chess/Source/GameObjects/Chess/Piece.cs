@@ -9,7 +9,7 @@ using ChineseChess.Source.GameRule;
 
 namespace ChineseChess.Source.GameObjects.Chess
 {
-    public abstract class Piece : GameModel
+    public class Piece : GameModel
     {
         private bool _isFocusing = false;
         private bool _isDragging = false;
@@ -30,43 +30,23 @@ namespace ChineseChess.Source.GameObjects.Chess
         public event EventHandler<int> CheckMated;
 
 
-        protected virtual Predicate<Point> OutOfRangeMove() => c => false;
 
-        protected virtual void FindLegalMoves(int[][] board)
+        public virtual void FindLegalMoves(int[][] board)
         {
             LegalMoves.Clear();
             Index = Position.ToIndex();
+            LegalMoves = PieceMoveFactory.CreatePieceMove(Value, Index).FindLegalMoves(board);
         }
 
-        protected virtual void RemoveIllegalMoves(int[][] board) { }
 
-        protected virtual void FindVerticalMoves(int[][] board) { }
-
-        protected virtual void FindHorizontalMoves(int[][] board) { }
-
-        protected virtual bool IsBlockedMove(Point point, int[][] board) => false;
-
-        protected bool StillHasLegalMoves(int row, int column, int[][] board)
-        {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-
-            if (board[row][column] * Value > 0) return false;
-            else
-            {
-                LegalMoves.Add(new Point(column, row));
-                if (board[row][column] * Value < 0) return false;
-            }
-            return true;
-        }
-
-        protected void HasCheckMateMove(int [][] board)
+        protected void HasCheckMateMove(int[][] board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
 
             foreach (var move in LegalMoves)
-                if (Math.Abs(board[move.Y][move.X]) == (int)Pieces.R_General)
+                if (Math.Abs((int)board[move.Y][move.X]) == (int)Pieces.R_General)
                 {
-                    Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}] move[{move.Y}][{move.X}]");
+                    Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}] move[{move.X}][{move.Y}]");
                     OnCheckMating();
                 }
         }
@@ -157,7 +137,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                 var currentIdx = Index;
                 var newIdx = validPos.ToIndex();
                 Position = validPos;
-                
+
                 OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx, Value));
             }
             else
@@ -172,7 +152,7 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         private void SetBounds()
         {
-            Bounds = new Rectangle((int)Position.X, (int)Position.Y, 
+            Bounds = new Rectangle((int)Position.X, (int)Position.Y,
                                     Texture.Width, Texture.Height);
         }
 

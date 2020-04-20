@@ -2,16 +2,12 @@
 using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.Helper
 {
     public static class PieceMoveFactory
     {
-        public static IMovable CreatePiece(int key, Point idx)
+        public static IMovable CreatePieceMove(int key, Point idx)
         {
             key = Math.Abs(key);
             if (key == (int)Pieces.R_Chariot)

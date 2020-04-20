@@ -73,7 +73,6 @@ namespace ChineseChess.Source.Main
             ArrayBoard[7][1] = ArrayBoard[7][7] = 5;
             ArrayBoard[6][0] = ArrayBoard[6][2] = 1;
             ArrayBoard[6][4] = ArrayBoard[6][6] = ArrayBoard[6][8] = 1;
-
         }
 
 

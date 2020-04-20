@@ -15,7 +15,7 @@ namespace ChineseChess.Source.AI.MoveLogic
         public List<Point> LegalMoves { get; }
 
 
-        public int Value { get; } = 2;
+        public int Value { get; set; } = 2;
 
 
 
@@ -27,6 +27,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            Value = board[Index.Y][Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
 

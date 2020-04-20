@@ -10,12 +10,13 @@ namespace ChineseChess.Source.AI.MoveLogic
 {
     public class ElephantMove : IMovable
     {
-        public int Value { get; }
+        public int Value { get; set; }
         public List<Point> LegalMoves { get; }
         public Point Index { get; set; }
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            Value = board[Index.Y][Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
 

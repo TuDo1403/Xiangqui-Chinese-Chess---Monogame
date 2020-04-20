@@ -10,7 +10,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 {
     public class SoldierMove : IMovable
     {
-        public int Value { get ; }
+        public int Value { get; set; }
 
         public List<Point> LegalMoves { get; }
 
@@ -18,6 +18,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            Value = board[Index.Y][Index.X];
             FindVerticalMoves(board);
             if (RiverCrossed())
             {

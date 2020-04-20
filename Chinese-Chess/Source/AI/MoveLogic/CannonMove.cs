@@ -10,12 +10,13 @@ namespace ChineseChess.Source.AI.MoveLogic
 {
     public class CannonMove : IMovable
     {
-        public int Value { get; } = 5;
+        public int Value { get; set; } = 5;
         public List<Point> LegalMoves { get; }
         public Point Index { get; set; }
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            Value = board[Index.Y][Index.X];
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
             return LegalMoves;
@@ -39,8 +40,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                         ++i;
                         if (board[posY][i] * Value > 0) break;
                         if (board[posY][i] * Value < 0)
+                        {
                             LegalMoves.Add(new Point(i, posY));
-                        break;
+                            break;
+                        }
                     }
                     break;
                 }
@@ -58,8 +61,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                         --i;
                         if (board[posY][i] * Value > 0) break;
                         if (board[posY][i] * Value < 0)
+                        {
                             LegalMoves.Add(new Point(i, posY));
-                        break;
+                            break;
+                        }
                     }
                     break;
                 }
@@ -80,8 +85,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                         ++i;
                         if (board[i][posX] * Value > 0) break;
                         if (board[i][posX] * Value < 0)
+                        {
                             LegalMoves.Add(new Point(posX, i));
-                        break;
+                            break;
+                        }
                     }
                     break;
                 }
@@ -99,8 +106,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                         --i;
                         if (board[i][posX] * Value > 0) break;
                         if (board[i][posX] * Value < 0)
+                        {
                             LegalMoves.Add(new Point(posX, i));
-                        break;
+                            break;
+                        }
                     }
                     break;
                 }

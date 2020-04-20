@@ -18,21 +18,22 @@ namespace ChineseChess.Source.Helper
             var txt = contentManager.Load<Texture2D>(PieceLoader.TextureLoader[key]);
             var position = idx.ToPosition();
             var val = key;
-            key = Math.Abs(key);
-            if (key == (int)Pieces.R_Chariot)
-                return new Chariot(txt, position, val, board);
-            if (key == (int)Pieces.R_Horse)
-                return new Horse(txt, position, val, board);
-            if (key == (int)Pieces.R_Advisor)
-                return new Advisor(txt, position, val, board);
-            if (key == (int)Pieces.R_Cannon)
-                return new Cannon(txt, position, val, board);
-            if (key == (int)Pieces.R_General)
-                return new General(txt, position, val, board);
-            if (key == (int)Pieces.R_Soldier)
-                return new Soldier(txt, position, val, board);
-            if (key == (int)Pieces.R_Elephant)
-                return new Elephant(txt, position, val, board);
+            return new Piece(txt, position, val, board);
+            //key = Math.Abs(key);
+            //if (key == (int)Pieces.R_Chariot)
+            //    return new Chariot(txt, position, val, board);
+            //if (key == (int)Pieces.R_Horse)
+            //    return new Horse(txt, position, val, board);
+            //if (key == (int)Pieces.R_Advisor)
+            //    return new Advisor(txt, position, val, board);
+            //if (key == (int)Pieces.R_Cannon)
+            //    return new Cannon(txt, position, val, board);
+            //if (key == (int)Pieces.R_General)
+            //    return new General(txt, position, val, board);
+            //if (key == (int)Pieces.R_Soldier)
+            //    return new Soldier(txt, position, val, board);
+            //if (key == (int)Pieces.R_Elephant)
+            //    return new Elephant(txt, position, val, board);
 
             throw new ArgumentException($"Create piece error: key values {key}");
         }

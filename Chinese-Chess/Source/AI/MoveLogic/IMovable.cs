@@ -13,6 +13,6 @@ namespace ChineseChess.Source.AI.MoveLogic
         Point Index { get; set; }
         List<Point> FindLegalMoves(int[][] board);
 
-        int Value { get; }
+        int Value { get; set; }
     }
 }
