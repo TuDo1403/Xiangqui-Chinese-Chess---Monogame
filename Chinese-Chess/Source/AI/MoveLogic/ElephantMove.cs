@@ -16,6 +16,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            if (board == null) throw new ArgumentNullException(nameof(board));
             Value = board[Index.Y][Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);

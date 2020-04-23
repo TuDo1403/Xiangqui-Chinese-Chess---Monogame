@@ -16,6 +16,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            if (board == null) throw new ArgumentNullException(nameof(board));
             Value = board[Index.Y][Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindLShapedMoves(IdxToVector2);
@@ -38,7 +39,7 @@ namespace ChineseChess.Source.AI.MoveLogic
             LegalMoves.RemoveAll(c => IsBlockedMove(c, board));
         }
 
-        private Predicate<Point> OutOfRangeMove()
+        private static Predicate<Point> OutOfRangeMove()
         {
             return c => c.Y < 0 || c.Y >= (int)BoardRule.ROW ||
                         c.X < 0 || c.X >= (int)BoardRule.COL;

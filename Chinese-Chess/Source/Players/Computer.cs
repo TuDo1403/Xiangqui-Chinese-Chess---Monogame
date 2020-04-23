@@ -12,20 +12,23 @@ namespace ChineseChess.Source.Players
     public class Computer : Player
     {
         public MiniMax AIAgent { get; set; }
-        public Computer(int player)
+        public int Depth { get; set; }
+        public Computer(int player, int depth)
         {
             Tag = GameRule.PlayerTag.COM;
             AIAgent = new MiniMax(player);
+            Depth = depth;
         }
 
-        public override async void Update(int[][] board)
+        public override void Update(int[][] board, int d=0)
         {
-            Search(board);
+            var depth = d == 0 ? Depth : d;
+            Search(board, depth);
         }
 
-        private void Search(int[][] board)
+        private void Search(int[][] board, int depth)
         {
-            var move = AIAgent.Minimax(board, 8);
+            var move = AIAgent.Minimax(board, depth);
             var focusingPiece = Pieces.Where(p => p.Index == move.Item2)
                                       .SingleOrDefault();
             if (focusingPiece != null)

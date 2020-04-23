@@ -22,6 +22,7 @@ namespace ChineseChess.Source.Main
 
         private int _turn;
         private int _checkMateSide;
+        private int _searchDepth;
 
         private uint _checkCount;
 
@@ -29,16 +30,13 @@ namespace ChineseChess.Source.Main
 
         private Piece _focusingPiece;
 
-
-        public List<Piece>[] Pieces { get; private set; }
-
-        public Player[] Players { get; private set; }
+        private readonly Player[] _players;
 
         public Board Board { get; private set; }
 
         public event EventHandler<int[][]> BoardUpdated;
 
-        public int[][] ArrayBoard { get; private set; }
+        private int[][] ArrayBoard;
 
 
 
@@ -87,12 +85,10 @@ namespace ChineseChess.Source.Main
             _turn = new Random().Next(0, 2);
             _messages = new Message[5];
 
-            //Pieces = new List<Piece>[2];
-            //Pieces[(int)GameTeam.BLACK] = new List<Piece>();
-            //Pieces[(int)GameTeam.RED] = new List<Piece>();
-            Players = new Player[2];
-            Players[(int)GameTeam.BLACK] = new Computer((int)GameTeam.BLACK);
-            Players[(int)GameTeam.RED] = new Human();
+            _players = new Player[2];
+            _searchDepth = 5;
+            _players[(int)GameTeam.BLACK] = new Computer((int)GameTeam.BLACK, _searchDepth);
+            _players[(int)GameTeam.RED] = new Human();
 
             LoadArrayBoard();
         }
@@ -134,14 +130,11 @@ namespace ChineseChess.Source.Main
             piece.Moved += Piece_MovedHandler;
             piece.CheckMated += Piece_CheckMatedHandler;
 
-            //if (piece.Value > 0)
-            //    Pieces[(int)GameTeam.RED].Add(piece);
-            //else
-            //    Pieces[(int)GameTeam.BLACK].Add(piece);
+
             if (piece.Value > 0)
-                Players[(int)GameTeam.RED].AddPiece(piece);
+                _players[(int)GameTeam.RED].AddPiece(piece);
             else
-                Players[(int)GameTeam.BLACK].AddPiece(piece);
+                _players[(int)GameTeam.BLACK].AddPiece(piece);
         }
 
         private void Piece_CheckMatedHandler(object sender, int e)
@@ -209,16 +202,10 @@ namespace ChineseChess.Source.Main
         private void UpdatePieces(Point e)
         {
             // Check if attacking General
-            if (Math.Abs(ArrayBoard[e.Y][e.X]) == (int)GameRule.Pieces.R_General)
+            if (Math.Abs(ArrayBoard[e.Y][e.X]) == (int)Pieces.R_General)
                 _gameState = GameState.GAMEOVER;
 
-            //var p = Pieces[_turn].Where(c => c.Index == e)
-            //                     .SingleOrDefault();
-            //if (p != null)
-            //    p.RemoveBoardUpdatedEventHandler(this);
-
-            //Pieces[_turn].RemoveAll(piece => piece.Index == e);
-            Players[_turn].RemovePiece(this, e);
+            _players[_turn].RemovePiece(this, e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)
@@ -250,12 +237,14 @@ namespace ChineseChess.Source.Main
         private void UpdatePiecesInTurn(MouseState mouseState)
         {
             _messages[_turn + 3].Update();
-            //foreach (var piece in Pieces[_turn])
-            //    piece.Update(mouseState);
-            if (Players[_turn].GetType() == typeof(Computer))
-                Players[_turn].Update(ArrayBoard);
+            if (_players[_turn].GetType() == typeof(Computer))
+            {
+                var depth = _gameState == GameState.CHECKMATE ? _searchDepth + 1 : 0;
+                _players[_turn].Update(ArrayBoard, depth);
+            }
+                
             else
-                Players[_turn].Update(mouseState);
+                _players[_turn].Update(mouseState);
         }
 
 
@@ -291,7 +280,7 @@ namespace ChineseChess.Source.Main
             //{
             //    piece.Draw(spriteBatch);
             //}
-            foreach (var player in Players)
+            foreach (var player in _players)
                 player.DrawPieces(spriteBatch);
         }
 

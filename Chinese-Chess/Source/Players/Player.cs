@@ -14,7 +14,7 @@ namespace ChineseChess.Source.Players
 {
     public class Player
     {
-        public List<Piece> Pieces { get; set; } = new List<Piece>();
+        public List<Piece> Pieces { get; } = new List<Piece>();
 
         public PlayerTag Tag { get; protected set; }
 
@@ -43,7 +43,7 @@ namespace ChineseChess.Source.Players
 
         }
 
-        public virtual void Update(int[][] board)
+        public virtual void Update(int[][] board, int depth)
         {
 
         }

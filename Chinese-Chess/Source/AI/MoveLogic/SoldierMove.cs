@@ -18,6 +18,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            if (board == null) throw new ArgumentNullException(nameof(board));
             Value = board[Index.Y][Index.X];
             FindVerticalMoves(board);
             if (RiverCrossed())
@@ -65,6 +66,8 @@ namespace ChineseChess.Source.AI.MoveLogic
         protected bool StillHasLegalMoves(int row, int column, int[][] board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
+            if (row < 0 || row > (int)BoardRule.ROW - 1) return false;
+            if (column < 0 || column > (int)BoardRule.COL - 1) return false;
 
             if (board[row][column] * Value > 0) return false;
             else

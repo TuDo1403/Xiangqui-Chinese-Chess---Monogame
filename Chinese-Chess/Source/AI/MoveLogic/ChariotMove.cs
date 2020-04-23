@@ -17,6 +17,7 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(int[][] board)
         {
+            if (board == null) throw new ArgumentNullException(nameof(board));
             Value = board[Index.Y][Index.X];
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
