@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChineseChess.Source.AI
+namespace ChineseChess.Source.Players
 {
-    interface IMoveStrategy
+    public class Human
     {
-        int BoardEvaluator(int[][] board, int player);
     }
 }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChineseChess.Source.AI
+namespace ChineseChess.Source.Helper
 {
-    interface IMoveStrategy
+    public static class MoveHelper
     {
-        int BoardEvaluator(int[][] board, int player);
     }
 }

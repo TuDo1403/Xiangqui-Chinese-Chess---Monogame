@@ -83,6 +83,7 @@
     <Compile Include="Source\GameRule\BoardRule.cs" />
     <Compile Include="Source\GameRule\GameMode.cs" />
     <Compile Include="Source\GameRule\Pieces.cs" />
+    <Compile Include="Source\Helper\MoveHelper.cs" />
     <Compile Include="Source\Helper\PieceFactory.cs" />
     <Compile Include="Source\GameObjects\GameModel.cs" />
     <Compile Include="Source\GameObjects\Chess\Piece.cs" />
@@ -96,12 +97,18 @@
     <Compile Include="Source\Main\ChessBoard.cs" />
     <Compile Include="Source\GameRule\GameState.cs" />
     <Compile Include="Source\GameRule\GameTeam.cs" />
+    <Compile Include="Source\Players\Computer.cs" />
+    <Compile Include="Source\Players\Human.cs" />
+    <Compile Include="Source\Players\Player.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

@@ -138,12 +138,12 @@ namespace ChineseChess.Source.GameObjects.Chess
                 var newIdx = validPos.ToIndex();
                 Position = validPos;
 
-                OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx, Value));
+                OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx));
             }
             else
             {
                 Position = Index.ToPosition();
-                OnMoving(new PositionTransitionEventArgs(Point.Zero, Index, 0));
+                OnMoving(new PositionTransitionEventArgs(Point.Zero, Index));
             }
             SetBounds();
         }

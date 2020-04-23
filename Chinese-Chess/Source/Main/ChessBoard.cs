@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ChineseChess.Properties;
 using System.Linq;
 using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Players;
 
 namespace ChineseChess.Source.Main
 {
@@ -30,6 +31,8 @@ namespace ChineseChess.Source.Main
 
 
         public List<Piece>[] Pieces { get; private set; }
+
+        public Player[] Players { get; private set; }
 
         public Board Board { get; private set; }
 
@@ -169,7 +172,7 @@ namespace ChineseChess.Source.Main
         private void UpdateBoard(PositionTransitionEventArgs e)
         {
             UpdatePieces(e.NewIdx);
-            UpdatePosition(e.CurrentIdx, e.NewIdx, e.Value);
+            UpdatePosition(e.CurrentIdx, e.NewIdx);
             OnBoardUpdating();
         }
 
@@ -178,8 +181,9 @@ namespace ChineseChess.Source.Main
             (BoardUpdated as EventHandler<int[][]>)?.Invoke(this, ArrayBoard);
         }
 
-        private void UpdatePosition(Point oldIdx, Point newIdx, int value)
+        private void UpdatePosition(Point oldIdx, Point newIdx)
         {
+            var value = ArrayBoard[oldIdx.Y][oldIdx.X];
             ArrayBoard[oldIdx.Y][oldIdx.X] = 0;
             ArrayBoard[newIdx.Y][newIdx.X] = value;
 

@@ -13,15 +13,12 @@ namespace ChineseChess.Source.Helper
 
         public Point NewIdx { get; set; }
 
-        public int Value { get; set; }
 
 
-
-        public PositionTransitionEventArgs(Point currentIdx, Point newIdx, int value)
+        public PositionTransitionEventArgs(Point currentIdx, Point newIdx)
         {
             CurrentIdx = currentIdx;
             NewIdx = newIdx;
-            Value = value;
         }
     }
 }
