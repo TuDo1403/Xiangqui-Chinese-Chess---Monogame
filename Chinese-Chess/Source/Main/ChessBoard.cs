@@ -87,9 +87,12 @@ namespace ChineseChess.Source.Main
             _turn = new Random().Next(0, 2);
             _messages = new Message[5];
 
-            Pieces = new List<Piece>[2];
-            Pieces[(int)GameTeam.BLACK] = new List<Piece>();
-            Pieces[(int)GameTeam.RED] = new List<Piece>();
+            //Pieces = new List<Piece>[2];
+            //Pieces[(int)GameTeam.BLACK] = new List<Piece>();
+            //Pieces[(int)GameTeam.RED] = new List<Piece>();
+            Players = new Player[2];
+            Players[(int)GameTeam.BLACK] = new Computer((int)GameTeam.BLACK);
+            Players[(int)GameTeam.RED] = new Human();
 
             LoadArrayBoard();
         }
@@ -98,9 +101,7 @@ namespace ChineseChess.Source.Main
         public void LoadContent(ContentManager contentManager)
         {
             if (contentManager == null)
-            {
                 throw new ArgumentNullException(nameof(contentManager));
-            }
 
             for (int i = 0; i < (int)BoardRule.ROW; ++i)
                 for (int j = 0; j < (int)BoardRule.COL; ++j)
@@ -133,10 +134,14 @@ namespace ChineseChess.Source.Main
             piece.Moved += Piece_MovedHandler;
             piece.CheckMated += Piece_CheckMatedHandler;
 
+            //if (piece.Value > 0)
+            //    Pieces[(int)GameTeam.RED].Add(piece);
+            //else
+            //    Pieces[(int)GameTeam.BLACK].Add(piece);
             if (piece.Value > 0)
-                Pieces[(int)GameTeam.RED].Add(piece);
+                Players[(int)GameTeam.RED].AddPiece(piece);
             else
-                Pieces[(int)GameTeam.BLACK].Add(piece);
+                Players[(int)GameTeam.BLACK].AddPiece(piece);
         }
 
         private void Piece_CheckMatedHandler(object sender, int e)
@@ -207,12 +212,13 @@ namespace ChineseChess.Source.Main
             if (Math.Abs(ArrayBoard[e.Y][e.X]) == (int)GameRule.Pieces.R_General)
                 _gameState = GameState.GAMEOVER;
 
-            var p = Pieces[_turn].Where(c => c.Index == e)
-                                 .SingleOrDefault();
-            if (p != null)
-                p.RemoveBoardUpdatedEventHandler(this);
-            
-            Pieces[_turn].RemoveAll(piece => piece.Index == e);
+            //var p = Pieces[_turn].Where(c => c.Index == e)
+            //                     .SingleOrDefault();
+            //if (p != null)
+            //    p.RemoveBoardUpdatedEventHandler(this);
+
+            //Pieces[_turn].RemoveAll(piece => piece.Index == e);
+            Players[_turn].RemovePiece(this, e);
         }
 
         private void Piece_FocusedHandler(object sender, EventArgs e)
@@ -244,8 +250,12 @@ namespace ChineseChess.Source.Main
         private void UpdatePiecesInTurn(MouseState mouseState)
         {
             _messages[_turn + 3].Update();
-            foreach (var piece in Pieces[_turn])
-                piece.Update(mouseState);
+            //foreach (var piece in Pieces[_turn])
+            //    piece.Update(mouseState);
+            if (Players[_turn].GetType() == typeof(Computer))
+                Players[_turn].Update(ArrayBoard);
+            else
+                Players[_turn].Update(mouseState);
         }
 
 
@@ -275,12 +285,14 @@ namespace ChineseChess.Source.Main
 
         private void DrawPieces(SpriteBatch spriteBatch)
         {
-            foreach (var piece in from team in Pieces
-                                  from piece in team
-                                  select piece)
-            {
-                piece.Draw(spriteBatch);
-            }
+            //foreach (var piece in from team in Pieces
+            //                      from piece in team
+            //                      select piece)
+            //{
+            //    piece.Draw(spriteBatch);
+            //}
+            foreach (var player in Players)
+                player.DrawPieces(spriteBatch);
         }
 
         private void DrawCheckMateMessage(SpriteBatch spriteBatch)

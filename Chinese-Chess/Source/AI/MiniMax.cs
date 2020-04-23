@@ -16,7 +16,11 @@ namespace ChineseChess.Source.AI
 
         public int BoardEvaluator(int[][] board, int player)
         {
-            throw new NotImplementedException();
+            var score = 0;
+            for (int i = 0; i < 10; ++i)
+                for (int j = 0; j < 9; ++j)
+                    score += board[i][j];
+            return score;
         }
 
         public MiniMax(int player)
@@ -24,20 +28,97 @@ namespace ChineseChess.Source.AI
             _player = player;
         }
 
-        public (int, Point, Point) Minimax(int[][] state, int depth, int player)
+        public (int, Point, Point) Minimax(int[][] state, int depth)
         {
             if (IsGameOver(state))
-            {
-                var score = BoardEvaluator(state, player);
-                return (score, new Point(-1, -1), new Point(-1, -1));
-            }
-            var alpha = int.MaxValue;
-            var beta = int.MinValue;
-            if (player == _player)
-                return MaxValue(state, player, depth, ref alpha, ref beta);
-            else
-                return MinValue(state, player, depth, ref alpha, ref beta);
+                return (BoardEvaluator(state, _player), new Point(-1, -1), new Point(-1, -1)); 
+            //var alpha = int.MinValue;
+            //var beta = int.MaxValue;
+            var alpha = -100000;
+            var beta = 100000;
 
+            var result = MinValue(state, _player, depth, ref alpha, ref beta);
+            return result;
+            //if (player == _player)
+            //    return MaxValue(state, player, depth, ref alpha, ref beta);
+            //else
+            //    return MinValue(state, player, depth, ref alpha, ref beta);
+
+        }
+
+        private (int, Point, Point) MinValue(int[][] state, int player, int depth, ref int alpha, ref int beta)
+        {
+            if (depth == 0 || IsGameOver(state))
+                return (BoardEvaluator(state, player), new Point(-1, -1), new Point(-1, -1));
+
+            //var value = int.MaxValue;
+            var bestMove = (100000, new Point(-1, -1), new Point(-1, -1));
+            var pieces = GetTeamPieceIndices(state, player);
+            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
+                foreach (var move in GetMoves(state, pieceIdx))
+                {
+                    var successor = MakeMove(state, pieceIdx, move);
+                    //var maxVal = MaxValue(successor, SwitchTeam(player), depth - 1,
+                    //                      ref alpha, ref beta);
+                    var maxMove = MaxValue(successor, SwitchTeam(player), depth - 1,
+                                           ref alpha, ref beta);
+                    if (maxMove.Item1 < bestMove.Item1)
+                        bestMove = (maxMove.Item1, pieceIdx, move);
+
+                    if (maxMove.Item1 <= alpha) return bestMove;
+                    beta = beta < maxMove.Item1 ? beta : maxMove.Item1;
+                    
+
+                    //if (maxVal < value)
+                    //{
+                    //    value = maxVal;
+                    //    //MinMove = (pieceIdx, move);
+                    //}
+                    
+
+                    //if (maxVal <= alpha) return value;
+                    //beta = beta < maxVal ? beta : maxVal;
+                }
+
+            //return value;
+            return bestMove;
+        }
+
+        private (int, Point, Point) MaxValue(int[][] state, int player, int depth, ref int alpha, ref int beta)
+        {
+            if (depth == 0 || IsGameOver(state))
+                return (BoardEvaluator(state, player), new Point(-1, -1), new Point(-1, -1));
+
+            //var value = int.MinValue;
+            var bestMove = (-100000, new Point(-1, -1), new Point(-1, -1));
+            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
+                foreach (var move in GetMoves(state, pieceIdx))
+                {
+                    var successor = MakeMove(state, pieceIdx, move);
+                    //var minVal = MinValue(successor, SwitchTeam(player), depth - 1,
+                    //                           ref alpha, ref beta);
+                    var minMove = MinValue(successor, SwitchTeam(player), depth - 1,
+                                           ref alpha, ref beta);
+
+                    if (minMove.Item1 > bestMove.Item1)
+                        bestMove = (minMove.Item1, pieceIdx, move);
+                    if (minMove.Item1 >= beta) return bestMove;
+
+                    alpha = minMove.Item1 > alpha ? minMove.Item1 : alpha;
+
+                    //value = minVal > value ? minVal : value;
+                    //if (minVal > value)
+                    //{
+                    //    value = minVal;
+                    //    //MaxMove = (pieceIdx, move);
+                    //}
+
+                    //if (minVal >= beta) return value;
+                    //alpha = minVal > alpha ? minVal : alpha;
+                }
+
+            //return value;
+            return bestMove;
         }
 
         private List<Point> GetTeamPieceIndices(int[][] board, int player)
@@ -82,56 +163,20 @@ namespace ChineseChess.Source.AI
 
         private int SwitchTeam(int team) => -team + 1;
 
-        private (int, Point, Point) MinValue(int[][] state, int player, int depth, ref int alpha, ref int beta)
-        {
-            if (depth == 0 || IsGameOver(state))
-            {
-                var score = BoardEvaluator(state, player);
-                return (score, new Point(-1, -1), new Point(-1, -1));
-            }
-
-            var result = (int.MaxValue, new Point(-1, -1), new Point(-1, -1));
-            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
-                foreach (var move in GetMoves(state, pieceIdx))
-                {
-                    var successor = MakeMove(state, pieceIdx, move);
-                    var bestResult = MaxValue(successor, SwitchTeam(player), depth - 1, 
-                                              ref alpha, ref beta);
-
-                    var value = result.MaxValue < bestResult.Item1 ? result.MaxValue : bestResult.Item1;
-                    if (value <= alpha) return (value, pieceIdx, move);
-                    beta = beta < value ? beta : value;
-                }
-
-            return result;
-        }
-
-        private (int, Point, Point) MaxValue(int[][] state, int player, int depth, ref int alpha, ref int beta)
-        {
-            if (depth == 0 || IsGameOver(state))
-            {
-                var score = BoardEvaluator(state, player);
-                return (score, new Point(-1, -1), new Point(-1, -1));
-            }
-
-            var result = (int.MinValue, new Point(-1, -1), new Point(-1, -1));
-            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
-                foreach (var move in GetMoves(state, pieceIdx))
-                {
-                    var successor = MakeMove(state, pieceIdx, move);
-                    var worstResult = MinValue(successor, SwitchTeam(player), depth - 1, 
-                                               ref alpha, ref beta);
-                    var value = result.MinValue > worstResult.Item1 ? result.MinValue : worstResult.Item1;
-                    if (value >= beta) return (value, pieceIdx, move);
-                    alpha = alpha > value ? alpha : value;
-                }
-
-            return result;
-        }
+        
 
         private bool IsGameOver(int[][] state)
         {
-            return true;
+            var result = true;
+            for (int i = 0; i < 10; ++i)
+                for (int j = 0; j < 9; ++j)
+                    if (_player == 1 && state[i][j] == 100 ||
+                        _player == 0 && state[i][j] == -100)
+                    {
+                        result = false;
+                        break;
+                    }
+            return result;
         }
     }
 }

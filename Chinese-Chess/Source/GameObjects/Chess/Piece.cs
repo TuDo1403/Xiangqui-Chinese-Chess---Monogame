@@ -127,16 +127,16 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        private void OnFocusing() => (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
+        public void OnFocusing() => (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
 
         private void SetMove(Vector2 tilePos)
         {
-            var validPos = tilePos.GetLegalMovePosition(LegalMoves);
-            if (validPos != Vector2.Zero)
+            var legalPos = tilePos.GetLegalMovePosition(LegalMoves);
+            if (legalPos != Vector2.Zero)
             {
                 var currentIdx = Index;
-                var newIdx = validPos.ToIndex();
-                Position = validPos;
+                var newIdx = legalPos.ToIndex();
+                Position = legalPos;
 
                 OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx));
             }
@@ -145,6 +145,13 @@ namespace ChineseChess.Source.GameObjects.Chess
                 Position = Index.ToPosition();
                 OnMoving(new PositionTransitionEventArgs(Point.Zero, Index));
             }
+            SetBounds();
+        }
+
+        public void SetMove(Point newIdx)
+        {
+            Position = newIdx.ToPosition();
+            OnMoving(new PositionTransitionEventArgs(Index, newIdx));
             SetBounds();
         }
 
