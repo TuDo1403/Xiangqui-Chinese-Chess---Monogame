@@ -1,11 +1,11 @@
-﻿using ChineseChess.Source.Helper;
+﻿using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Helper;
+using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using ChineseChess.Source.Main;
-using ChineseChess.Source.GameRule;
 
 namespace ChineseChess.Source.GameObjects.Chess
 {
@@ -41,30 +41,31 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         protected void HasCheckMateMove(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
 
             foreach (var move in LegalMoves)
-                if (Math.Abs((int)board[move.Y, move.X]) == (int)Pieces.R_General)
+            {
+                if (Math.Abs(board[move.Y, move.X]) == (int)Pieces.R_General)
                 {
-                    Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}] move[{move.X}][{move.Y}]");
                     OnCheckMating();
                 }
+            }
         }
 
-        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Value);
-
-        protected void PrintLegalMove()
+        private void OnCheckMating()
         {
-            Console.WriteLine();
-            foreach (var move in LegalMoves)
-                Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}]: ({move.Y}, {move.X})");
+            (CheckMated as EventHandler<int>)?.Invoke(this, Value);
         }
-
-
 
         public Piece(Texture2D txt, Vector2 position, int val, ChessBoard board) : base(txt)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
 
             Value = val;
             board.BoardUpdated += Xiangqui_BoardUpdatedHandler;
@@ -82,7 +83,10 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         public void RemoveBoardUpdatedEventHandler(ChessBoard board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
 
             board.BoardUpdated -= Xiangqui_BoardUpdatedHandler;
         }
@@ -95,7 +99,9 @@ namespace ChineseChess.Source.GameObjects.Chess
                 spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
             }
             else
+            {
                 throw new ArgumentNullException(nameof(spriteBatch));
+            }
         }
 
 
@@ -104,9 +110,13 @@ namespace ChineseChess.Source.GameObjects.Chess
             if (Bounds.Contains(mouseState.Position))
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
+                {
                     DragPiece(mouseState);
+                }
                 else if (mouseState.LeftButton == ButtonState.Released && _isDragging == true)
+                {
                     SetNewMovePosition(mouseState);
+                }
             }
         }
 
@@ -127,7 +137,10 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        public void OnFocusing() => (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
+        public void OnFocusing()
+        {
+            (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
+        }
 
         private void SetMove(Vector2 tilePos)
         {
@@ -155,7 +168,10 @@ namespace ChineseChess.Source.GameObjects.Chess
             SetBounds();
         }
 
-        private void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
+        private void OnMoving(PositionTransitionEventArgs eventArgs)
+        {
+            (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
+        }
 
         private void SetBounds()
         {

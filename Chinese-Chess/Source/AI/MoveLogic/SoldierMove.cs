@@ -3,9 +3,6 @@ using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MoveLogic
 {
@@ -19,8 +16,12 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y,Index.X];
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
+
+            Value = board[Index.Y, Index.X];
             FindVerticalMoves(board);
             if (RiverCrossed())
             {
@@ -38,13 +39,13 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         private bool RiverCrossed()
         {
-            return Value < 0 && Index.Y > (int)BoardRule.B_BORD ||
-                   Value > 0 && Index.Y < (int)BoardRule.R_BORD;
+            return Value < 0 && Index.Y > (int)Rule.B_BORD ||
+                   Value > 0 && Index.Y < (int)Rule.R_BORD;
         }
 
         private void FindHorizontalMoves(BoardState board)
         {
-            if (Index.X + 1 < (int)BoardRule.COL)
+            if (Index.X + 1 < (int)Rule.COL)
             {
                 StillHasLegalMoves(Index.Y, Index.X + 1, board);
             }
@@ -66,15 +67,32 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         protected bool StillHasLegalMoves(int row, int column, BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-            if (row < 0 || row > (int)BoardRule.ROW - 1) return false;
-            if (column < 0 || column > (int)BoardRule.COL - 1) return false;
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
 
-            if (board[row,column] * Value > 0) return false;
+            if (row < 0 || row > (int)Rule.ROW - 1)
+            {
+                return false;
+            }
+
+            if (column < 0 || column > (int)Rule.COL - 1)
+            {
+                return false;
+            }
+
+            if (board[row, column] * Value > 0)
+            {
+                return false;
+            }
             else
             {
                 LegalMoves.Add(new Point(column, row));
-                if (board[row,column] * Value < 0) return false;
+                if (board[row, column] * Value < 0)
+                {
+                    return false;
+                }
             }
             return true;
         }

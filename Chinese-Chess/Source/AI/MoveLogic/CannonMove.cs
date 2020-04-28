@@ -3,9 +3,6 @@ using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MoveLogic
 {
@@ -17,7 +14,6 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
             Value = board[Index.Y, Index.X];
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
@@ -32,91 +28,93 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         private void FindHorizontalMoves(BoardState board)
         {
-            int posY = Index.Y;
-            for (int i = Index.X + 1; i < (int)BoardRule.COL; ++i)
+            var rowIdx = Index.Y;
+            for (int i = Index.X + 1; i < (int)Rule.COL; ++i)
             {
-                if (board[posY,i] != 0)
+                if (board[rowIdx, i] != 0)
                 {
-                    while (i < (int)BoardRule.COL - 1)
+                    while (i < (int)Rule.COL - 1)
                     {
                         ++i;
-                        if (board[posY,i] * Value > 0) break;
-                        if (board[posY,i] * Value < 0)
+                        if (board[rowIdx, i] * Value > 0) break;
+
+                        if (board[rowIdx, i] * Value < 0)
                         {
-                            LegalMoves.Add(new Point(i, posY));
+                            LegalMoves.Add(new Point(i, rowIdx));
                             break;
                         }
                     }
                     break;
                 }
                 else
-                    LegalMoves.Add(new Point(i, posY));
+                    LegalMoves.Add(new Point(i, rowIdx));
             }
 
-            if (Index.X - 1 < 0) return;
             for (int i = Index.X - 1; i >= 0; --i)
             {
-                if (board[posY,i] != 0)
+                if (board[rowIdx, i] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (board[posY,i] * Value > 0) break;
-                        if (board[posY,i] * Value < 0)
+                        if (board[rowIdx, i] * Value > 0) break;
+
+                        if (board[rowIdx, i] * Value < 0)
                         {
-                            LegalMoves.Add(new Point(i, posY));
+                            LegalMoves.Add(new Point(i, rowIdx));
                             break;
                         }
                     }
                     break;
                 }
                 else
-                    LegalMoves.Add(new Point(i, posY));
+                    LegalMoves.Add(new Point(i, rowIdx));
             }
         }
 
         private void FindVerticalMoves(BoardState board)
         {
-            int posX = Index.X;
-            for (int i = Index.Y + 1; i < (int)BoardRule.ROW; ++i)
+            var colIdx = Index.X;
+            for (int i = Index.Y + 1; i < (int)Rule.ROW; ++i)
             {
-                if (board[i,posX] != 0)
+                if (board[i, colIdx] != 0)
                 {
-                    while (i < (int)BoardRule.ROW - 1)
+                    while (i < (int)Rule.ROW - 1)
                     {
                         ++i;
-                        if (board[i,posX] * Value > 0) break;
-                        if (board[i,posX] * Value < 0)
+                        if (board[i, colIdx] * Value > 0) break;
+
+                        if (board[i, colIdx] * Value < 0)
                         {
-                            LegalMoves.Add(new Point(posX, i));
+                            LegalMoves.Add(new Point(colIdx, i));
                             break;
                         }
                     }
                     break;
                 }
                 else
-                    LegalMoves.Add(new Point(posX, i));
+                    LegalMoves.Add(new Point(colIdx, i));
             }
 
-            if (Index.Y - 1 < 0) return;
             for (int i = Index.Y - 1; i >= 0; --i)
             {
-                if (board[i,posX] != 0)
+                if (board[i, colIdx] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (board[i,posX] * Value > 0) break;
-                        if (board[i,posX] * Value < 0)
+                        if (board[i, colIdx] * Value > 0) break;
+
+                        if (board[i, colIdx] * Value < 0)
                         {
-                            LegalMoves.Add(new Point(posX, i));
+                            LegalMoves.Add(new Point(colIdx, i));
                             break;
                         }
                     }
                     break;
                 }
                 else
-                    LegalMoves.Add(new Point(posX, i));
+                    LegalMoves.Add(new Point(colIdx, i));
             }
         }
     }

@@ -4,10 +4,8 @@ using ChineseChess.Source.Helper;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.GameObjects.Chess
 {
@@ -16,20 +14,26 @@ namespace ChineseChess.Source.GameObjects.Chess
         private int[][] _boardState = new int[10][];
         private readonly Stack<int[][]> _undoStates = new Stack<int[][]>();
 
-        private readonly static int[][] _redCannonPosVal = new int[10][];
-        private readonly static int[][] _redChariotPosVal = new int[10][];
-        private readonly static int[][] _redHorsePosVal = new int[10][];
-        private readonly static int[][] _redSoldierPosVal = new int[10][];
+        private static readonly int[][] _redCannonPosVal = new int[10][];
+        private static readonly int[][] _redChariotPosVal = new int[10][];
+        private static readonly int[][] _redHorsePosVal = new int[10][];
+        private static readonly int[][] _redSoldierPosVal = new int[10][];
 
-        private readonly static int[][] _blackCannonPosVal = new int[10][];
-        private readonly static int[][] _blackChariotPosVal = new int[10][];
-        private readonly static int[][] _blackHorsePosVal = new int[10][];
-        private readonly static int[][] _blackSoldierPosVal = new int[10][];
+        private static readonly int[][] _blackCannonPosVal = new int[10][];
+        private static readonly int[][] _blackChariotPosVal = new int[10][];
+        private static readonly int[][] _blackHorsePosVal = new int[10][];
+        private static readonly int[][] _blackSoldierPosVal = new int[10][];
 
 
         public BoardState()
         {
             LoadBoard(Resources.MatrixBoard, _boardState);
+            LoadPosValBoards();
+        }
+
+        public BoardState(int[][] boardState)
+        {
+            _boardState = boardState;
             LoadPosValBoards();
         }
 
@@ -53,7 +57,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             foreach (var line in board)
             {
                 var row = line.Replace("\r", "").Split(' ').ToArray();
-                boardState[idx++] = Array.ConvertAll(row, s => int.Parse(s));
+                boardState[idx++] = Array.ConvertAll(row, s => int.Parse(s, CultureInfo.InvariantCulture));
             }
         }
 
@@ -76,8 +80,10 @@ namespace ChineseChess.Source.GameObjects.Chess
             MakeMove(oldIdx, newIdx);
         }
 
-        public void Undo() => _boardState = _undoStates.Pop();
-
+        public void Undo()
+        {
+            _boardState = _undoStates.Pop();
+        }
 
         private static int[][] Clone(int[][] board)
         {
@@ -86,31 +92,56 @@ namespace ChineseChess.Source.GameObjects.Chess
             {
                 newBoard[i] = new int[9];
                 for (int j = 0; j < 9; ++j)
+                {
                     newBoard[i][j] = board[i][j];
+                }
             }
             return newBoard;
         }
 
-        public int PosVal(Point idx)
+
+        public int PosVal(int row, int col)
         {
-            var pieceVal = _boardState[idx.Y][idx.X];
+            var pieceVal = _boardState[row][col];
             if (pieceVal == (int)Pieces.B_Cannon)
-                return _blackCannonPosVal[idx.Y][idx.X];
+            {
+                return _blackCannonPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.B_Chariot)
-                return _blackChariotPosVal[idx.Y][idx.X];
+            {
+                return _blackChariotPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.B_Soldier)
-                return _blackSoldierPosVal[idx.Y][idx.X];
+            {
+                return _blackSoldierPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.B_Horse)
-                return _blackHorsePosVal[idx.Y][idx.X];
+            {
+                return _blackHorsePosVal[row][col];
+            }
 
             if (pieceVal == (int)Pieces.R_Cannon)
-                return _redCannonPosVal[idx.Y][idx.X];
+            {
+                return _redCannonPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.R_Chariot)
-                return _redChariotPosVal[idx.Y][idx.X];
+            {
+                return _redChariotPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.R_Soldier)
-                return _redSoldierPosVal[idx.Y][idx.X];
+            {
+                return _redSoldierPosVal[row][col];
+            }
+
             if (pieceVal == (int)Pieces.R_Horse)
-                return _redHorsePosVal[idx.Y][idx.X];
+            {
+                return _redHorsePosVal[row][col];
+            }
 
             return 0;
         }
@@ -124,31 +155,47 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        public List<Point> GetPieces(bool maxPlayer, bool moveOrder=false)
+        public List<Point> GetPieces(bool maxPlayer, bool moveOrder = false)
         {
             var pieces = new List<Point>();
             for (int i = 0; i < 10; ++i)
+            {
                 for (int j = 0; j < 9; ++j)
+                {
                     if (maxPlayer == true && IsTeamRed(i, j) ||
                         maxPlayer == false && IsTeamBlack(i, j))
+                    {
                         pieces.Add(new Point(j, i));
+                    }
+                }
+            }
 
             // Simple move ordering
             if (moveOrder)
             {
                 if (maxPlayer == false)
+                {
                     pieces = pieces.OrderBy(p => _boardState[p.Y][p.X])
                                    .ToList();
+                }
                 else
+                {
                     pieces = pieces.OrderByDescending(p => _boardState[p.Y][p.X])
                                    .ToList();
+                }
             }
-                         
+
             return pieces;
         }
 
-        private bool IsTeamBlack(int i, int j) => _boardState[i][j] < 0;
+        private bool IsTeamBlack(int i, int j)
+        {
+            return _boardState[i][j] < 0;
+        }
 
-        private bool IsTeamRed(int i, int j) => _boardState[i][j] > 0;
+        private bool IsTeamRed(int i, int j)
+        {
+            return _boardState[i][j] > 0;
+        }
     }
 }

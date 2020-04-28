@@ -1,10 +1,4 @@
-﻿using ChineseChess.Source.GameObjects.Chess;
-using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace ChineseChess.Source.Players
 {
@@ -18,7 +12,9 @@ namespace ChineseChess.Source.Players
         public override void Update(MouseState mouseState)
         {
             foreach (var piece in Pieces)
+            {
                 piece.Update(mouseState);
+            }
         }
     }
 }

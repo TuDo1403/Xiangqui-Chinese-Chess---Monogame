@@ -3,9 +3,6 @@ using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MoveLogic
 {
@@ -13,13 +10,12 @@ namespace ChineseChess.Source.AI.MoveLogic
     {
 
         public int Value { get; set; }
-        public List<Point> LegalMoves { get; }
+        public List<Point> LegalMoves { get; } = new List<Point>();
         public Point Index { get; set; }
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y,Index.X];
+            Value = board[Index.Y, Index.X];
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
             return LegalMoves;
@@ -28,42 +24,56 @@ namespace ChineseChess.Source.AI.MoveLogic
         public ChariotMove(Point idx)
         {
             Index = idx;
-            LegalMoves = new List<Point>();
         }
 
         private void FindHorizontalMoves(BoardState board)
         {
-            int posY = Index.Y;
-            for (int i = Index.X + 1; i < (int)BoardRule.COL; ++i)
-                if (!StillHasLegalMoves(posY, i, board)) break;
-
-            if (Index.X - 1 < 0) return;
+            var rowIdx = Index.Y;
+            for (int i = Index.X + 1; i < (int)Rule.COL; ++i)
+            {
+                if (board[rowIdx, i] * Value > 0)
+                    break;
+                else
+                {
+                    LegalMoves.Add(new Point(i, rowIdx));
+                    if (board[rowIdx, i] * Value < 0) break;
+                }
+            }
             for (int i = Index.X - 1; i >= 0; --i)
-                if (!StillHasLegalMoves(posY, i, board)) break;
+            {
+                if (board[rowIdx, i] * Value > 0)
+                    break;
+                else
+                {
+                    LegalMoves.Add(new Point(i, rowIdx));
+                    if (board[rowIdx, i] * Value < 0) break;
+                }
+            }
         }
 
         private void FindVerticalMoves(BoardState board)
         {
-            int posX = Index.X;
-            for (int i = Index.Y + 1; i < (int)BoardRule.ROW; ++i)
-                if (!StillHasLegalMoves(i, posX, board)) break;
-
-            if (Index.Y - 1 < 0) return;
-            for (int i = Index.Y - 1; i >= 0; --i)
-                if (!StillHasLegalMoves(i, posX, board)) break;
-        }
-
-        private bool StillHasLegalMoves(int row, int column, BoardState board)
-        {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-
-            if (board[row,column] * Value > 0) return false;
-            else
+            var colIdx = Index.X;
+            for (int i = Index.Y + 1; i < (int)Rule.ROW; ++i)
             {
-                LegalMoves.Add(new Point(column, row));
-                if (board[row,column] * Value < 0) return false;
+                if (board[i, colIdx] * Value > 0)
+                    break;
+                else
+                {
+                    LegalMoves.Add(new Point(colIdx, i));
+                    if (board[i, colIdx] * Value < 0) break;
+                }
             }
-            return true;
+            for (int i = Index.Y - 1; i >= 0; --i)
+            {
+                if (board[i, colIdx] * Value > 0)
+                    break;
+                else
+                {
+                    LegalMoves.Add(new Point(colIdx, i));
+                    if (board[i, colIdx] * Value < 0) break;
+                }
+            }
         }
     }
 }

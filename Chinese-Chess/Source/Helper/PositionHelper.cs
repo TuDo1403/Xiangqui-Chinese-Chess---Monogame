@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.Helper
 {
@@ -48,6 +46,7 @@ namespace ChineseChess.Source.Helper
             {
                 throw new ArgumentNullException(nameof(legalMoves));
             }
+
             if (legalMoves.Count == 0)
             {
                 return Vector2.Zero;

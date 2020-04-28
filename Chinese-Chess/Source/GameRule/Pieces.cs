@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ChineseChess.Source.GameRule
+﻿namespace ChineseChess.Source.GameRule
 {
-    enum Pieces
+    internal enum Pieces
     {
         R_Chariot = 600,
         R_Horse = 270,

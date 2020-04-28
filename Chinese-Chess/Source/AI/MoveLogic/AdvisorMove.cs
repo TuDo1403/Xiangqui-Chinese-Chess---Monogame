@@ -3,9 +3,6 @@ using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MoveLogic
 {
@@ -28,7 +25,11 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
+
             Value = board[Index.Y, Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
@@ -56,11 +57,11 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         protected Predicate<Point> OutOfRangeMove()
         {
-            return c => c.Y < 0 || c.Y >= (int)BoardRule.ROW ||
-                        c.X > (int)BoardRule.R_CASTLE ||
-                        c.X < (int)BoardRule.L_CASTLE ||
-                        Value > 0 && c.Y < (int)BoardRule.FR_CASTLE ||
-                        Value < 0 && c.Y > (int)BoardRule.FB_CASTLE;
+            return c => c.Y < 0 || c.Y >= (int)Rule.ROW ||
+                        c.X > (int)Rule.R_CASTLE ||
+                        c.X < (int)Rule.L_CASTLE ||
+                        Value > 0 && c.Y < (int)Rule.FR_CASTLE ||
+                        Value < 0 && c.Y > (int)Rule.FB_CASTLE;
         }
     }
 }

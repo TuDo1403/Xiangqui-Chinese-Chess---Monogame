@@ -3,9 +3,6 @@ using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MoveLogic
 {
@@ -17,8 +14,12 @@ namespace ChineseChess.Source.AI.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y,Index.X];
+            if (board == null)
+            {
+                throw new ArgumentNullException(nameof(board));
+            }
+
+            Value = board[Index.Y, Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindLShapedMoves(IdxToVector2);
             RemoveIllegalMoves(board);
@@ -35,23 +36,27 @@ namespace ChineseChess.Source.AI.MoveLogic
         {
             LegalMoves.RemoveAll(OutOfRangeMove());
 
-            LegalMoves.RemoveAll(c => board[c.Y,c.X] * Value > 0);
+            LegalMoves.RemoveAll(c => board[c.Y, c.X] * Value > 0);
 
             LegalMoves.RemoveAll(c => IsBlockedMove(c, board));
         }
 
         private static Predicate<Point> OutOfRangeMove()
         {
-            return c => c.Y < 0 || c.Y >= (int)BoardRule.ROW ||
-                        c.X < 0 || c.X >= (int)BoardRule.COL;
+            return c => c.Y < 0 || c.Y >= (int)Rule.ROW ||
+                        c.X < 0 || c.X >= (int)Rule.COL;
         }
 
         private bool IsBlockedMove(Point move, BoardState board)
         {
             if (Math.Abs(Index.X - move.X) == 2)
-                return board[Index.Y,(Index.X + move.X) / 2] != 0;
+            {
+                return board[Index.Y, (Index.X + move.X) / 2] != 0;
+            }
             else
-                return board[(Index.Y + move.Y) / 2,Index.X] != 0;
+            {
+                return board[(Index.Y + move.Y) / 2, Index.X] != 0;
+            }
         }
 
         private void FindLShapedMoves(Vector2 currentPos)

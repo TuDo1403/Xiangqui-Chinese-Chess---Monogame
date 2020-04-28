@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.GameObjects
 {
@@ -18,7 +14,10 @@ namespace ChineseChess.Source.GameObjects
 
 
 
-        public GameModel(Texture2D txt) => Texture = txt ?? throw new ArgumentNullException(nameof(txt));
+        public GameModel(Texture2D txt)
+        {
+            Texture = txt ?? throw new ArgumentNullException(nameof(txt));
+        }
 
         public GameModel() { }
 
@@ -29,10 +28,14 @@ namespace ChineseChess.Source.GameObjects
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (spriteBatch != null)
-                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 
+            {
+                spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White,
                                 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            }
             else
+            {
                 throw new ArgumentNullException(nameof(spriteBatch));
+            }
         }
     }
 }

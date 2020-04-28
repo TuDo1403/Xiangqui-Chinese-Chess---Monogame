@@ -81,11 +81,10 @@
     <Compile Include="Source\GameObjects\Chess\Board.cs" />
     <Compile Include="Source\GameObjects\Chess\BoardState.cs" />
     <Compile Include="Source\GameObjects\Message.cs" />
-    <Compile Include="Source\GameRule\BoardRule.cs" />
+    <Compile Include="Source\GameRule\Rule.cs" />
     <Compile Include="Source\GameRule\GameMode.cs" />
     <Compile Include="Source\GameRule\Pieces.cs" />
     <Compile Include="Source\GameRule\PlayerTag.cs" />
-    <Compile Include="Source\Helper\MoveHelper.cs" />
     <Compile Include="Source\Helper\PieceFactory.cs" />
     <Compile Include="Source\GameObjects\GameModel.cs" />
     <Compile Include="Source\GameObjects\Chess\Piece.cs" />

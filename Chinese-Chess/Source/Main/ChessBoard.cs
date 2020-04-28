@@ -1,14 +1,14 @@
-﻿using ChineseChess.Source.Helper;
+﻿using ChineseChess.Properties;
 using ChineseChess.Source.GameObjects;
 using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Helper;
+using ChineseChess.Source.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using ChineseChess.Properties;
-using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Players;
 
 namespace ChineseChess.Source.Main
 {
@@ -42,7 +42,10 @@ namespace ChineseChess.Source.Main
         public static ChessBoard GetInstance()
         {
             if (_instance == null)
+            {
                 _instance = new ChessBoard();
+            }
+
             return _instance;
         }
 
@@ -52,13 +55,15 @@ namespace ChineseChess.Source.Main
             _gameState = GameState.IDLE;
             _checkCount = 0;
 
-            _turn = new Random().Next(0, 2);
+            //_turn = new Random().Next(0, 2);
+            _turn = 1;
             _messages = new Message[5];
 
             _players = new Player[2];
             _searchDepth = 3;
-            _players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
+            //_players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
             _players[(int)Team.RED] = new Human();
+            _players[(int)Team.BLACK] = new Human();
             //_players[(int)GameTeam.RED] = new Computer(GameTeam.RED, _searchDepth + 1);
 
             _matrixBoard = new BoardState();
@@ -68,12 +73,20 @@ namespace ChineseChess.Source.Main
         public void LoadContent(ContentManager contentManager)
         {
             if (contentManager == null)
+            {
                 throw new ArgumentNullException(nameof(contentManager));
+            }
 
-            for (int i = 0; i < (int)BoardRule.ROW; ++i)
-                for (int j = 0; j < (int)BoardRule.COL; ++j)
+            for (int i = 0; i < (int)Rule.ROW; ++i)
+            {
+                for (int j = 0; j < (int)Rule.COL; ++j)
+                {
                     if (_matrixBoard[i, j] != 0)
+                    {
                         PutPieceOnBoard(contentManager, new Point(j, i));
+                    }
+                }
+            }
 
             Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
             LoadMessage(contentManager);
@@ -94,8 +107,8 @@ namespace ChineseChess.Source.Main
 
         private void PutPieceOnBoard(ContentManager contentManager, Point boardIdx)
         {
-            var piece = PieceFactory.CreatePiece(_matrixBoard[boardIdx.Y, boardIdx.X], 
-                                                 boardIdx, _instance, 
+            var piece = PieceFactory.CreatePiece(_matrixBoard[boardIdx.Y, boardIdx.X],
+                                                 boardIdx, _instance,
                                                  contentManager);
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
@@ -103,9 +116,13 @@ namespace ChineseChess.Source.Main
 
 
             if (piece.Value > 0)
+            {
                 _players[(int)Team.RED].AddPiece(piece);
+            }
             else
+            {
                 _players[(int)Team.BLACK].AddPiece(piece);
+            }
         }
 
         private void Piece_CheckMatedHandler(object sender, int e)
@@ -114,7 +131,9 @@ namespace ChineseChess.Source.Main
 
             // Quadruple check
             if (_checkCount >= 4)
+            {
                 _gameState = GameState.GAMEOVER;
+            }
             else
             {
                 _gameState = GameState.CHECKMATE;
@@ -155,7 +174,9 @@ namespace ChineseChess.Source.Main
         {
             // Check if attacking General
             if (Math.Abs(_matrixBoard[e.Y, e.X]) == (int)Pieces.R_General)
+            {
                 _gameState = GameState.GAMEOVER;
+            }
 
             _players[_turn].RemovePiece(this, e);
         }
@@ -173,17 +194,23 @@ namespace ChineseChess.Source.Main
             {
                 CheckMateUpdate();
                 if (_gameState == GameState.MOVING)
+                {
                     _focusingPiece.Update(mouseState);
+                }
                 else
+                {
                     UpdatePiecesInTurn(mouseState);
+                }
             }
 
         }
 
         private void CheckMateUpdate()
         {
-            if (_gameState == GameState.CHECKMATE) 
+            if (_gameState == GameState.CHECKMATE)
+            {
                 _messages[(int)_gameState].Update();
+            }
         }
 
         private void UpdatePiecesInTurn(MouseState mouseState)
@@ -191,35 +218,46 @@ namespace ChineseChess.Source.Main
             _messages[_turn + 3].Update();
             if (_players[_turn].GetType() == typeof(Computer))
             {
-                //var depth = _gameState == GameState.CHECKMATE ? _searchDepth + 1 : 0;
-                _players[_turn].Update(_matrixBoard, 0);
+                _players[_turn].Update(_matrixBoard);
             }
-                
             else
+            {
                 _players[_turn].Update(mouseState);
+            }
         }
 
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (spriteBatch == null) throw new ArgumentNullException(nameof(spriteBatch));
+            if (spriteBatch == null)
+            {
+                throw new ArgumentNullException(nameof(spriteBatch));
+            }
 
             Board.Draw(spriteBatch);
             DrawPieces(spriteBatch);
 
             if (_gameState == GameState.GAMEOVER)
+            {
                 DrawGameOverMessage(spriteBatch);
+            }
             else if (_gameState == GameState.CHECKMATE)
+            {
                 DrawCheckMateMessage(spriteBatch);
+            }
             else
+            {
                 DrawTurnMessage(spriteBatch);
+            }
         }
 
         private void DrawTurnMessage(SpriteBatch spriteBatch)
         {
             var color = Color.Red;
             if (_turn + 3 == (int)GameState.B_TURN)
+            {
                 color = Color.Black;
+            }
 
             _messages[_turn + 3].DrawString(spriteBatch, color);
         }
@@ -227,14 +265,18 @@ namespace ChineseChess.Source.Main
         private void DrawPieces(SpriteBatch spriteBatch)
         {
             foreach (var player in _players)
+            {
                 player.DrawPieces(spriteBatch);
+            }
         }
 
         private void DrawCheckMateMessage(SpriteBatch spriteBatch)
         {
             var color = Color.Red;
             if (_checkMateSide < 0)
+            {
                 color = Color.Black;
+            }
 
             _messages[(int)_gameState].DrawString(spriteBatch, color);
         }
@@ -242,9 +284,13 @@ namespace ChineseChess.Source.Main
         private void DrawGameOverMessage(SpriteBatch spriteBatch)
         {
             if (_focusingPiece.Value < 0)
+            {
                 _messages[(int)GameState.B_WIN].DrawString(spriteBatch, Color.Black);
+            }
             else
+            {
                 _messages[(int)GameState.R_WIN].DrawString(spriteBatch, Color.Red);
+            }
         }
     }
 }
