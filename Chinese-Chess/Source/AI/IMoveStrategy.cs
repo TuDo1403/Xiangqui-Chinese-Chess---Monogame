@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,6 @@ namespace ChineseChess.Source.AI
 {
     public interface IMoveStrategy
     {
-        int BoardEvaluator(int[][] board, int player);
+        int BoardEvaluator(BoardState board);
     }
 }

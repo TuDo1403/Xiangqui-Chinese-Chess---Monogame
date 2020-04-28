@@ -8,19 +8,19 @@ namespace ChineseChess.Source.GameRule
 {
     enum Pieces
     {
-        R_Chariot = 8,
-        R_Horse = 4,
-        R_Elephant = 3,
-        R_Advisor = 2,
-        R_General = 100,
-        R_Cannon = 5,
-        R_Soldier = 1,
-        B_Soldier = -1,
-        B_Cannon = -5,
-        B_General = -100,
-        B_Advisor = -2,
-        B_Elephant = -3,
-        B_Horse = -4,
-        B_Chariot = -8
+        R_Chariot = 600,
+        R_Horse = 270,
+        R_Elephant = 130,
+        R_Advisor = 120,
+        R_General = 6000,
+        R_Cannon = 285,
+        R_Soldier = 30,
+        B_Soldier = -30,
+        B_Cannon = -285,
+        B_General = -6000,
+        B_Advisor = -120,
+        B_Elephant = -130,
+        B_Horse = -270,
+        B_Chariot = -600
     }
 }

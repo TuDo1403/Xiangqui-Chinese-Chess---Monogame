@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.GameRule;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,10 @@ namespace ChineseChess.Source.AI.MoveLogic
         public List<Point> LegalMoves { get; }
         public Point Index { get; set; }
 
-        public List<Point> FindLegalMoves(int[][] board)
+        public List<Point> FindLegalMoves(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y][Index.X];
+            Value = board[Index.Y, Index.X];
             FindHorizontalMoves(board);
             FindVerticalMoves(board);
             return LegalMoves;
@@ -29,18 +30,18 @@ namespace ChineseChess.Source.AI.MoveLogic
             Index = idx;
         }
 
-        private void FindHorizontalMoves(int[][] board)
+        private void FindHorizontalMoves(BoardState board)
         {
             int posY = Index.Y;
             for (int i = Index.X + 1; i < (int)BoardRule.COL; ++i)
             {
-                if (board[posY][i] != 0)
+                if (board[posY,i] != 0)
                 {
                     while (i < (int)BoardRule.COL - 1)
                     {
                         ++i;
-                        if (board[posY][i] * Value > 0) break;
-                        if (board[posY][i] * Value < 0)
+                        if (board[posY,i] * Value > 0) break;
+                        if (board[posY,i] * Value < 0)
                         {
                             LegalMoves.Add(new Point(i, posY));
                             break;
@@ -55,13 +56,13 @@ namespace ChineseChess.Source.AI.MoveLogic
             if (Index.X - 1 < 0) return;
             for (int i = Index.X - 1; i >= 0; --i)
             {
-                if (board[posY][i] != 0)
+                if (board[posY,i] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (board[posY][i] * Value > 0) break;
-                        if (board[posY][i] * Value < 0)
+                        if (board[posY,i] * Value > 0) break;
+                        if (board[posY,i] * Value < 0)
                         {
                             LegalMoves.Add(new Point(i, posY));
                             break;
@@ -74,18 +75,18 @@ namespace ChineseChess.Source.AI.MoveLogic
             }
         }
 
-        private void FindVerticalMoves(int[][] board)
+        private void FindVerticalMoves(BoardState board)
         {
             int posX = Index.X;
             for (int i = Index.Y + 1; i < (int)BoardRule.ROW; ++i)
             {
-                if (board[i][posX] != 0)
+                if (board[i,posX] != 0)
                 {
                     while (i < (int)BoardRule.ROW - 1)
                     {
                         ++i;
-                        if (board[i][posX] * Value > 0) break;
-                        if (board[i][posX] * Value < 0)
+                        if (board[i,posX] * Value > 0) break;
+                        if (board[i,posX] * Value < 0)
                         {
                             LegalMoves.Add(new Point(posX, i));
                             break;
@@ -100,13 +101,13 @@ namespace ChineseChess.Source.AI.MoveLogic
             if (Index.Y - 1 < 0) return;
             for (int i = Index.Y - 1; i >= 0; --i)
             {
-                if (board[i][posX] != 0)
+                if (board[i,posX] != 0)
                 {
                     while (i > 0)
                     {
                         --i;
-                        if (board[i][posX] * Value > 0) break;
-                        if (board[i][posX] * Value < 0)
+                        if (board[i,posX] * Value > 0) break;
+                        if (board[i,posX] * Value < 0)
                         {
                             LegalMoves.Add(new Point(posX, i));
                             break;

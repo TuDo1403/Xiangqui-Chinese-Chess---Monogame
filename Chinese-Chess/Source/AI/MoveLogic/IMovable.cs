@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace ChineseChess.Source.AI.MoveLogic
     {
         List<Point> LegalMoves { get; }
         Point Index { get; set; }
-        List<Point> FindLegalMoves(int[][] board);
+        List<Point> FindLegalMoves(BoardState board);
 
         int Value { get; set; }
     }

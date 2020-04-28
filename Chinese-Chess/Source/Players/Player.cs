@@ -43,7 +43,7 @@ namespace ChineseChess.Source.Players
 
         }
 
-        public virtual void Update(int[][] board, int depth)
+        public virtual void Update(BoardState board, int depth)
         {
 
         }

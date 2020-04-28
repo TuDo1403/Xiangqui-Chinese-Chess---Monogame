@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.GameRule;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,10 @@ namespace ChineseChess.Source.AI.MoveLogic
         public List<Point> LegalMoves { get; }
         public Point Index { get; set ; }
 
-        public List<Point> FindLegalMoves(int[][] board)
+        public List<Point> FindLegalMoves(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y][Index.X];
+            Value = board[Index.Y,Index.X];
             FindVerticalMoves(board);
             FindHorizontalMoves(board);
             FindFlyingMove(board);
@@ -30,40 +31,28 @@ namespace ChineseChess.Source.AI.MoveLogic
             LegalMoves = new List<Point>();
         }
 
-        private void FindFlyingMove(int[][] board)
+        private void FindFlyingMove(BoardState board)
         {
-            //var opponentSide = Value < 0 ? 1 : 0;
-            //var enemyGeneral = ChessBoard.GetInstance()
-            //                             .Pieces[opponentSide].Where(c => c.GetType() == typeof(General))
-            //                                                  .SingleOrDefault();
-            //if (enemyGeneral != null)
-            //{
-            //    var enemyGeneralPos = enemyGeneral.Index;
-            //    // Check if two general are in the same rank (horizontal line)
-            //    if (Index.X / enemyGeneralPos.X == 1)
-            //        if (!IsBlockedMove(enemyGeneralPos, board))
-            //            LegalMoves.Add(enemyGeneralPos);
-            //}
-            for (int i = 0; i < 10; ++i)
+            for (int i = (int)BoardRule.FB_CASTLE; i <= (int)BoardRule.COL; ++i)
                 for (int j = 0; j < 9; ++j)
-                    if (Math.Abs(board[i][j]) == 100 && board[i][j] * Value < 0)
+                    if (Math.Abs(board[i,j]) == 6000 && board[i,j] * Value < 0)
                         if (Index.X == j)
                             if (!IsBlockedMove(new Point(j, i), board))
                                 LegalMoves.Add(new Point(j, i));
         }
 
-        private bool IsBlockedMove(Point point, int[][] board)
+        private bool IsBlockedMove(Point point, BoardState board)
         {
             var sum = 0;
             var highY = Index.Y < point.Y ? point.Y : Index.Y;
             var lowY = Index.Y > point.Y ? point.Y : Index.Y;
             while (lowY < highY - 1)
-                sum += Math.Abs(board[++lowY][Index.X]);
+                sum += Math.Abs(board[++lowY,Index.X]);
 
             return sum != 0;
         }
 
-        private void FindHorizontalMoves(int[][] board)
+        private void FindHorizontalMoves(BoardState board)
         {
             if (Index.X + 1 <= (int)BoardRule.R_CASTLE)
                 StillHasLegalMoves(Index.Y, Index.X + 1, board);
@@ -72,7 +61,7 @@ namespace ChineseChess.Source.AI.MoveLogic
                 StillHasLegalMoves(Index.Y, Index.X - 1, board);
         }
 
-        private void FindVerticalMoves(int[][] board)
+        private void FindVerticalMoves(BoardState board)
         {
             if (Value > 0)
             {
@@ -89,15 +78,15 @@ namespace ChineseChess.Source.AI.MoveLogic
                     StillHasLegalMoves(Index.Y - 1, Index.X, board);
             }
         }
-        protected bool StillHasLegalMoves(int row, int column, int[][] board)
+        protected bool StillHasLegalMoves(int row, int column, BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
 
-            if (board[row][column] * Value > 0) return false;
+            if (board[row,column] * Value > 0) return false;
             else
             {
                 LegalMoves.Add(new Point(column, row));
-                if (board[row][column] * Value < 0) return false;
+                if (board[row,column] * Value < 0) return false;
             }
             return true;
         }

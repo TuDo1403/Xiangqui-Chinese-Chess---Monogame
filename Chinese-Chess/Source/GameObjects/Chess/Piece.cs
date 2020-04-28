@@ -31,7 +31,7 @@ namespace ChineseChess.Source.GameObjects.Chess
 
 
 
-        public virtual void FindLegalMoves(int[][] board)
+        public virtual void FindLegalMoves(BoardState board)
         {
             LegalMoves.Clear();
             Index = Position.ToIndex();
@@ -39,12 +39,12 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        protected void HasCheckMateMove(int[][] board)
+        protected void HasCheckMateMove(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
 
             foreach (var move in LegalMoves)
-                if (Math.Abs((int)board[move.Y][move.X]) == (int)Pieces.R_General)
+                if (Math.Abs((int)board[move.Y, move.X]) == (int)Pieces.R_General)
                 {
                     Console.WriteLine($"{GetType()}[{Index.Y}][{Index.X}] move[{move.X}][{move.Y}]");
                     OnCheckMating();
@@ -73,7 +73,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             SetBounds();
         }
 
-        private void Xiangqui_BoardUpdatedHandler(object sender, int[][] board)
+        private void Xiangqui_BoardUpdatedHandler(object sender, BoardState board)
         {
             FindLegalMoves(board);
             HasCheckMateMove(board);

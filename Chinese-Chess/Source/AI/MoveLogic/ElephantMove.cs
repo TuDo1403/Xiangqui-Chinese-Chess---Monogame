@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.GameRule;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,10 @@ namespace ChineseChess.Source.AI.MoveLogic
         public List<Point> LegalMoves { get; }
         public Point Index { get; set; }
 
-        public List<Point> FindLegalMoves(int[][] board)
+        public List<Point> FindLegalMoves(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y][Index.X];
+            Value = board[Index.Y,Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
 
@@ -31,18 +32,18 @@ namespace ChineseChess.Source.AI.MoveLogic
             LegalMoves = new List<Point>();
         }
 
-        private void RemoveIllegalMoves(int[][] board)
+        private void RemoveIllegalMoves(BoardState board)
         {
             LegalMoves.RemoveAll(OutOfRangeMove());
 
-            LegalMoves.RemoveAll(c => board[c.Y][c.X] * Value > 0);
+            LegalMoves.RemoveAll(c => board[c.Y,c.X] * Value > 0);
 
             LegalMoves.RemoveAll(c => IsBlockedMove(c, board));
         }
 
-        private bool IsBlockedMove(Point move, int[][] board)
+        private bool IsBlockedMove(Point move, BoardState board)
         {
-            return board[(Index.Y + move.Y) / 2][(Index.X + move.X) / 2] != 0;
+            return board[(Index.Y + move.Y) / 2,(Index.X + move.X) / 2] != 0;
         }
 
         private Predicate<Point> OutOfRangeMove()

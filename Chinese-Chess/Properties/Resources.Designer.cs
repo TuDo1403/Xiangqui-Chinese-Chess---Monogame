@@ -61,6 +61,78 @@ namespace ChineseChess.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0 0 -2 -6 -6 -6 -2 0 0
+        ///0 -2 -4 -6 -6 -6 -4 -2 0
+        ///-4 0 -8 -6 -10 -6 -8 0 -4
+        ///0 0 0 -2 -4 -2 0 0 0
+        ///2 0 -4 -2 -6 -2 -4 0 2
+        ///0 0 0 -2 -8 -2 0 0 0
+        ///0 0 2 -4 -10 -4 2 0 0
+        ///-2 -2 0 10 8 10 0 -2 -2
+        ///-2 -2 0 4 14 4 0 -2 -2
+        ///-6 -4 0 10 12 10 0 -4 -6.
+        /// </summary>
+        internal static string B_CannonPosVal {
+            get {
+                return ResourceManager.GetString("B_CannonPosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2 -10 -6 -14 -12 -14 -6 -10 2
+        ///-8 -4 -8 -16 -8 -16 -8 -4 -8
+        ///-4 -8 -6 -14 -12 -14 -6 -8 -4
+        ///-6 -10 -8 -14 -14 -14 -8 -10 -6
+        ///-12 -16 -14 -20 -20 -20 -14 -16 -12
+        ///-12 -14 -12 -18 -18 -18 -12 -14 -12
+        ///-12 -18 -16 -22 -22 -22 -16 -18 -12
+        ///-12 -12 -12 -18 -18 -18 -12 -12 -12
+        ///-16 -20 -18 -24 -26 -24 -18 -20 -16
+        ///-14 -14 -12 -18 -16 -18 -12 -14 -14.
+        /// </summary>
+        internal static string B_ChariotPosVal {
+            get {
+                return ResourceManager.GetString("B_ChariotPosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0 4 0 0 0 0 0 4 0
+        ///0 -2 -4 -4 2 -4 -4 -2 0
+        ///-4 -2 -8 -8 -4 -8 -8 -2 -4
+        ///-2 -6 -8 -6 -10 -6 -8 -6 -2
+        ///-4 -12 -16 -14 -12 -14 -16 -12 -4
+        ///-6 -16 -14 -18 -16 -18 -14 -16 -6
+        ///-8 -24 -18 -24 -20 -24 -18 -24 -8
+        ///-12 -14 -16 -20 -18 -20 -16 -14 -12
+        ///-4 -10 -28 -16 -8 -16 -28 -10 -4
+        ///-4 -8 -16 -12 -4 -12 -16 -8 -4.
+        /// </summary>
+        internal static string B_HorsePosVal {
+            get {
+                return ResourceManager.GetString("B_HorsePosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0 0 0 0 0 0 0 0 0
+        ///0 0 0 0 0 0 0 0 0
+        ///0 0 0 0 0 0 0 0 0
+        ///0 0 2 0 -4 0 2 0 0
+        ///-2 0 -8 0 -8 0 -8 0 -2
+        ///-6 -12 -18 -18 -20 -18 -18 -12 -6
+        ///-10 -20 -30 -34 -40 -34 -30 -20 -10
+        ///-14 -26 -42 -60 -80 -60 -42 -26 -14
+        ///-18 -36 -56 -80 -120 -80 -56 -36 -18
+        ///0 -3 -6 -9 -12 -9 -6 -3 0.
+        /// </summary>
+        internal static string B_SoldierPosVal {
+            get {
+                return ResourceManager.GetString("B_SoldierPosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Black Turn.
         /// </summary>
         internal static string blackTurn {
@@ -84,6 +156,96 @@ namespace ChineseChess.Properties {
         internal static string checkMate {
             get {
                 return ResourceManager.GetString("checkMate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -5 -4 -3 -2 -1 -2 -3 -4 -5
+        ///0 0 0 0 0 0 0 0 0
+        ///0 -6 0 0 0 0 0 -6 0
+        ///-7 0 -7 0 -7 0 -7 0 -7
+        ///0 0 0 0 0 0 0 0 0
+        ///0 0 0 0 0 0 0 0 0
+        ///7 0 7 0 7 0 7 0 7
+        ///0 6 0 0 0 0 0 6 0
+        ///0 0 0 0 0 0 0 0 0
+        ///5 4 3 2 1 2 3 4 5.
+        /// </summary>
+        internal static string MatrixBoard {
+            get {
+                return ResourceManager.GetString("MatrixBoard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6 4 0 -10 -12 -10 0 4 6
+        ///2 2 0 -4 -14 -4 0 2 2
+        ///2 2 0 -10 -8 -10 0 2 2
+        ///0 0 -2 4 10 4 -2 0 0
+        ///0 0 0 2 8 2 0 0 0
+        ///-2 0 4 2 6 2 4 0 -2
+        ///0 0 0 2 4 2 0 0 0
+        ///4 0 8 6 10 6 8 0 4
+        ///0 2 4 6 6 6 4 2 0
+        ///0 0 2 6 6 6 2 0 0.
+        /// </summary>
+        internal static string R_CannonPosVal {
+            get {
+                return ResourceManager.GetString("R_CannonPosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 14 14 12 18 16 18 12 14 14
+        ///16 20 18 24 26 24 18 20 16
+        ///12 12 12 18 18 18 12 12 12
+        ///12 18 16 22 22 22 16 18 12
+        ///12 14 12 18 18 18 12 14 12
+        ///12 16 14 20 20 20 14 16 12
+        ///6 10 8 14 14 14 8 10 6
+        ///4 8 6 14 12 14 6 8 4
+        ///8 4 8 16 8 16 8 4 8
+        ///-2 10 6 14 12 14 6 10 -2.
+        /// </summary>
+        internal static string R_ChariotPosVal {
+            get {
+                return ResourceManager.GetString("R_ChariotPosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4 8 16 12 4 12 16 8 4
+        ///4 10 28 16 8 16 28 10 4
+        ///12 14 16 20 18 20 16 14 12
+        ///8 24 18 24 20 24 18 24 8
+        ///6 16 14 18 16 18 14 16 6
+        ///4 12 16 14 12 14 16 12 4
+        ///2 6 8 6 10 6 8 6 2
+        ///4 2 8 8 4 8 8 2 4
+        ///0 2 4 4 -2 4 4 2 0
+        ///0 -4 0 0 0 0 0 -4 0.
+        /// </summary>
+        internal static string R_HorsePosVal {
+            get {
+                return ResourceManager.GetString("R_HorsePosVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0 3 6 9 12 9 6 3 0
+        ///18 36 56 80 120 80 56 36 18
+        ///14 26 42 60 80 60 42 26 14
+        ///10 20 30 34 40 34 30 20 10
+        ///6 12 18 18 20 18 18 12 6
+        ///2 0 8 0 8 0 8 0 2
+        ///0 0 -2 0 4 0 -2 0 0
+        ///0 0 0 0 0 0 0 0 0
+        ///0 0 0 0 0 0 0 0 0
+        ///0 0 0 0 0 0 0 0 0.
+        /// </summary>
+        internal static string R_SoldierPosVal {
+            get {
+                return ResourceManager.GetString("R_SoldierPosVal", resourceCulture);
             }
         }
         

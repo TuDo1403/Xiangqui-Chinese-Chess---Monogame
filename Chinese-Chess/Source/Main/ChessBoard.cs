@@ -6,9 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using ChineseChess.Properties;
-using System.Linq;
 using ChineseChess.Source.GameRule;
 using ChineseChess.Source.Players;
 
@@ -22,21 +20,22 @@ namespace ChineseChess.Source.Main
 
         private int _turn;
         private int _checkMateSide;
-        private int _searchDepth;
 
         private uint _checkCount;
 
-        private readonly Message[] _messages;
+        private readonly int _searchDepth;
 
-        private Piece _focusingPiece;
+        private readonly Message[] _messages;
 
         private readonly Player[] _players;
 
+        private readonly BoardState _matrixBoard;
+
+        private Piece _focusingPiece;
+
         public Board Board { get; private set; }
 
-        public event EventHandler<int[][]> BoardUpdated;
-
-        private int[][] ArrayBoard;
+        public event EventHandler<BoardState> BoardUpdated;
 
 
 
@@ -45,35 +44,6 @@ namespace ChineseChess.Source.Main
             if (_instance == null)
                 _instance = new ChessBoard();
             return _instance;
-        }
-
-        private void LoadArrayBoard()
-        {
-            ArrayBoard = new int[10][];
-            for (int i = 0; i < 10; ++i)
-            {
-                ArrayBoard[i] = new int[9];
-                for (int j = 0; j < 9; ++j)
-                    ArrayBoard[i][j] = 0;
-            }
-
-            ArrayBoard[0][0] = ArrayBoard[0][8] = -8;
-            ArrayBoard[0][1] = ArrayBoard[0][7] = -4;
-            ArrayBoard[0][2] = ArrayBoard[0][6] = -3;
-            ArrayBoard[0][3] = ArrayBoard[0][5] = -2;
-            ArrayBoard[0][4] = -100;
-            ArrayBoard[2][1] = ArrayBoard[2][7] = -5;
-            ArrayBoard[3][0] = ArrayBoard[3][2] = -1;
-            ArrayBoard[3][4] = ArrayBoard[3][6] = ArrayBoard[3][8] = -1;
-
-            ArrayBoard[9][0] = ArrayBoard[9][8] = 8;
-            ArrayBoard[9][1] = ArrayBoard[9][7] = 4;
-            ArrayBoard[9][2] = ArrayBoard[9][6] = 3;
-            ArrayBoard[9][3] = ArrayBoard[9][5] = 2;
-            ArrayBoard[9][4] = 100;
-            ArrayBoard[7][1] = ArrayBoard[7][7] = 5;
-            ArrayBoard[6][0] = ArrayBoard[6][2] = 1;
-            ArrayBoard[6][4] = ArrayBoard[6][6] = ArrayBoard[6][8] = 1;
         }
 
 
@@ -86,11 +56,12 @@ namespace ChineseChess.Source.Main
             _messages = new Message[5];
 
             _players = new Player[2];
-            _searchDepth = 5;
-            _players[(int)GameTeam.BLACK] = new Computer((int)GameTeam.BLACK, _searchDepth);
-            _players[(int)GameTeam.RED] = new Human();
+            _searchDepth = 3;
+            _players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
+            _players[(int)Team.RED] = new Human();
+            //_players[(int)GameTeam.RED] = new Computer(GameTeam.RED, _searchDepth + 1);
 
-            LoadArrayBoard();
+            _matrixBoard = new BoardState();
         }
 
 
@@ -101,7 +72,7 @@ namespace ChineseChess.Source.Main
 
             for (int i = 0; i < (int)BoardRule.ROW; ++i)
                 for (int j = 0; j < (int)BoardRule.COL; ++j)
-                    if (ArrayBoard[i][j] != 0)
+                    if (_matrixBoard[i, j] != 0)
                         PutPieceOnBoard(contentManager, new Point(j, i));
 
             Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
@@ -123,7 +94,7 @@ namespace ChineseChess.Source.Main
 
         private void PutPieceOnBoard(ContentManager contentManager, Point boardIdx)
         {
-            var piece = PieceFactory.CreatePiece(ArrayBoard[boardIdx.Y][boardIdx.X], 
+            var piece = PieceFactory.CreatePiece(_matrixBoard[boardIdx.Y, boardIdx.X], 
                                                  boardIdx, _instance, 
                                                  contentManager);
             piece.Focused += Piece_FocusedHandler;
@@ -132,9 +103,9 @@ namespace ChineseChess.Source.Main
 
 
             if (piece.Value > 0)
-                _players[(int)GameTeam.RED].AddPiece(piece);
+                _players[(int)Team.RED].AddPiece(piece);
             else
-                _players[(int)GameTeam.BLACK].AddPiece(piece);
+                _players[(int)Team.BLACK].AddPiece(piece);
         }
 
         private void Piece_CheckMatedHandler(object sender, int e)
@@ -170,39 +141,20 @@ namespace ChineseChess.Source.Main
         private void UpdateBoard(PositionTransitionEventArgs e)
         {
             UpdatePieces(e.NewIdx);
-            UpdatePosition(e.CurrentIdx, e.NewIdx);
+            //UpdatePosition(e.CurrentIdx, e.NewIdx);
+            _matrixBoard.MakeMove(e.CurrentIdx, e.NewIdx);
             OnBoardUpdating();
         }
 
         private void OnBoardUpdating()
         {
-            (BoardUpdated as EventHandler<int[][]>)?.Invoke(this, ArrayBoard);
-        }
-
-        private void UpdatePosition(Point oldIdx, Point newIdx)
-        {
-            var value = ArrayBoard[oldIdx.Y][oldIdx.X];
-            ArrayBoard[oldIdx.Y][oldIdx.X] = 0;
-            ArrayBoard[newIdx.Y][newIdx.X] = value;
-
-            // PrintBoard();
-        }
-
-        private void PrintBoard()
-        {
-            for (int i = 0; i < (int)BoardRule.ROW; ++i)
-            {
-                for (int j = 0; j < (int)BoardRule.COL; ++j)
-                    Console.Write($"{ArrayBoard[i][j]}\t");
-
-                Console.WriteLine();
-            }
+            (BoardUpdated as EventHandler<BoardState>)?.Invoke(this, _matrixBoard);
         }
 
         private void UpdatePieces(Point e)
         {
             // Check if attacking General
-            if (Math.Abs(ArrayBoard[e.Y][e.X]) == (int)Pieces.R_General)
+            if (Math.Abs(_matrixBoard[e.Y, e.X]) == (int)Pieces.R_General)
                 _gameState = GameState.GAMEOVER;
 
             _players[_turn].RemovePiece(this, e);
@@ -239,8 +191,8 @@ namespace ChineseChess.Source.Main
             _messages[_turn + 3].Update();
             if (_players[_turn].GetType() == typeof(Computer))
             {
-                var depth = _gameState == GameState.CHECKMATE ? _searchDepth + 1 : 0;
-                _players[_turn].Update(ArrayBoard, depth);
+                //var depth = _gameState == GameState.CHECKMATE ? _searchDepth + 1 : 0;
+                _players[_turn].Update(_matrixBoard, 0);
             }
                 
             else
@@ -274,12 +226,6 @@ namespace ChineseChess.Source.Main
 
         private void DrawPieces(SpriteBatch spriteBatch)
         {
-            //foreach (var piece in from team in Pieces
-            //                      from piece in team
-            //                      select piece)
-            //{
-            //    piece.Draw(spriteBatch);
-            //}
             foreach (var player in _players)
                 player.DrawPieces(spriteBatch);
         }

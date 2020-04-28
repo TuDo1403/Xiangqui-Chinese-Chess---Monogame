@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChineseChess.Source.GameRule
 {
-    enum GameTeam
+    public enum Team
     {
         BLACK,
         RED

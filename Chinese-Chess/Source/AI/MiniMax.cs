@@ -1,175 +1,143 @@
-﻿using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Helper;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI
 {
     public class MiniMax : IMoveStrategy
     {
-        private readonly int _player;
+        private readonly Team _player;
 
-        public int BoardEvaluator(int[][] board, int player)
+        public int BoardEvaluator(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
 
+            if (RedWins(board)) return int.MaxValue;
+            if (BlackWins(board)) return int.MinValue;
+
             var score = 0;
-            for (int i = 0; i < 10; ++i)
-                for (int j = 0; j < 9; ++j)
-                    score += board[i][j];
-            if (Losing(board, player))
-                score = player == 0 ? score + 100000 : score - 100000;
-            else if (Winning(board, player))
-                score = player == 0 ? score - 100000 : score + 100000;
+            var redVal = board.GetPieces(true)
+                              .Sum(pieceIdx => board[pieceIdx.Y, pieceIdx.X] + board.PosVal(pieceIdx));
             
+            var blackVal = board.GetPieces(false)
+                                .Sum(pieceIdx => board[pieceIdx.Y, pieceIdx.X] + board.PosVal(pieceIdx));
+            score = redVal + blackVal;
+
             return score;
         }
 
-        public MiniMax(int player)
-        {
-            _player = player;
-        }
 
-        public (int, Point, Point) Minimax(int[][] state, int depth)
+        public MiniMax(Team player) => _player = player;
+
+        public (Point, Point) MinimaxRoot(BoardState state, int depth)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            var alpha = -100000;
-            var beta = 100000;
+            var alpha = int.MinValue;
+            var beta = int.MaxValue;
+            var isMaximizingPlayer = _player == Team.BLACK ? false : true;
+            var bestVal = _player == Team.BLACK ? int.MaxValue : int.MinValue;
+            var bestMoveFound = (Point.Zero, Point.Zero);
 
-            if (_player == 1)
-                return Max(state, _player, depth, ref alpha, ref beta);
+            foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer, true))
+                foreach (var move in state.GetLegalMoves(pieceIdx))
+                {
+                    var newGameMove = (pieceIdx, move);
+                    state.SimulateMove(pieceIdx, move);
+                    var value = Minimax(state, !isMaximizingPlayer, depth - 1, alpha, beta);
+                    state.Undo();
+
+                    if (isMaximizingPlayer && value >= bestVal ||
+                        !isMaximizingPlayer && value <= bestVal)
+                    {
+                        bestVal = value;
+                        bestMoveFound = newGameMove;
+                    }
+                }
+            return bestMoveFound;
+        }
+
+        public int Minimax(BoardState state, bool isMaximizingPlayer, int depth, int alpha, int beta)
+        {
+            if (state == null) throw new ArgumentNullException(nameof(state));
+
+            if (isMaximizingPlayer)
+                return MaxValue(state, isMaximizingPlayer, depth, alpha, beta);
             else
-                return Min(state, _player, depth, ref alpha, ref beta);
-
+                return MinValue(state, isMaximizingPlayer, depth, alpha, beta);
+            
         }
 
-        private (int, Point, Point) Min(int[][] state, int player, int depth, ref int alpha, ref int beta)
+        private int MinValue(BoardState state, bool isMaximizingPlayer, int depth, int alpha, int beta)
         {
-            if (depth == 0)
-                return (BoardEvaluator(state, player), new Point(-1, -1), new Point(-1, -1));
+            if (depth == 0 || IsGameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = (100000, new Point(-1, -1), new Point(-1, -1));
-            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
-                foreach (var move in GetMoves(state, pieceIdx))
+            var bestMove = int.MaxValue;
+            foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer, true))
+                foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
-                    var successor = MakeMove(state, pieceIdx, move);
-                    var maxMove = Max(successor, SwitchTeam(player), depth - 1,
-                                           ref alpha, ref beta);
-                    if (maxMove.Item1 < bestMove.Item1)
-                        bestMove = (maxMove.Item1, pieceIdx, move);
-                    if (maxMove.Item1 <= alpha) return bestMove;
-                    beta = maxMove.Item1 < beta ? maxMove.Item1 : beta;
+                    state.SimulateMove(pieceIdx, move);
+                    bestMove = Math.Min(bestMove, MaxValue(state, !isMaximizingPlayer, depth - 1, 
+                                                           alpha, beta));
+                    state.Undo();
+                    beta = Math.Min(beta, bestMove);
+                    if (beta <= alpha) return bestMove;
                 }
 
             return bestMove;
         }
 
-        private (int, Point, Point) Max(int[][] state, int player, int depth, ref int alpha, ref int beta)
+        private int MaxValue(BoardState state, bool isMaximizingPlayer, int depth, int alpha, int beta)
         {
-            if (depth == 0)
-                return (BoardEvaluator(state, player), new Point(-1, -1), new Point(-1, -1));
+            if (depth == 0 || IsGameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = (-100000, new Point(-1, -1), new Point(-1, -1));
-            foreach (var pieceIdx in GetTeamPieceIndices(state, player))
-                foreach (var move in GetMoves(state, pieceIdx))
+            var bestMove = int.MinValue;
+            foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer, true))
+                foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
-                    var successor = MakeMove(state, pieceIdx, move);
-                    var minMove = Min(successor, SwitchTeam(player), depth - 1,
-                                           ref alpha, ref beta);
-
-                    if (minMove.Item1 > bestMove.Item1)
-                        bestMove = (minMove.Item1, pieceIdx, move);
-                    if (minMove.Item1 >= beta) return bestMove;
-                    alpha = minMove.Item1 > alpha ? minMove.Item1 : alpha;
+                    state.SimulateMove(pieceIdx, move);
+                    bestMove = Math.Max(bestMove, MinValue(state, !isMaximizingPlayer, depth - 1,
+                                                           alpha, beta));
+                    state.Undo();
+                    alpha = Math.Max(alpha, bestMove);
+                    if (beta <= alpha) return bestMove;
                 }
             return bestMove;
         }
 
-        private static List<Point> GetTeamPieceIndices(int[][] board, int player)
+        private bool RedWins(BoardState state)
         {
-            var indices = new List<Point>();
-            for (int i = 0; i < 10; ++i)
-                for (int j = 0; j < 9; ++j)
-                    if (board[i][j] != 0)
-                        if (player == 1 && board[i][j] > 0 ||
-                            player == 0 && board[i][j] < 0)
-                            indices.Add(new Point(j, i));
-                    
-            return indices;
-        }
-
-        private static List<Point> GetMoves(int[][] board, Point pieceIndx)
-        {
-            var key = Math.Abs(board[pieceIndx.Y][pieceIndx.X]);
-            return PieceMoveFactory.CreatePieceMove(key, pieceIndx).FindLegalMoves(board);
-        }
-
-        private static int[][] MakeMove(int[][] board, Point oldIdx, Point newIdx)
-        {
-            var value = board[oldIdx.Y][oldIdx.X];
-            var newBoard = CopyBoard(board);
-            newBoard[oldIdx.Y][oldIdx.X] = 0;
-            newBoard[newIdx.Y][newIdx.X] = value;
-            return newBoard;
-        }
-
-        private static int[][] CopyBoard(int[][] board)
-        {
-            var newBoard = new int[10][];
-            for (int i = 0; i < 10; ++i)
-            {
-                newBoard[i] = new int[9];
-                for (int j = 0; j < 9; ++j)
-                    newBoard[i][j] = board[i][j];
-            }
-            return newBoard;
-        }
-
-        private static int SwitchTeam(int team) => -team + 1;
-
-        private bool Losing(int[][] state, int player)
-        {
-            var isLosing = true;
-            for (int i = 0; i < 10; ++i)
-                for (int j = 0; j < 9; ++j)
-                    if (player == 0 && state[i][j] == -100 ||
-                        player == 1 && state[i][j] == 100)
+            for (int i = 0; i <= (int)BoardRule.FB_CASTLE; ++i)
+                for (int j = (int)BoardRule.L_CASTLE; j <= (int)BoardRule.R_CASTLE; ++j)
+                    if (state[i, j] == (int)Pieces.B_General)
                         return false;
-            return isLosing;
+            return true;
         }
 
-        private bool Winning(int[][] state, int player)
+        private bool BlackWins(BoardState state)
         {
-            var isWinning = true;
-            for (int i = 0; i < 10; ++i)
-                for (int j = 0; j < 9; ++j)
-                    if (player == 0 && state[i][j] == -100 ||
-                        player == 1 && state[i][j] == 100)
+            for (int i = (int)BoardRule.FR_CASTLE; i <= (int)BoardRule.COL; ++i)
+                for (int j = (int)BoardRule.L_CASTLE; j <= (int)BoardRule.R_CASTLE; ++j)
+                    if (state[i, j] == (int)Pieces.R_General)
                         return false;
-            return isWinning;
-
+            return true;
         }
 
-        
+        private static bool IsGameOver(BoardState state)
+        {
+            var generalCount = 0;
+            for (int i = (int)BoardRule.FB_CASTLE; i <= (int)BoardRule.COL; ++i)
+                for (int j = (int)BoardRule.L_CASTLE; j <= (int)BoardRule.R_CASTLE; ++j)
+                    if (state[i, j] == (int)Pieces.R_General)
+                        ++generalCount;
+            for (int i = 0; i <= (int)BoardRule.FB_CASTLE; ++i)
+                for (int j = (int)BoardRule.L_CASTLE; j <= (int)BoardRule.R_CASTLE; ++j)
+                    if (state[i, j] == (int)Pieces.B_General)
+                        ++generalCount;
 
-        //private bool IsGameOver(int[][] state)
-        //{
-        //    var result = true;
-        //    for (int i = 0; i < 10; ++i)
-        //        for (int j = 0; j < 9; ++j)
-        //            if (_player == 1 && state[i][j] == 100 ||
-        //                _player == 0 && state[i][j] == -100)
-        //            {
-        //                result = false;
-        //                break;
-        //            }
-        //    return result;
-        //}
+            return generalCount != 2;
+        }
     }
 }

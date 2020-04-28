@@ -123,13 +123,41 @@
   <data name="blackWins" xml:space="preserve">
     <value>Black Wins!</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="B_CannonPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\B_CannonPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="B_ChariotPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\B_ChariotPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="B_HorsePosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\B_HorsePosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="B_SoldierPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\B_SoldierPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="checkMate" xml:space="preserve">
     <value>Check Mate!</value>
+  </data>
+  <data name="MatrixBoard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\MatrixBoard.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="redTurn" xml:space="preserve">
     <value>Red Turn</value>
   </data>
   <data name="redWins" xml:space="preserve">
     <value>Red Wins!</value>
+  </data>
+  <data name="R_CannonPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\R_CannonPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="R_ChariotPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\R_ChariotPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="R_HorsePosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\R_HorsePosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="R_SoldierPosVal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\BoardState\R_SoldierPosVal.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

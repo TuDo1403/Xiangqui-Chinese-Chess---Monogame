@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.GameRule;
+﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -25,10 +26,10 @@ namespace ChineseChess.Source.AI.MoveLogic
             Index = idx;
         }
 
-        public List<Point> FindLegalMoves(int[][] board)
+        public List<Point> FindLegalMoves(BoardState board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
-            Value = board[Index.Y][Index.X];
+            Value = board[Index.Y, Index.X];
             var IdxToVector2 = Index.ToVector2();
             FindCrossMove(IdxToVector2);
 
@@ -46,11 +47,11 @@ namespace ChineseChess.Source.AI.MoveLogic
             LegalMoves.Add(Vector2.Add(currentPosition, new Vector2(-1, -1)).ToPoint());
         }
 
-        protected void RemoveIllegalMoves(int[][] board)
+        protected void RemoveIllegalMoves(BoardState board)
         {
             LegalMoves.RemoveAll(OutOfRangeMove());
 
-            LegalMoves.RemoveAll(c => board[c.Y][c.X] * Value > 0);
+            LegalMoves.RemoveAll(c => board[c.Y, c.X] * Value > 0);
         }
 
         protected Predicate<Point> OutOfRangeMove()
