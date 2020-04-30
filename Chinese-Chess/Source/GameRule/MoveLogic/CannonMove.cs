@@ -1,10 +1,8 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
-using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 
-namespace ChineseChess.Source.AI.MoveLogic
+namespace ChineseChess.Source.GameRule.MoveLogic
 {
     public class CannonMove : IMovable
     {
@@ -36,7 +34,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                     while (i < (int)Rule.COL - 1)
                     {
                         ++i;
-                        if (board[rowIdx, i] * Value > 0) break;
+                        if (board[rowIdx, i] * Value > 0)
+                        {
+                            break;
+                        }
 
                         if (board[rowIdx, i] * Value < 0)
                         {
@@ -47,7 +48,9 @@ namespace ChineseChess.Source.AI.MoveLogic
                     break;
                 }
                 else
+                {
                     LegalMoves.Add(new Point(i, rowIdx));
+                }
             }
 
             for (int i = Index.X - 1; i >= 0; --i)
@@ -57,7 +60,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                     while (i > 0)
                     {
                         --i;
-                        if (board[rowIdx, i] * Value > 0) break;
+                        if (board[rowIdx, i] * Value > 0)
+                        {
+                            break;
+                        }
 
                         if (board[rowIdx, i] * Value < 0)
                         {
@@ -68,7 +74,9 @@ namespace ChineseChess.Source.AI.MoveLogic
                     break;
                 }
                 else
+                {
                     LegalMoves.Add(new Point(i, rowIdx));
+                }
             }
         }
 
@@ -82,7 +90,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                     while (i < (int)Rule.ROW - 1)
                     {
                         ++i;
-                        if (board[i, colIdx] * Value > 0) break;
+                        if (board[i, colIdx] * Value > 0)
+                        {
+                            break;
+                        }
 
                         if (board[i, colIdx] * Value < 0)
                         {
@@ -93,7 +104,9 @@ namespace ChineseChess.Source.AI.MoveLogic
                     break;
                 }
                 else
+                {
                     LegalMoves.Add(new Point(colIdx, i));
+                }
             }
 
             for (int i = Index.Y - 1; i >= 0; --i)
@@ -103,7 +116,10 @@ namespace ChineseChess.Source.AI.MoveLogic
                     while (i > 0)
                     {
                         --i;
-                        if (board[i, colIdx] * Value > 0) break;
+                        if (board[i, colIdx] * Value > 0)
+                        {
+                            break;
+                        }
 
                         if (board[i, colIdx] * Value < 0)
                         {
@@ -114,7 +130,9 @@ namespace ChineseChess.Source.AI.MoveLogic
                     break;
                 }
                 else
+                {
                     LegalMoves.Add(new Point(colIdx, i));
+                }
             }
         }
     }

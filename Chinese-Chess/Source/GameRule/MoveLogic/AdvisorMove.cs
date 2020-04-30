@@ -1,17 +1,15 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
-using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace ChineseChess.Source.AI.MoveLogic
+namespace ChineseChess.Source.GameRule.MoveLogic
 {
     public class AdvisorMove : IMovable
     {
         public Point Index { get; set; }
 
         public List<Point> LegalMoves { get; }
-
 
         public int Value { get; set; } = 2;
 

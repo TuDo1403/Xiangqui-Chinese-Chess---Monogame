@@ -25,15 +25,10 @@ namespace ChineseChess.Source.GameObjects.Chess
         private static readonly int[][] _blackSoldierPosVal = new int[10][];
 
 
+
         public BoardState()
         {
             LoadBoard(Resources.MatrixBoard, _boardState);
-            LoadPosValBoards();
-        }
-
-        public BoardState(int[][] boardState)
-        {
-            _boardState = boardState;
             LoadPosValBoards();
         }
 
@@ -67,24 +62,12 @@ namespace ChineseChess.Source.GameObjects.Chess
             set => _boardState[idx1][idx2] = value;
         }
 
-        public void MakeMove(Point oldIdx, Point newIdx)
-        {
-            var pieceVal = _boardState[oldIdx.Y][oldIdx.X];
-            _boardState[oldIdx.Y][oldIdx.X] = 0;
-            _boardState[newIdx.Y][newIdx.X] = pieceVal;
-        }
 
         public void SimulateMove(Point oldIdx, Point newIdx)
         {
             _undoStates.Push(Clone(_boardState));
             MakeMove(oldIdx, newIdx);
         }
-
-        public void Undo()
-        {
-            _boardState = _undoStates.Pop();
-        }
-
         private static int[][] Clone(int[][] board)
         {
             var newBoard = new int[10][];
@@ -92,110 +75,88 @@ namespace ChineseChess.Source.GameObjects.Chess
             {
                 newBoard[i] = new int[9];
                 for (int j = 0; j < 9; ++j)
-                {
                     newBoard[i][j] = board[i][j];
-                }
             }
             return newBoard;
         }
+
+        public void MakeMove(Point oldIdx, Point newIdx)
+        {
+            var pieceVal = _boardState[oldIdx.Y][oldIdx.X];
+            _boardState[oldIdx.Y][oldIdx.X] = 0;
+            _boardState[newIdx.Y][newIdx.X] = pieceVal;
+        }
+
+        public void Undo() => _boardState = _undoStates.Pop();
+
 
 
         public int PosVal(int row, int col)
         {
             var pieceVal = _boardState[row][col];
             if (pieceVal == (int)Pieces.B_Cannon)
-            {
                 return _blackCannonPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.B_Chariot)
-            {
                 return _blackChariotPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.B_Soldier)
-            {
                 return _blackSoldierPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.B_Horse)
-            {
+
                 return _blackHorsePosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.R_Cannon)
-            {
                 return _redCannonPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.R_Chariot)
-            {
                 return _redChariotPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.R_Soldier)
-            {
                 return _redSoldierPosVal[row][col];
-            }
 
             if (pieceVal == (int)Pieces.R_Horse)
-            {
                 return _redHorsePosVal[row][col];
-            }
 
             return 0;
         }
 
 
-        public List<Point> GetLegalMoves(Point pieceIdx)
+        public List<Point> GetLegalMoves(Point pieceIdx, bool moveOrder)
         {
-            var key = Math.Abs(_boardState[pieceIdx.Y][pieceIdx.X]);
-            return PieceMoveFactory.CreatePieceMove(key, pieceIdx)
-                                   .FindLegalMoves(this);
-        }
-
-
-        public List<Point> GetPieces(bool maxPlayer, bool moveOrder = false)
-        {
-            var pieces = new List<Point>();
-            for (int i = 0; i < 10; ++i)
-            {
-                for (int j = 0; j < 9; ++j)
-                {
-                    if (maxPlayer == true && IsTeamRed(i, j) ||
-                        maxPlayer == false && IsTeamBlack(i, j))
-                    {
-                        pieces.Add(new Point(j, i));
-                    }
-                }
-            }
+            var value = _boardState[pieceIdx.Y][pieceIdx.X];
+            var key = Math.Abs(value);
+            var moves = PieceMoveFactory.CreatePieceMove(key, pieceIdx)
+                                        .FindLegalMoves(this);
 
             // Simple move ordering
             if (moveOrder)
             {
-                if (maxPlayer == false)
-                {
-                    pieces = pieces.OrderBy(p => _boardState[p.Y][p.X])
-                                   .ToList();
-                }
+                if (value > 0)
+                    return moves.OrderBy(p => _boardState[p.Y][p.X])
+                                .ToList();
                 else
-                {
-                    pieces = pieces.OrderByDescending(p => _boardState[p.Y][p.X])
-                                   .ToList();
-                }
+                    return moves.OrderByDescending(p => _boardState[p.Y][p.X])
+                                .ToList();
             }
+            return moves;
+        }
+
+
+        public List<Point> GetPieces(bool maxPlayer)
+        {
+            var pieces = new List<Point>();
+            for (int i = 0; i < 10; ++i)
+                for (int j = 0; j < 9; ++j)
+                    if (maxPlayer == true && IsTeamRed(i, j) ||
+                        maxPlayer == false && IsTeamBlack(i, j))
+                        pieces.Add(new Point(j, i));
 
             return pieces;
         }
 
-        private bool IsTeamBlack(int i, int j)
-        {
-            return _boardState[i][j] < 0;
-        }
-
-        private bool IsTeamRed(int i, int j)
-        {
-            return _boardState[i][j] > 0;
-        }
+        private bool IsTeamBlack(int i, int j) => _boardState[i][j] < 0;
+        private bool IsTeamRed(int i, int j) => _boardState[i][j] > 0;
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace ChineseChess.Source.AI.MoveLogic
+namespace ChineseChess.Source.GameRule.MoveLogic
 {
     public interface IMovable
     {

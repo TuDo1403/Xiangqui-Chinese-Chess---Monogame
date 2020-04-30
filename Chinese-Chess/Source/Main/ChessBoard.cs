@@ -60,10 +60,10 @@ namespace ChineseChess.Source.Main
             _messages = new Message[5];
 
             _players = new Player[2];
-            _searchDepth = 3;
-            //_players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
+            _searchDepth = 5;
+            _players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
             _players[(int)Team.RED] = new Human();
-            _players[(int)Team.BLACK] = new Human();
+            //_players[(int)Team.BLACK] = new Human();
             //_players[(int)GameTeam.RED] = new Computer(GameTeam.RED, _searchDepth + 1);
 
             _matrixBoard = new BoardState();

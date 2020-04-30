@@ -27,7 +27,7 @@ namespace ChineseChess.Source.Players
                               .SingleOrDefault();
             if (piece != null)
             {
-                piece.RemoveBoardUpdatedEventHandler(board);
+                piece.RemoveBoardUpdatedEvent(board);
             }
 
             Pieces.RemoveAll(p => p.Index == index);

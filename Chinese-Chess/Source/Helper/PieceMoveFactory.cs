@@ -1,5 +1,5 @@
-﻿using ChineseChess.Source.AI.MoveLogic;
-using ChineseChess.Source.GameRule;
+﻿using ChineseChess.Source.GameRule;
+using ChineseChess.Source.GameRule.MoveLogic;
 using Microsoft.Xna.Framework;
 using System;
 

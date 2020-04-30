@@ -1,10 +1,8 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
-using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 
-namespace ChineseChess.Source.AI.MoveLogic
+namespace ChineseChess.Source.GameRule.MoveLogic
 {
     public class ChariotMove : IMovable
     {
@@ -32,21 +30,31 @@ namespace ChineseChess.Source.AI.MoveLogic
             for (int i = Index.X + 1; i < (int)Rule.COL; ++i)
             {
                 if (board[rowIdx, i] * Value > 0)
+                {
                     break;
+                }
                 else
                 {
                     LegalMoves.Add(new Point(i, rowIdx));
-                    if (board[rowIdx, i] * Value < 0) break;
+                    if (board[rowIdx, i] * Value < 0)
+                    {
+                        break;
+                    }
                 }
             }
             for (int i = Index.X - 1; i >= 0; --i)
             {
                 if (board[rowIdx, i] * Value > 0)
+                {
                     break;
+                }
                 else
                 {
                     LegalMoves.Add(new Point(i, rowIdx));
-                    if (board[rowIdx, i] * Value < 0) break;
+                    if (board[rowIdx, i] * Value < 0)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -57,21 +65,31 @@ namespace ChineseChess.Source.AI.MoveLogic
             for (int i = Index.Y + 1; i < (int)Rule.ROW; ++i)
             {
                 if (board[i, colIdx] * Value > 0)
+                {
                     break;
+                }
                 else
                 {
                     LegalMoves.Add(new Point(colIdx, i));
-                    if (board[i, colIdx] * Value < 0) break;
+                    if (board[i, colIdx] * Value < 0)
+                    {
+                        break;
+                    }
                 }
             }
             for (int i = Index.Y - 1; i >= 0; --i)
             {
                 if (board[i, colIdx] * Value > 0)
+                {
                     break;
+                }
                 else
                 {
                     LegalMoves.Add(new Point(colIdx, i));
-                    if (board[i, colIdx] * Value < 0) break;
+                    if (board[i, colIdx] * Value < 0)
+                    {
+                        break;
+                    }
                 }
             }
         }

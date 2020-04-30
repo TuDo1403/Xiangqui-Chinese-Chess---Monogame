@@ -70,14 +70,14 @@
     </Compile>
     <Compile Include="Source\AI\MiniMax.cs" />
     <Compile Include="Source\AI\IMoveStrategy.cs" />
-    <Compile Include="Source\AI\MoveLogic\AdvisorMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\CannonMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\ChariotMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\ElephantMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\GeneralMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\HorseMove.cs" />
-    <Compile Include="Source\AI\MoveLogic\IMovable.cs" />
-    <Compile Include="Source\AI\MoveLogic\SoldierMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\AdvisorMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\CannonMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\ChariotMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\ElephantMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\GeneralMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\HorseMove.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\IMovable.cs" />
+    <Compile Include="Source\GameRule\MoveLogic\SoldierMove.cs" />
     <Compile Include="Source\GameObjects\Chess\Board.cs" />
     <Compile Include="Source\GameObjects\Chess\BoardState.cs" />
     <Compile Include="Source\GameObjects\Message.cs" />

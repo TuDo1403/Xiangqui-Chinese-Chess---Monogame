@@ -13,6 +13,7 @@ namespace ChineseChess.Source.GameObjects
 
         private readonly string _text;
 
+
         public int CurrentFrame { get; set; } = 0;
         public int TotalFrames { get; set; } = 300;
 
@@ -31,29 +32,20 @@ namespace ChineseChess.Source.GameObjects
 
         public void Update()
         {
-            if (CurrentFrame < TotalFrames)
-            {
-                CurrentFrame++;
-            }
+            if (CurrentFrame < TotalFrames) CurrentFrame++;
         }
 
 
-        public void ResetTimer()
-        {
-            CurrentFrame = 0;
-        }
+        public void ResetTimer() => CurrentFrame = 0;
 
 
         public void DrawString(SpriteBatch spriteBatch, Color color)
         {
             if (spriteBatch == null)
-            {
                 throw new ArgumentNullException(nameof(spriteBatch));
-            }
             if (CurrentFrame < TotalFrames)
-            {
-                spriteBatch.DrawString(_spriteFont, _text, _position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
-            }
+                spriteBatch.DrawString(_spriteFont, _text, _position, color, 0f, 
+                                       Vector2.Zero, 1f, SpriteEffects.None, 1);
         }
     }
 }

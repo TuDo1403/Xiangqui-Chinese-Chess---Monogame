@@ -1,10 +1,9 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
-using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace ChineseChess.Source.AI.MoveLogic
+namespace ChineseChess.Source.GameRule.MoveLogic
 {
     public class ElephantMove : IMovable
     {

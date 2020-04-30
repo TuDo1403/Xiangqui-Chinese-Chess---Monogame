@@ -14,8 +14,7 @@ namespace ChineseChess.Source.GameObjects.Chess
         private bool _isFocusing = false;
         private bool _isDragging = false;
 
-
-        protected List<Point> LegalMoves { get; private set; } = new List<Point>();
+        private List<Point> _legalMoves = new List<Point>();
 
 
         public int Value { get; protected set; }
@@ -33,63 +32,39 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         public virtual void FindLegalMoves(BoardState board)
         {
-            LegalMoves.Clear();
+            _legalMoves.Clear();
             Index = Position.ToIndex();
-            LegalMoves = PieceMoveFactory.CreatePieceMove(Value, Index).FindLegalMoves(board);
+            _legalMoves = PieceMoveFactory.CreatePieceMove(Value, Index)
+                                          .FindLegalMoves(board);
         }
 
 
         protected void HasCheckMateMove(BoardState board)
         {
-            if (board == null)
-            {
-                throw new ArgumentNullException(nameof(board));
-            }
-
-            foreach (var move in LegalMoves)
-            {
+            foreach (var move in _legalMoves)
                 if (Math.Abs(board[move.Y, move.X]) == (int)Pieces.R_General)
-                {
                     OnCheckMating();
-                }
-            }
         }
 
-        private void OnCheckMating()
-        {
-            (CheckMated as EventHandler<int>)?.Invoke(this, Value);
-        }
+        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Value);
 
         public Piece(Texture2D txt, Vector2 position, int val, ChessBoard board) : base(txt)
         {
-            if (board == null)
-            {
-                throw new ArgumentNullException(nameof(board));
-            }
-
             Value = val;
-            board.BoardUpdated += Xiangqui_BoardUpdatedHandler;
+            board.BoardUpdated += BoardUpdatedHandler;
             Position = position;
             Index = Position.ToIndex();
             SetBounds();
         }
 
-        private void Xiangqui_BoardUpdatedHandler(object sender, BoardState board)
+        private void BoardUpdatedHandler(object sender, BoardState board)
         {
             FindLegalMoves(board);
             HasCheckMateMove(board);
         }
 
 
-        public void RemoveBoardUpdatedEventHandler(ChessBoard board)
-        {
-            if (board == null)
-            {
-                throw new ArgumentNullException(nameof(board));
-            }
-
-            board.BoardUpdated -= Xiangqui_BoardUpdatedHandler;
-        }
+        public void RemoveBoardUpdatedEvent(ChessBoard board) => board.BoardUpdated -= BoardUpdatedHandler;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -99,9 +74,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                 spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
             }
             else
-            {
                 throw new ArgumentNullException(nameof(spriteBatch));
-            }
         }
 
 
@@ -110,13 +83,9 @@ namespace ChineseChess.Source.GameObjects.Chess
             if (Bounds.Contains(mouseState.Position))
             {
                 if (mouseState.LeftButton == ButtonState.Pressed)
-                {
                     DragPiece(mouseState);
-                }
                 else if (mouseState.LeftButton == ButtonState.Released && _isDragging == true)
-                {
                     SetNewMovePosition(mouseState);
-                }
             }
         }
 
@@ -137,14 +106,11 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        public void OnFocusing()
-        {
-            (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
-        }
+        public void OnFocusing() => (Focused as EventHandler)?.Invoke(this, EventArgs.Empty);
 
         private void SetMove(Vector2 tilePos)
         {
-            var legalPos = tilePos.GetLegalMovePosition(LegalMoves);
+            var legalPos = tilePos.GetLegalMovePosition(_legalMoves);
             if (legalPos != Vector2.Zero)
             {
                 var currentIdx = Index;
@@ -168,10 +134,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             SetBounds();
         }
 
-        private void OnMoving(PositionTransitionEventArgs eventArgs)
-        {
-            (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
-        }
+        private void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
 
         private void SetBounds()
         {

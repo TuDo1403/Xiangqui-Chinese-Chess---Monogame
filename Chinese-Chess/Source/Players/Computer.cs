@@ -23,7 +23,7 @@ namespace ChineseChess.Source.Players
 
         private void FindBestMove(BoardState board)
         {
-            var move = AIAgent.MinimaxRoot(board, Depth);
+            var move = AIAgent.MinimaxRoot(board, Depth, true);
             var focusingPiece = Pieces.Where(p => p.Index == move.Item1)
                                       .SingleOrDefault();
             focusingPiece.OnFocusing();
