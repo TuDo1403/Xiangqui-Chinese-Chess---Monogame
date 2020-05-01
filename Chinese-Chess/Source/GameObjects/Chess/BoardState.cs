@@ -21,6 +21,13 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         private static readonly int[][] _blackCannonPosVal = new int[10][];
         private static readonly int[][] _blackChariotPosVal = new int[10][];
+
+        internal BoardState Clone()
+        {
+            var newBoard = Clone(_boardState);
+            return new BoardState(newBoard);
+        }
+
         private static readonly int[][] _blackHorsePosVal = new int[10][];
         private static readonly int[][] _blackSoldierPosVal = new int[10][];
 
@@ -31,6 +38,8 @@ namespace ChineseChess.Source.GameObjects.Chess
             LoadBoard(Resources.MatrixBoard, _boardState);
             LoadPosValBoards();
         }
+
+        private BoardState(int[][] boardState) => _boardState = boardState;
 
         private void LoadPosValBoards()
         {
@@ -123,7 +132,7 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        public List<Point> GetLegalMoves(Point pieceIdx, bool moveOrder)
+        public List<Point> GetLegalMoves(Point pieceIdx, bool moveOrder = false)
         {
             var value = _boardState[pieceIdx.Y][pieceIdx.X];
             var key = Math.Abs(value);

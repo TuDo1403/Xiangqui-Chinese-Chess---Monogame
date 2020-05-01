@@ -68,8 +68,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Source\AI\MiniMax.cs" />
+    <Compile Include="Source\AI\Minimax\AlphaBetaPruning.cs" />
+    <Compile Include="Source\AI\Minimax\IterativeDeepening.cs" />
     <Compile Include="Source\AI\IMoveStrategy.cs" />
+    <Compile Include="Source\AI\Minimax\MoveOrdering.cs" />
     <Compile Include="Source\GameRule\MoveLogic\AdvisorMove.cs" />
     <Compile Include="Source\GameRule\MoveLogic\CannonMove.cs" />
     <Compile Include="Source\GameRule\MoveLogic\ChariotMove.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Source\GameRule\GameMode.cs" />
     <Compile Include="Source\GameRule\Pieces.cs" />
     <Compile Include="Source\GameRule\PlayerTag.cs" />
+    <Compile Include="Source\Helper\ComplexityMeasuring.cs" />
     <Compile Include="Source\Helper\PieceFactory.cs" />
     <Compile Include="Source\GameObjects\GameModel.cs" />
     <Compile Include="Source\GameObjects\Chess\Piece.cs" />

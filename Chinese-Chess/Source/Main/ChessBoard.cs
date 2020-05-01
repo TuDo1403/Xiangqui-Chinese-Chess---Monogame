@@ -1,4 +1,5 @@
 ﻿using ChineseChess.Properties;
+using ChineseChess.Source.AI.Minimax;
 using ChineseChess.Source.GameObjects;
 using ChineseChess.Source.GameObjects.Chess;
 using ChineseChess.Source.GameRule;
@@ -55,16 +56,15 @@ namespace ChineseChess.Source.Main
             _gameState = GameState.IDLE;
             _checkCount = 0;
 
-            //_turn = new Random().Next(0, 2);
-            _turn = 1;
+            _turn = new Random().Next(0, 2);
             _messages = new Message[5];
 
             _players = new Player[2];
-            _searchDepth = 5;
-            _players[(int)Team.BLACK] = new Computer(Team.BLACK, _searchDepth);
+            _searchDepth = 4;
+            _players[(int)Team.BLACK] = new Computer(new MoveOrdering(Team.BLACK), _searchDepth);
             _players[(int)Team.RED] = new Human();
             //_players[(int)Team.BLACK] = new Human();
-            //_players[(int)GameTeam.RED] = new Computer(GameTeam.RED, _searchDepth + 1);
+            //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
 
             _matrixBoard = new BoardState();
         }
