@@ -160,16 +160,16 @@ namespace ChineseChess.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -5 -4 -3 -2 -1 -2 -3 -4 -5
+        ///   Looks up a localized string similar to -600 -270 -130 -120 -6000 -120 -130 -270 -600
         ///0 0 0 0 0 0 0 0 0
-        ///0 -6 0 0 0 0 0 -6 0
-        ///-7 0 -7 0 -7 0 -7 0 -7
+        ///0 -285 0 0 0 0 0 -285 0
+        ///-30 0 -30 0 -30 0 -30 0 -30
         ///0 0 0 0 0 0 0 0 0
         ///0 0 0 0 0 0 0 0 0
-        ///7 0 7 0 7 0 7 0 7
-        ///0 6 0 0 0 0 0 6 0
+        ///30 0 30 0 30 0 30 0 30
+        ///0 285 0 0 0 0 0 285 0
         ///0 0 0 0 0 0 0 0 0
-        ///5 4 3 2 1 2 3 4 5.
+        ///600 270 130 120 6000 120 130 270 600.
         /// </summary>
         internal static string MatrixBoard {
             get {

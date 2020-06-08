@@ -29,7 +29,7 @@ namespace ChineseChess.Source.AI
 
         protected virtual (Point, Point) MinimaxRoot(BoardState state, int depth)
         {
-            var isMaximizingPlayer = Player == Team.BLACK ? false : true;
+            var isMaximizingPlayer = Player != Team.BLACK;
             var bestVal = Player == Team.BLACK ? int.MaxValue : int.MinValue;
             var bestMoveFound = (Point.Zero, Point.Zero);
 

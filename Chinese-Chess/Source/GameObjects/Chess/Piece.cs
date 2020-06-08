@@ -16,6 +16,8 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         private List<Point> _legalMoves = new List<Point>();
 
+        private Texture2D _rect;
+
 
         public int Value { get; protected set; }
 
@@ -48,9 +50,10 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Value);
 
-        public Piece(Texture2D txt, Vector2 position, int val, ChessBoard board) : base(txt)
+        public Piece(Texture2D txt, Texture2D rect, Vector2 position, int val, ChessBoard board) : base(txt)
         {
             Value = val;
+            _rect = rect;
             board.BoardUpdated += BoardUpdatedHandler;
             Position = position;
             Index = Position.ToIndex();
@@ -72,10 +75,19 @@ namespace ChineseChess.Source.GameObjects.Chess
             {
                 var layerDepth = _isFocusing ? 1f : 0.5f;
                 spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
+                if (_isFocusing)
+                {
+                    foreach (var legalMove in _legalMoves)
+                    {
+                        spriteBatch.Draw(_rect, legalMove.ToPosition(), _rect.Bounds, Color.White, 0f, 
+                                        Vector2.Zero, 1f, SpriteEffects.None, 0.75f);
+                    }
+                }
             }
             else
                 throw new ArgumentNullException(nameof(spriteBatch));
         }
+
 
 
         public override void Update(MouseState mouseState)
@@ -147,5 +159,7 @@ namespace ChineseChess.Source.GameObjects.Chess
             var position = mousePosition.ToTopLeftPosition(Texture.Width, Texture.Height);
             Position = position;
         }
+
+        
     }
 }

@@ -167,7 +167,7 @@ namespace ChineseChess.Source.Main
 
         private void OnBoardUpdating()
         {
-            (BoardUpdated as EventHandler<BoardState>)?.Invoke(this, _matrixBoard);
+            BoardUpdated?.Invoke(this, _matrixBoard);
         }
 
         private void UpdatePieces(Point e)

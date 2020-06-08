@@ -17,9 +17,10 @@ namespace ChineseChess.Source.Helper
             }
 
             var txt = contentManager.Load<Texture2D>(PieceLoader.TextureLoader[key]);
+            var rect = contentManager.Load<Texture2D>("redCircle");
             var position = idx.ToPosition();
             var val = key;
-            return new Piece(txt, position, val, board);
+            return new Piece(txt, rect, position, val, board);
         }
     }
 }
