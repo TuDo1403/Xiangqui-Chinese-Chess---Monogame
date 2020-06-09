@@ -53,7 +53,8 @@ namespace ChineseChess.Source.Helper
             }
 
             var minDistance = legalMoves.Min(c => Vector2.Distance(releasedPosition, c.ToPosition()));
-            if (minDistance <= CENTER_TOPLEFT_GAP)
+            var epsilon = 35;
+            if (minDistance < CENTER_TOPLEFT_GAP - epsilon)
             {
                 var nearestMatrixPos = legalMoves.Where(c => Vector2.Distance(releasedPosition, c.ToPosition()) == minDistance)
                                                  .SingleOrDefault();
@@ -72,6 +73,12 @@ namespace ChineseChess.Source.Helper
         public static Vector2 ToCenterPosition(this Vector2 tlPosition, int txtWidth, int txtHeight)
         {
             return new Vector2(tlPosition.X + txtWidth / 2, tlPosition.Y + txtHeight / 2);
+        }
+
+        public static Vector2 Round(this Vector2 vector)
+        {
+            var roundedVector = new Vector2((int)vector.X, (int)vector.Y);
+            return roundedVector;
         }
     }
 }

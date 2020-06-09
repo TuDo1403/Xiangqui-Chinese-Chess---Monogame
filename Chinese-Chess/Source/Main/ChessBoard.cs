@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ChineseChess.Source.Main
 {
@@ -31,6 +33,8 @@ namespace ChineseChess.Source.Main
         private readonly Player[] _players;
 
         private readonly BoardState _matrixBoard;
+
+        private readonly Stack<PositionTransitionEventArgs> _undoMoves = new Stack<PositionTransitionEventArgs>();
 
         private Piece _focusingPiece;
 

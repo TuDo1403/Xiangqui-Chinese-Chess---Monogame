@@ -13,6 +13,9 @@ namespace ChineseChess.Source.GameObjects.Chess
     {
         private bool _isFocusing = false;
         private bool _isDragging = false;
+        private bool _isMoving = false;
+
+        private float _speed = 1f;
 
         private List<Point> _legalMoves = new List<Point>();
 
@@ -127,8 +130,9 @@ namespace ChineseChess.Source.GameObjects.Chess
             {
                 var currentIdx = Index;
                 var newIdx = legalPos.ToIndex();
-                Position = legalPos;
 
+                Position = legalPos;
+                
                 OnMoving(new PositionTransitionEventArgs(currentIdx, newIdx));
             }
             else
@@ -141,14 +145,14 @@ namespace ChineseChess.Source.GameObjects.Chess
 
         public void SetMove(Point newIdx)
         {
-            Position = newIdx.ToPosition();
-            OnMoving(new PositionTransitionEventArgs(Index, newIdx));
-            SetBounds();
+            //Position = newIdx.ToPosition();
+            
+            
         }
 
-        private void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
+        public void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);
 
-        private void SetBounds()
+        public void SetBounds()
         {
             Bounds = new Rectangle((int)Position.X, (int)Position.Y,
                                     Texture.Width, Texture.Height);

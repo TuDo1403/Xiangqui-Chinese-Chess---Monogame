@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,6 +45,7 @@ namespace ChineseChess.Source.AI.MCTS
             {
                 foreach (var move in state.GetLegalMoves(pieceIndx))
                 {
+                    state.SimulateMove(pieceIndx, move);
 
                 }
             }
@@ -51,7 +53,19 @@ namespace ChineseChess.Source.AI.MCTS
             return bestMoveFound;
         }
 
-        private float MCTS()
+        private float MTCS(BoardState state, bool isMaximizingPlayer)
+        {
+            if (isMaximizingPlayer)
+                return MCTSMax(state, isMaximizingPlayer);
+            return MCTSMin(state, isMaximizingPlayer);
+        }
+
+        private float MCTSMin(BoardState state, bool isMaximizingPlayer)
+        {
+            return 0;
+        }
+
+        private float MCTSMax(BoardState state, bool isMaximizingPlayer)
         {
             return 0;
         }
@@ -59,6 +73,11 @@ namespace ChineseChess.Source.AI.MCTS
         private void RandomMove()
         {
 
+        }
+
+        private float UCT()
+        {
+            return 0;
         }
     }
 }

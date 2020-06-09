@@ -43,8 +43,30 @@ namespace ChineseChess.Source.Players
             }
             else
             {
-                MakeMove(_move);
-                _move = (Point.Zero, Point.Zero);
+                var focusingPiece = Pieces.Where(p => p.Index == _move.Item1)
+                                          .SingleOrDefault();
+
+                if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > 6)
+                {
+                    focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.1f);
+                    focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X), 
+                                                         (float)Math.Round(focusingPiece.Position.Y));
+                    focusingPiece.SetBounds();
+                }
+                else
+                {
+                    focusingPiece.OnFocusing(); // Set focus for ChessBoard function to check if new index is old index or not
+
+                    focusingPiece.Position = _move.Item2.ToPosition();  // Normalize Position because vector lerp with speed 0.1f cannot give exact position
+                    focusingPiece.SetBounds();  // Normalize rectangle bound
+
+                    focusingPiece.OnMoving(new PositionTransitionEventArgs(focusingPiece.Index, _move.Item2));  // Set moving for Chessboard to change turn
+
+                    focusingPiece.Index = _move.Item2;
+                    
+                    _move = (Point.Zero, Point.Zero);
+                }
+                
             }
         }
 
@@ -66,10 +88,7 @@ namespace ChineseChess.Source.Players
 
         private void MakeMove((Point, Point) move)
         {
-            var focusingPiece = Pieces.Where(p => p.Index == move.Item1)
-                                      .SingleOrDefault();
-            focusingPiece.OnFocusing();
-            focusingPiece.SetMove(move.Item2);
+            
         }
 
         private void  WriteReport(string fileName)
