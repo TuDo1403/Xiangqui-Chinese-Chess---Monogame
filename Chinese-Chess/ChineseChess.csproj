@@ -91,6 +91,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Source\AI\MCTS\MonteCarloTreeSearch.cs" />
+    <Compile Include="Source\AI\MCTS\Node.cs" />
     <Compile Include="Source\AI\Minimax\AlphaBetaPruning.cs" />
     <Compile Include="Source\AI\Minimax\IterativeDeepening.cs" />
     <Compile Include="Source\AI\IMoveStrategy.cs" />

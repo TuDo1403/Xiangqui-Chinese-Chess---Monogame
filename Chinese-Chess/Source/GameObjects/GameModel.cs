@@ -21,7 +21,7 @@ namespace ChineseChess.Source.GameObjects
 
         }
 
-        public virtual void Update(MouseState mouseState) { }
+        public virtual void Update(MouseState mouseState, GameTime gameTime) { }
 
 
         public virtual void Draw(SpriteBatch spriteBatch)

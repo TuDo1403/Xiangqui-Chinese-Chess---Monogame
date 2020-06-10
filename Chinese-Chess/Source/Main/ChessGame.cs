@@ -91,7 +91,7 @@ namespace ChineseChess.Source.Main
             }
 
             // TODO: Add your update logic here
-            _game.Update(Mouse.GetState());
+            _game.Update(Mouse.GetState(), gameTime);
 
             base.Update(gameTime);
         }

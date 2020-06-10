@@ -21,7 +21,7 @@ namespace ChineseChess.Source.AI
             Name = "IterativeDeepening";
         }
 
-        public (Point, Point) Search(BoardState state, int depth)
+        public (Point, Point) Search(BoardState state, int depth, GameTime gameTime)
         {
             PositionsEvaluated = 0;
             return MinimaxRoot(state, depth);

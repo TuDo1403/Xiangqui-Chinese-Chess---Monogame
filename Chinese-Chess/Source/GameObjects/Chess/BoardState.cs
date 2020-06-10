@@ -72,10 +72,11 @@ namespace ChineseChess.Source.GameObjects.Chess
         }
 
 
-        public void SimulateMove(Point oldIdx, Point newIdx)
+        public BoardState SimulateMove(Point oldIdx, Point newIdx)
         {
             _undoStates.Push(Clone(_boardState));
             MakeMove(oldIdx, newIdx);
+            return Clone();
         }
         private static int[][] Clone(int[][] board)
         {

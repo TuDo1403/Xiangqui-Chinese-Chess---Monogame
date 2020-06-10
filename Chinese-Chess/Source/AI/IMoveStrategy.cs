@@ -5,7 +5,7 @@ namespace ChineseChess.Source.AI
 {
     public interface IMoveStrategy
     {
-        (Point, Point) Search(BoardState state, int depth);
+        (Point, Point) Search(BoardState state, int depth, GameTime gameTime);
 
         int PositionsEvaluated { get; }
 

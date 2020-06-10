@@ -1,4 +1,5 @@
 ﻿using ChineseChess.Properties;
+using ChineseChess.Source.AI.MCTS;
 using ChineseChess.Source.AI.Minimax;
 using ChineseChess.Source.GameObjects;
 using ChineseChess.Source.GameObjects.Chess;
@@ -34,8 +35,6 @@ namespace ChineseChess.Source.Main
 
         private readonly BoardState _matrixBoard;
 
-        private readonly Stack<PositionTransitionEventArgs> _undoMoves = new Stack<PositionTransitionEventArgs>();
-
         private Piece _focusingPiece;
 
         public Board Board { get; private set; }
@@ -64,9 +63,9 @@ namespace ChineseChess.Source.Main
             _messages = new Message[5];
 
             _players = new Player[2];
-            _searchDepth = 4;
-            _players[(int)Team.BLACK] = new Computer(new MoveOrdering(Team.BLACK), _searchDepth);
-            _players[(int)Team.RED] = new Human();
+            _searchDepth = 100;
+            _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), _searchDepth);
+            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 4);
             //_players[(int)Team.BLACK] = new Human();
             //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
 
@@ -192,18 +191,18 @@ namespace ChineseChess.Source.Main
         }
 
 
-        public override void Update(MouseState mouseState)
+        public override void Update(MouseState mouseState, GameTime gameTime)
         {
             if (_gameState != GameState.GAMEOVER)
             {
                 CheckMateUpdate();
                 if (_gameState == GameState.MOVING)
                 {
-                    _focusingPiece.Update(mouseState);
+                    _focusingPiece.Update(mouseState, gameTime);
                 }
                 else
                 {
-                    UpdatePiecesInTurn(mouseState);
+                    UpdatePiecesInTurn(mouseState, gameTime);
                 }
             }
 
@@ -217,16 +216,16 @@ namespace ChineseChess.Source.Main
             }
         }
 
-        private void UpdatePiecesInTurn(MouseState mouseState)
+        private void UpdatePiecesInTurn(MouseState mouseState, GameTime gameTime)
         {
             _messages[_turn + 3].Update();
             if (_players[_turn].GetType() == typeof(Computer))
             {
-                _players[_turn].Update(_matrixBoard);
+                _players[_turn].Update(_matrixBoard, gameTime);
             }
             else
             {
-                _players[_turn].Update(mouseState);
+                _players[_turn].Update(mouseState, gameTime);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace ChineseChess.Source.Players
 {
@@ -9,11 +10,11 @@ namespace ChineseChess.Source.Players
             Tag = GameRule.PlayerTag.HUMAN;
         }
 
-        public override void Update(MouseState mouseState)
+        public override void Update(MouseState mouseState, GameTime gameTime)
         {
             foreach (var piece in Pieces)
             {
-                piece.Update(mouseState);
+                piece.Update(mouseState, gameTime);
             }
         }
     }

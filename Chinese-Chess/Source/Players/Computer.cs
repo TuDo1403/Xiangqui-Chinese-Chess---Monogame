@@ -18,7 +18,7 @@ namespace ChineseChess.Source.Players
 
         private (Point, Point) _move = (Point.Zero, Point.Zero);
 
-        private ComplexityMeasuring _moveInfo;
+        private readonly ComplexityMeasuring _moveInfo;
 
 
         public IMoveStrategy AIAgent { get; set; }
@@ -30,7 +30,7 @@ namespace ChineseChess.Source.Players
             Depth = depth;
         }
 
-        public override void Update(BoardState board)
+        public override void Update(BoardState board, GameTime gameTime)
         {
             if (_move == (Point.Zero, Point.Zero))
             {
@@ -38,7 +38,7 @@ namespace ChineseChess.Source.Players
                 {
                     _isCalculating = true;
                     var newBoard = board.Clone();
-                    ((Action<BoardState>)AsyncCalculation).BeginInvoke(newBoard, null, this);
+                    ((Action<BoardState, GameTime>)AsyncCalculation).BeginInvoke(newBoard, gameTime, null, this);
                 }
             }
             else
@@ -46,7 +46,8 @@ namespace ChineseChess.Source.Players
                 var focusingPiece = Pieces.Where(p => p.Index == _move.Item1)
                                           .SingleOrDefault();
 
-                if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > 6)
+                var epsilon = 20;
+                if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > epsilon)
                 {
                     focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.1f);
                     focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X), 
@@ -70,25 +71,20 @@ namespace ChineseChess.Source.Players
             }
         }
 
-        private void AsyncCalculation(BoardState board)
+        private void AsyncCalculation(BoardState board, GameTime gameTime)
         {
-            _move = CalculateMoveAsync(board).Result;
+            _move = CalculateMoveAsync(board, gameTime).Result;
             _isCalculating = false;
         }
 
-        private async Task<(Point, Point)> CalculateMoveAsync(BoardState board)
+        private async Task<(Point, Point)> CalculateMoveAsync(BoardState board, GameTime gameTime)
         {
             var move = (Point.Zero, Point.Zero);
             await Task.Run(() =>
             {
-                move = AIAgent.Search(board, Depth);
+                move = AIAgent.Search(board, Depth, gameTime);
             }).ConfigureAwait(false);
             return move;
-        }
-
-        private void MakeMove((Point, Point) move)
-        {
-            
         }
 
         private void  WriteReport(string fileName)

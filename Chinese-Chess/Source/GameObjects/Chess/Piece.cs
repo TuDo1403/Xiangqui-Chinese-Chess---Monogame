@@ -13,13 +13,10 @@ namespace ChineseChess.Source.GameObjects.Chess
     {
         private bool _isFocusing = false;
         private bool _isDragging = false;
-        private bool _isMoving = false;
-
-        private float _speed = 1f;
 
         private List<Point> _legalMoves = new List<Point>();
 
-        private Texture2D _rect;
+        private readonly Texture2D _rect;
 
 
         public int Value { get; protected set; }
@@ -93,7 +90,7 @@ namespace ChineseChess.Source.GameObjects.Chess
 
 
 
-        public override void Update(MouseState mouseState)
+        public override void Update(MouseState mouseState, GameTime gameTime)
         {
             if (Bounds.Contains(mouseState.Position))
             {
@@ -141,13 +138,6 @@ namespace ChineseChess.Source.GameObjects.Chess
                 OnMoving(new PositionTransitionEventArgs(Point.Zero, Index));
             }
             SetBounds();
-        }
-
-        public void SetMove(Point newIdx)
-        {
-            //Position = newIdx.ToPosition();
-            
-            
         }
 
         public void OnMoving(PositionTransitionEventArgs eventArgs) => (Moved as EventHandler<PositionTransitionEventArgs>)?.Invoke(this, eventArgs);

@@ -33,9 +33,9 @@ namespace ChineseChess.Source.Players
             Pieces.RemoveAll(p => p.Index == index);
         }
 
-        public virtual void Update(MouseState mouseState) { }
+        public virtual void Update(MouseState mouseState, GameTime gameTime) { }
 
-        public virtual void Update(BoardState board) { }
+        public virtual void Update(BoardState board, GameTime gameTime) { }
 
         public virtual void DrawPieces(SpriteBatch spriteBatch)
         {
