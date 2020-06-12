@@ -15,7 +15,7 @@ namespace ChineseChess.Source.GameObjects
 
 
         public int CurrentFrame { get; set; } = 0;
-        public int TotalFrames { get; set; } = 300;
+        public int TotalFrames { get; set; } = 3000;
 
 
 

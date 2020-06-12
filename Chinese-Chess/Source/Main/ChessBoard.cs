@@ -60,12 +60,13 @@ namespace ChineseChess.Source.Main
             _checkCount = 0;
 
             _turn = new Random().Next(0, 2);
+            //_turn = 1;
             _messages = new Message[5];
 
             _players = new Player[2];
             _searchDepth = 100;
             _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), _searchDepth);
-            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 4);
+            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
             //_players[(int)Team.BLACK] = new Human();
             //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
 
@@ -139,8 +140,12 @@ namespace ChineseChess.Source.Main
             }
             else
             {
-                _gameState = GameState.CHECKMATE;
-                _checkMateSide = e;
+                if (_gameState != GameState.GAMEOVER)
+                {
+                    _gameState = GameState.CHECKMATE;
+                    _checkMateSide = e;
+                }
+                
             }
         }
 
