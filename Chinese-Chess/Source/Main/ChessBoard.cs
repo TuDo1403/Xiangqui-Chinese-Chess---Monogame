@@ -64,9 +64,9 @@ namespace ChineseChess.Source.Main
             _messages = new Message[5];
 
             _players = new Player[2];
-            _searchDepth = 100;
+            _searchDepth = 4;
             _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), _searchDepth);
-            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
+            _players[(int)Team.RED] = new Human();
             //_players[(int)Team.BLACK] = new Human();
             //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
 

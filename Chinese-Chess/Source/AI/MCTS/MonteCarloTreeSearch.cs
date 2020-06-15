@@ -69,19 +69,14 @@ namespace ChineseChess.Source.AI.MCTS
                 return node;
             }
 
-            var maxVal = int.MinValue;
-            var simulateMove = (new Point(-1, -1), new Point(-1, -1));
-            foreach (var piece in node.State.GetPieces(node.CurrentPlayer))
-            {
-                foreach (var move in node.State.GetLegalMoves(piece, true))
-                {
-                    simulateMove = maxVal > Math.Abs(node.State[move.Y, move.X]) ? simulateMove : (piece, move);
-                    maxVal = Math.Max(maxVal, Math.Abs(node.State[move.Y, move.X]));
-                }
-            }
 
-            var successorState = node.State.SimulateMove(simulateMove.Item1, simulateMove.Item2);
-            var simulationNode = new Node(node, successorState, simulateMove, !node.CurrentPlayer);
+            var validMoves = from piece in node.State.GetPieces(node.CurrentPlayer)
+                             from move in node.State.GetLegalMoves(piece, true)
+                             select (piece, move);
+            var greedyMove = validMoves.ToList()[0];
+
+            var successorState = node.State.SimulateMove(greedyMove.Item1, greedyMove.Item2);
+            var simulationNode = new Node(node, successorState, greedyMove, !node.CurrentPlayer);
 
             simulationNode.TotalScore += BoardEvaluator(node.State) * invertReward;
             simulationNode.Visits += 1;
