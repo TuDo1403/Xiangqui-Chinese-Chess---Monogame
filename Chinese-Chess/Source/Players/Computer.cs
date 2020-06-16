@@ -49,7 +49,7 @@ namespace ChineseChess.Source.Players
                 var epsilon = 20;
                 if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > epsilon)
                 {
-                    focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.1f);
+                    focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.05f);
                     focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X), 
                                                          (float)Math.Round(focusingPiece.Position.Y));
                     focusingPiece.SetBounds();

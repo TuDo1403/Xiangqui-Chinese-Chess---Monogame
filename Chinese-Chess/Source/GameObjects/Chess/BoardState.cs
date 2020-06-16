@@ -159,8 +159,8 @@ namespace ChineseChess.Source.GameObjects.Chess
             var pieces = new List<Point>();
             for (int i = 0; i < 10; ++i)
                 for (int j = 0; j < 9; ++j)
-                    if (maxPlayer == true && IsTeamRed(i, j) ||
-                        maxPlayer == false && IsTeamBlack(i, j))
+                    if (maxPlayer && IsTeamRed(i, j) ||
+                        !maxPlayer && IsTeamBlack(i, j))
                         pieces.Add(new Point(j, i));
 
             return pieces;

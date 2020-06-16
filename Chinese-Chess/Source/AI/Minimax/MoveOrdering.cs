@@ -13,7 +13,7 @@ namespace ChineseChess.Source.AI.Minimax
         {
             var alpha = int.MinValue;
             var beta = int.MaxValue;
-            var isMaximizingPlayer = Player == Team.BLACK ? false : true;
+            var isMaximizingPlayer = Player != Team.BLACK;
             var bestVal = Player == Team.BLACK ? int.MaxValue : int.MinValue;
             var bestMoveFound = (Point.Zero, Point.Zero);
 

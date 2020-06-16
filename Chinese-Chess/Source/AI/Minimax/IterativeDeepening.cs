@@ -99,7 +99,7 @@ namespace ChineseChess.Source.AI
         }
 
 
-        protected int BoardEvaluator(BoardState board)
+        protected static int BoardEvaluator(BoardState board)
         {
             if (RedWins(board)) return int.MaxValue;
             if (BlackWins(board)) return int.MinValue;

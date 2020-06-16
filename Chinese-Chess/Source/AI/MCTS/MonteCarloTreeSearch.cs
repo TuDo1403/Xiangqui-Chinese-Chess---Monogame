@@ -1,17 +1,10 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
 using ChineseChess.Source.GameRule;
-using ChineseChess.Source.Players;
-using Microsoft.Win32.SafeHandles;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChineseChess.Source.AI.MCTS
 {
@@ -23,7 +16,7 @@ namespace ChineseChess.Source.AI.MCTS
 
         public Team Player { get; protected set; }
 
-        private int _simulations = 4000;
+        private readonly int _simulations = 5000;
 
         public MonteCarloTreeSearch(Team player)
         {
@@ -31,96 +24,98 @@ namespace ChineseChess.Source.AI.MCTS
             Name = "MonteCarloTreeSearch";
         }
 
-        public (Point, Point) Search(BoardState state, int simulations, GameTime gameTime)
+        public (Point, Point) Search(BoardState state, int depth, GameTime gameTime)
         {
             PositionsEvaluated = 0;
-            //ClearTree();
-            //ResetTimer();
-            return MCTS(state, simulations);
-            //return MCTSRoot(state, simulations, gameTime);
+            return UCTSearch(state, depth);
         }
 
 
-        private (Point, Point) MCTS(BoardState state, int simulations)
+        private (Point, Point) UCTSearch(BoardState state, int depth)
         {
             var currentPlayer = Player == Team.RED;
             var rootNode = new Node(null, state, (Point.Zero, Point.Zero), currentPlayer);
             for (int i = 0; i < _simulations; ++i)
             {
-                var current = Traverse(rootNode);
+                var v = TreePolicy(rootNode);
+                var vState = v.State.Clone();
+                var reward = DefaultPolicy(vState, v.CurrentPlayer, depth);
+                BackUp(v, reward);
+            }
+            return BestChild(rootNode).FromTo;
+        }
 
-                var simulationNode = RollOut(current);
+        private static Node TreePolicy(Node v)
+        {
+            while (!IsTerminal(v.State))
+            {
+                if (!IsFullyExpanded(v)) return Expand(v);
+                else v = BestChild(v);
+            }
+            return v;
+        }
 
-                if (simulationNode != null)
+        private static bool IsFullyExpanded(Node v)
+        {
+            if (v.Children == null) return false;
+            return v.Children.Where(n => n.Visits == 0).ToList().Count == 0;
+        }
+
+        private static Node Expand(Node v)
+        {
+            if (v.Children == null)
+            {
+                v.Children = new List<Node>();
+                var untriedActions = (from piece in v.State.GetPieces(v.CurrentPlayer)
+                                      from move in v.State.GetLegalMoves(piece)
+                                      select (piece, move)).ToList();
+                foreach (var action in untriedActions)
                 {
-                    simulationNode.BackPropagate();
+                    var s = v.State.SimulateMove(action.piece, action.move);
+                    var v_ = new Node(v, s, action, !v.CurrentPlayer);
+                    v.State.Undo();
+                    v.Children.Add(v_);
                 }
             }
-            return PickMaxUBC(rootNode).FromTo;
+
+            var unvisitNodes = v.Children.Where(n => n.Visits == 0).ToList();
+            return unvisitNodes[new Random().Next(unvisitNodes.Count)];
         }
 
-        private Node RollOut(Node node)
+        private static Node BestChild(Node v)
+        {
+            var nodes = v.Children.OrderByDescending(n => UBC(n)).ToList();
+            if (nodes.Count == 0) return null;
+            return nodes[0];
+        }
+
+        private static int DefaultPolicy(BoardState vState, bool turn, int depth)
+        {
+            if (!IsTerminal(vState))
+            {
+                //depth--;
+                var actions = (from piece in vState.GetPieces(turn)
+                               from move in vState.GetLegalMoves(piece)
+                               select (piece, move)).ToList();
+                var a = actions[new Random().Next(actions.Count)];
+                vState.MakeMove(a.piece, a.move);
+                turn = !turn;
+            }
+
+            var reward = BoardEvaluator(vState);
+            return reward;
+        }
+
+        private void BackUp(Node v, int reward)
         {
             var invertReward = Player == Team.RED ? 1 : -1;
-            if (GameOver(node.State))
+            reward *= invertReward;
+            while (v != null)
             {
-                node.Visits += 1;
-                node.TotalScore += BoardEvaluator(node.State) * invertReward;
-                return node;
+                v.Visits += 1;
+                v.TotalScore += reward;
+                v = v.Parent;
             }
-
-
-            var validMoves = from piece in node.State.GetPieces(node.CurrentPlayer)
-                             from move in node.State.GetLegalMoves(piece, true)
-                             select (piece, move);
-            var greedyMove = validMoves.ToList()[0];
-
-            var successorState = node.State.SimulateMove(greedyMove.Item1, greedyMove.Item2);
-            var simulationNode = new Node(node, successorState, greedyMove, !node.CurrentPlayer);
-
-            simulationNode.TotalScore += BoardEvaluator(node.State) * invertReward;
-            simulationNode.Visits += 1;
-            node.State.Undo();
-            
-            return simulationNode;
-        }
-
-        private Node Traverse(Node node)
-        {   
-            if (node.Parent != null && node.Visits == 0)
-            {
-                node.Visits = 1;
-                return node;
-            }
-            if (node.Children == null)
-                node.Expand();
-
-            var unvisitNodes = node.Children.Where(n => n.Visits == 0).ToList();
-            if (unvisitNodes.Count > 0)
-                return unvisitNodes[0];
-            Node bestUBCNode = null;
-            var maxUBC = PickMaxUBC(node);
-            if (bestUBCNode != null)
-            {
-                return Traverse(bestUBCNode);
-            }
-            else
-            {
-                return node;
-            }
-            
-        }
-
-        private Node PickMaxUBC(Node node)
-        {
-            Node selected = null;
-            var maxUBC = double.MinValue;
-            foreach (var child in node.Children)
-            {
-                selected = UBC(child) > maxUBC ? child : selected;
-                maxUBC = Math.Max(UBC(child), maxUBC);
-            }
-            return selected;
         }
 
         private static double UBC(Node node)
@@ -129,13 +124,10 @@ namespace ChineseChess.Source.AI.MCTS
             var n = node.Visits;
             var v = w / n;
             var N = node.Parent.Visits;
-            return v + Math.Sqrt((12000 * Math.Log(N)) / n);
+            return v + Math.Sqrt((2 * Math.Log(N)) / n);
         }
 
-        private static bool GameOver(BoardState state)
-        {
-            return RedWins(state) || BlackWins(state);
-        }
+        private static bool IsTerminal(BoardState state) => RedWins(state) || BlackWins(state);
 
         private static bool RedWins(BoardState state)
         {
@@ -157,10 +149,11 @@ namespace ChineseChess.Source.AI.MCTS
             return true;
         }
 
-        private int BoardEvaluator(BoardState board)
+        private static int BoardEvaluator(BoardState board)
         {
-            if (RedWins(board)) return 500000;
-            if (BlackWins(board)) return -500000;
+            //if (RedWins(board)) return 100000;
+            //if (BlackWins(board)) return -100000;
+
             var score = 0;
             for (int i = 0; i < (int)Rule.ROW; ++i)
                 for (int j = 0; j < (int)Rule.COL; ++j)
@@ -168,13 +161,6 @@ namespace ChineseChess.Source.AI.MCTS
                         score += board[i, j] + board.PosVal(i, j);
 
             return score;
-            //if (RedWins(board) && Player == Team.RED ||
-            //    BlackWins(board) && Player == Team.BLACK)
-            //    return 1;
-            //else if (RedWins(board) && Player == Team.BLACK ||
-            //         BlackWins(board) && Player == Team.RED)
-            //    return -1;
-            //return 0;
         }
     }
 }
