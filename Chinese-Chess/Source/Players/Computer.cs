@@ -43,31 +43,35 @@ namespace ChineseChess.Source.Players
             }
             else
             {
-                var focusingPiece = Pieces.Where(p => p.Index == _move.Item1)
-                                          .SingleOrDefault();
+                MoveTransition();
+            }
+        }
 
-                var epsilon = 20;
-                if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > epsilon)
-                {
-                    focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.05f);
-                    focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X), 
-                                                         (float)Math.Round(focusingPiece.Position.Y));
-                    focusingPiece.SetBounds();
-                }
-                else
-                {
-                    focusingPiece.OnFocusing(); // Set focus for ChessBoard function to check if new index is old index or not
+        private void MoveTransition()
+        {
+            var focusingPiece = Pieces.Where(p => p.Index == _move.Item1)
+                                    .SingleOrDefault();
 
-                    focusingPiece.Position = _move.Item2.ToPosition();  // Normalize Position because vector lerp with speed 0.1f cannot give exact position
-                    focusingPiece.SetBounds();  // Normalize rectangle bound
+            var epsilon = 20;
+            if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > epsilon)
+            {
+                focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.05f);
+                focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X),
+                                                  (float)Math.Round(focusingPiece.Position.Y));
+                focusingPiece.SetBounds();
+            }
+            else
+            {
+                focusingPiece.OnFocusing(); // Set focus for ChessBoard function to check if new index is old index or not
 
-                    focusingPiece.OnMoving(new PositionTransitionEventArgs(focusingPiece.Index, _move.Item2));  // Set moving for Chessboard to change turn
+                focusingPiece.Position = _move.Item2.ToPosition();  // Normalize Position because vector lerp with speed 0.1f cannot give exact position
+                focusingPiece.SetBounds();  // Normalize rectangle bound
 
-                    focusingPiece.Index = _move.Item2;
-                    
-                    _move = (Point.Zero, Point.Zero);
-                }
-                
+                focusingPiece.OnMoving(new PositionTransitionEventArgs(focusingPiece.Index, _move.Item2));  // Set moving for Chessboard to change turn
+
+                focusingPiece.Index = _move.Item2;
+
+                _move = (Point.Zero, Point.Zero);
             }
         }
 

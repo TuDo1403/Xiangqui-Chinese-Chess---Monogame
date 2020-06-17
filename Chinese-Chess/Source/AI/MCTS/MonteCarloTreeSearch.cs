@@ -1,6 +1,7 @@
 ﻿using ChineseChess.Source.AI.Minimax;
 using ChineseChess.Source.GameObjects.Chess;
 using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Players;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace ChineseChess.Source.AI.MCTS
 
         public Team Player { get; protected set; }
 
-        private readonly int _simulations = 200;
+        private readonly int _simulations = 260;
 
         public MonteCarloTreeSearch(Team player)
         {
@@ -43,7 +44,12 @@ namespace ChineseChess.Source.AI.MCTS
                 var reward = DefaultPolicy(vState, v.CurrentPlayer, depth);
                 BackUp(v, reward);
             }
+            //return rootNode.Children.OrderByDescending(n => n.Visits)
+            //                      .ThenByDescending(n => n.TotalScore)
+            //                      .ToList()[0].FromTo;
             return BestChild(rootNode).FromTo;
+            //return rootNode.Children.OrderByDescending(n => n.TotalScore)
+            //                      .ThenByDescending(n => n.Visits).ToList()[0].FromTo;
         }
 
         private static Node TreePolicy(Node v)
@@ -94,19 +100,12 @@ namespace ChineseChess.Source.AI.MCTS
         {
             if (!IsTerminal(vState))
             {
-                if (turn)
-                {
-                    var a = new MoveOrdering(Team.RED).Search(vState, depth, null);
-                    vState.MakeMove(a.Item1, a.Item2);
-                }
-                else
-                {
-                    var actions = (from piece in vState.GetPieces(turn)
-                                   from move in vState.GetLegalMoves(piece)
-                                   select (piece, move)).ToList();
-                    var a = actions[new Random().Next(actions.Count)];
-                    vState.MakeMove(a.piece, a.move);
-                }
+                var actions = (from piece in vState.GetPieces(turn)
+                               from move in vState.GetLegalMoves(piece)
+                               select (piece, move)).ToList();
+                var a = actions[new Random().Next(actions.Count)];
+                if (turn) a = new MoveOrdering(Team.RED).Search(vState, depth, null);
+                vState.MakeMove(a.piece, a.move);
             }
 
             var reward = BoardEvaluator(vState);
@@ -158,9 +157,8 @@ namespace ChineseChess.Source.AI.MCTS
 
         private static int BoardEvaluator(BoardState board)
         {
-            //if (RedWins(board)) return 100000;
-            //if (BlackWins(board)) return -100000;
-
+            if (RedWins(board)) return 50000;
+            if (BlackWins(board)) return -50000;
             var score = 0;
             for (int i = 0; i < (int)Rule.ROW; ++i)
                 for (int j = 0; j < (int)Rule.COL; ++j)

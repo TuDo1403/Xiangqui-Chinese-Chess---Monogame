@@ -66,7 +66,7 @@ namespace ChineseChess.Source.AI
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = int.MaxValue;
+            var bestMove = 10000;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
@@ -85,7 +85,7 @@ namespace ChineseChess.Source.AI
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = int.MinValue;
+            var bestMove = -10000;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
@@ -101,8 +101,8 @@ namespace ChineseChess.Source.AI
 
         protected static int BoardEvaluator(BoardState board)
         {
-            if (RedWins(board)) return int.MaxValue;
-            if (BlackWins(board)) return int.MinValue;
+            if (RedWins(board)) return 50000;
+            if (BlackWins(board)) return -50000;
 
             var score = 0;
             for (int i = 0; i < (int)Rule.ROW; ++i)

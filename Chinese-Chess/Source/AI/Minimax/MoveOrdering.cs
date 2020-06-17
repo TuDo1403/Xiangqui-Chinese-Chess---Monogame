@@ -11,8 +11,8 @@ namespace ChineseChess.Source.AI.Minimax
 
         protected override (Point, Point) MinimaxRoot(BoardState state, int depth)
         {
-            var alpha = int.MinValue;
-            var beta = int.MaxValue;
+            var alpha = -10000;
+            var beta = 10000;
             var isMaximizingPlayer = Player != Team.BLACK;
             var bestVal = Player == Team.BLACK ? int.MaxValue : int.MinValue;
             var bestMoveFound = (Point.Zero, Point.Zero);
@@ -50,7 +50,7 @@ namespace ChineseChess.Source.AI.Minimax
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = int.MaxValue;
+            var bestMove = 10000;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx, true))
                 {
@@ -71,7 +71,7 @@ namespace ChineseChess.Source.AI.Minimax
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = int.MinValue;
+            var bestMove = -10000;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx, true))
                 {

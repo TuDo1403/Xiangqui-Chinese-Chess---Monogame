@@ -59,14 +59,14 @@ namespace ChineseChess.Source.Main
             _gameState = GameState.IDLE;
             _checkCount = 0;
 
-            _turn = new Random().Next(0, 2);
-            //_turn = 1;
+            //_turn = new Random().Next(0, 2);
+            _turn = 1;
             _messages = new Message[5];
 
             _players = new Player[2];
             _searchDepth = 3;
-            _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), _searchDepth);
-            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), _searchDepth);
+            _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), 3);
+            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 3);
             //_players[(int)Team.RED] = new Human();
             //_players[(int)Team.BLACK] = new Human();
             //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
