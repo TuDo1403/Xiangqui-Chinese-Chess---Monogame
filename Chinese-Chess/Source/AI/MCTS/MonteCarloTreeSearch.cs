@@ -1,4 +1,5 @@
-﻿using ChineseChess.Source.GameObjects.Chess;
+﻿using ChineseChess.Source.AI.Minimax;
+using ChineseChess.Source.GameObjects.Chess;
 using ChineseChess.Source.GameRule;
 using Microsoft.Xna.Framework;
 using System;
@@ -16,7 +17,7 @@ namespace ChineseChess.Source.AI.MCTS
 
         public Team Player { get; protected set; }
 
-        private readonly int _simulations = 5000;
+        private readonly int _simulations = 200;
 
         public MonteCarloTreeSearch(Team player)
         {
@@ -93,13 +94,19 @@ namespace ChineseChess.Source.AI.MCTS
         {
             if (!IsTerminal(vState))
             {
-                //depth--;
-                var actions = (from piece in vState.GetPieces(turn)
-                               from move in vState.GetLegalMoves(piece)
-                               select (piece, move)).ToList();
-                var a = actions[new Random().Next(actions.Count)];
-                vState.MakeMove(a.piece, a.move);
-                turn = !turn;
+                if (turn)
+                {
+                    var a = new MoveOrdering(Team.RED).Search(vState, depth, null);
+                    vState.MakeMove(a.Item1, a.Item2);
+                }
+                else
+                {
+                    var actions = (from piece in vState.GetPieces(turn)
+                                   from move in vState.GetLegalMoves(piece)
+                                   select (piece, move)).ToList();
+                    var a = actions[new Random().Next(actions.Count)];
+                    vState.MakeMove(a.piece, a.move);
+                }
             }
 
             var reward = BoardEvaluator(vState);
