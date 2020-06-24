@@ -139,6 +139,9 @@
   <data name="checkMate" xml:space="preserve">
     <value>Check Mate!</value>
   </data>
+  <data name="draw" xml:space="preserve">
+    <value>Draw!</value>
+  </data>
   <data name="MatrixBoard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Data\BoardState\MatrixBoard.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

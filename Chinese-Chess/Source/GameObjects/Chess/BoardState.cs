@@ -12,6 +12,7 @@ namespace ChineseChess.Source.GameObjects.Chess
     public class BoardState
     {
         private int[][] _boardState = new int[10][];
+
         private readonly Stack<int[][]> _undoStates = new Stack<int[][]>();
 
         private static readonly int[][] _redCannonPosVal = new int[10][];
@@ -104,30 +105,14 @@ namespace ChineseChess.Source.GameObjects.Chess
         public int PosVal(int row, int col)
         {
             var pieceVal = _boardState[row][col];
-            if (pieceVal == (int)Pieces.B_Cannon)
-                return _blackCannonPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.B_Chariot)
-                return _blackChariotPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.B_Soldier)
-                return _blackSoldierPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.B_Horse)
-
-                return _blackHorsePosVal[row][col];
-
-            if (pieceVal == (int)Pieces.R_Cannon)
-                return _redCannonPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.R_Chariot)
-                return _redChariotPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.R_Soldier)
-                return _redSoldierPosVal[row][col];
-
-            if (pieceVal == (int)Pieces.R_Horse)
-                return _redHorsePosVal[row][col];
+            if (pieceVal == (int)Pieces.B_Cannon) return _blackCannonPosVal[row][col];
+            if (pieceVal == (int)Pieces.B_Chariot) return _blackChariotPosVal[row][col];
+            if (pieceVal == (int)Pieces.B_Soldier) return _blackSoldierPosVal[row][col];
+            if (pieceVal == (int)Pieces.B_Horse) return _blackHorsePosVal[row][col];
+            if (pieceVal == (int)Pieces.R_Cannon) return _redCannonPosVal[row][col];
+            if (pieceVal == (int)Pieces.R_Chariot) return _redChariotPosVal[row][col];
+            if (pieceVal == (int)Pieces.R_Soldier) return _redSoldierPosVal[row][col];
+            if (pieceVal == (int)Pieces.R_Horse) return _redHorsePosVal[row][col];
 
             return 0;
         }
@@ -143,11 +128,9 @@ namespace ChineseChess.Source.GameObjects.Chess
             // Simple move ordering
             if (moveOrder)
             {
-                if (value > 0)
-                    return moves.OrderBy(p => _boardState[p.Y][p.X])
-                                .ToList();
-                else
-                    return moves.OrderByDescending(p => _boardState[p.Y][p.X])
+                if (value > 0) return moves.OrderBy(p => _boardState[p.Y][p.X])
+                                         .ToList();
+                else return moves.OrderByDescending(p => _boardState[p.Y][p.X])
                                 .ToList();
             }
             return moves;

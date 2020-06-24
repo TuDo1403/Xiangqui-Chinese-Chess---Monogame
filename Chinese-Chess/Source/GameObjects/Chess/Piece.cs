@@ -48,7 +48,7 @@ namespace ChineseChess.Source.GameObjects.Chess
                     OnCheckMating();
         }
 
-        private void OnCheckMating() => (CheckMated as EventHandler<int>)?.Invoke(this, Value);
+        private void OnCheckMating() => CheckMated?.Invoke(this, Value);
 
         public Piece(Texture2D txt, Texture2D rect, Vector2 position, int val, ChessBoard board) : base(txt)
         {
@@ -76,16 +76,11 @@ namespace ChineseChess.Source.GameObjects.Chess
                 var layerDepth = _isFocusing ? 1f : 0.5f;
                 spriteBatch.Draw(Texture, Position, Texture.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth);
                 if (_isFocusing)
-                {
                     foreach (var legalMove in _legalMoves)
-                    {
                         spriteBatch.Draw(_rect, legalMove.ToPosition(), _rect.Bounds, Color.White, 0f, 
                                         Vector2.Zero, 1f, SpriteEffects.None, 0.75f);
-                    }
-                }
             }
-            else
-                throw new ArgumentNullException(nameof(spriteBatch));
+            else throw new ArgumentNullException(nameof(spriteBatch));
         }
 
 

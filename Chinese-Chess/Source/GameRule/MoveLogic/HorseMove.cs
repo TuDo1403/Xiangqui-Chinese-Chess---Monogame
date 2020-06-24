@@ -13,10 +13,7 @@ namespace ChineseChess.Source.GameRule.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null)
-            {
-                throw new ArgumentNullException(nameof(board));
-            }
+            if (board == null) throw new ArgumentNullException(nameof(board));
 
             Value = board[Index.Y, Index.X];
             var IdxToVector2 = Index.ToVector2();
@@ -49,13 +46,9 @@ namespace ChineseChess.Source.GameRule.MoveLogic
         private bool IsBlockedMove(Point move, BoardState board)
         {
             if (Math.Abs(Index.X - move.X) == 2)
-            {
                 return board[Index.Y, (Index.X + move.X) / 2] != 0;
-            }
             else
-            {
                 return board[(Index.Y + move.Y) / 2, Index.X] != 0;
-            }
         }
 
         private void FindLShapedMoves(Vector2 currentPos)

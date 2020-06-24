@@ -116,6 +116,7 @@
     <Compile Include="Source\GameObjects\GameModel.cs" />
     <Compile Include="Source\GameObjects\Chess\Piece.cs" />
     <Compile Include="Source\Helper\PieceMoveFactory.cs" />
+    <Compile Include="Source\Helper\PlayerFactory.cs" />
     <Compile Include="Source\Helper\PositionTransitionEventArgs.cs" />
     <Compile Include="Source\Main\ChessGame.cs" />
     <Compile Include="Source\Helper\PieceLoader.cs" />

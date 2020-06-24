@@ -16,10 +16,7 @@ namespace ChineseChess.Source.GameObjects
 
         public GameModel(Texture2D txt) => Texture = txt ?? throw new ArgumentNullException(nameof(txt));
 
-        public GameModel()
-        {
-
-        }
+        public GameModel() {}
 
         public virtual void Update(MouseState mouseState, GameTime gameTime) { }
 

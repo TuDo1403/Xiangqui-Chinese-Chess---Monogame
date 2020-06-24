@@ -3,11 +3,13 @@ using ChineseChess.Source.AI.Minimax;
 using ChineseChess.Source.GameObjects.Chess;
 using ChineseChess.Source.GameRule;
 using ChineseChess.Source.Helper;
+using ChineseChess.Source.Main;
 using Microsoft.Xna.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ChineseChess.Source.Players
@@ -16,13 +18,21 @@ namespace ChineseChess.Source.Players
     {
         private bool _isCalculating = false;
 
+        private bool _gameOver = false;
+
+        private int _repeatMoveCount = 0;
+
         private (Point, Point) _move = (Point.Zero, Point.Zero);
+
+        private (Point, Point) _prevMove = (Point.Zero, Point.Zero);
 
         private readonly ComplexityMeasuring _moveInfo;
 
 
         public IMoveStrategy AIAgent { get; set; }
         public int Depth { get; set; }
+
+
         public Computer(IMoveStrategy agent, int depth)
         {
             Tag = PlayerTag.COM;
@@ -30,21 +40,25 @@ namespace ChineseChess.Source.Players
             Depth = depth;
         }
 
+
+
         public override void Update(BoardState board, GameTime gameTime)
         {
-            if (_move == (Point.Zero, Point.Zero))
-            {
-                if (!_isCalculating)
-                {
-                    _isCalculating = true;
-                    var newBoard = board.Clone();
-                    ((Action<BoardState, GameTime>)AsyncCalculation).BeginInvoke(newBoard, gameTime, null, this);
-                }
-            }
+            if (_gameOver) OnGameOver();
             else
             {
-                MoveTransition();
+                if (_move == (Point.Zero, Point.Zero))
+                {
+                    if (!_isCalculating)
+                    {
+                        _isCalculating = true;
+                        var newBoard = board.Clone();
+                        ((Action<BoardState, GameTime>)AsyncCalculation).BeginInvoke(newBoard, gameTime, null, this);
+                    }
+                }
+                else MoveTransition();
             }
+            
         }
 
         private void MoveTransition()
@@ -71,8 +85,17 @@ namespace ChineseChess.Source.Players
 
                 focusingPiece.Index = _move.Item2;
 
+                DrawCheck();
+
                 _move = (Point.Zero, Point.Zero);
             }
+        }
+
+        private void DrawCheck()
+        {
+            if (_repeatMoveCount == 3) IsDraw = true;
+            if (_move == (_prevMove.Item2, _prevMove.Item1)) ++_repeatMoveCount;
+            else _prevMove = _move;
         }
 
         private void AsyncCalculation(BoardState board, GameTime gameTime)
@@ -87,6 +110,7 @@ namespace ChineseChess.Source.Players
             await Task.Run(() =>
             {
                 move = AIAgent.Search(board, Depth, gameTime);
+                if (move == (Point.Zero, Point.Zero)) _gameOver = true;
             }).ConfigureAwait(false);
             return move;
         }
@@ -94,9 +118,7 @@ namespace ChineseChess.Source.Players
         private void  WriteReport(string fileName)
         {
             using (StreamWriter writer = File.AppendText(fileName))
-            {
                 writer.WriteLine($"{_moveInfo.PositionsEvaluated},{_moveInfo.MilliSeconds}");
-            }
         }
     }
 }

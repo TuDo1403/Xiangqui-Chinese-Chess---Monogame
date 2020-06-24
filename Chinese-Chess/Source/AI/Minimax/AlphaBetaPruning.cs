@@ -28,8 +28,8 @@ namespace ChineseChess.Source.AI.Minimax
                     var value = Minimax(state, !isMaximizingPlayer, depth - 1, alpha, beta);
                     state.Undo();
 
-                    if (isMaximizingPlayer && value >= bestVal ||
-                        !isMaximizingPlayer && value <= bestVal)
+                    if (isMaximizingPlayer && value > bestVal ||
+                        !isMaximizingPlayer && value < bestVal)
                     {
                         bestVal = value;
                         bestMoveFound = (pieceIdx, move);
@@ -44,8 +44,7 @@ namespace ChineseChess.Source.AI.Minimax
         {
             if (isMaximizingPlayer)
                 return MaxValue(state, isMaximizingPlayer, depth, alpha, beta);
-            else
-                return MinValue(state, isMaximizingPlayer, depth, alpha, beta);
+            return MinValue(state, isMaximizingPlayer, depth, alpha, beta);
         }
 
         private int MinValue(BoardState state, bool isMaximizingPlayer,

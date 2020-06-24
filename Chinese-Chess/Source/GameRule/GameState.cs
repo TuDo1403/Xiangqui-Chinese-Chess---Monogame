@@ -7,6 +7,7 @@
         CHECKMATE,
         B_TURN,
         R_TURN,
+        DRAW,
         MOVING,
         GAMEOVER,
         IDLE

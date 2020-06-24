@@ -31,14 +31,9 @@ namespace ChineseChess.Source.GameRule.MoveLogic
             {
                 if (board[rowIdx, i] != 0)
                 {
-                    while (i < (int)Rule.COL - 1)
+                    while (i++ < (int)Rule.COL - 1)
                     {
-                        ++i;
-                        if (board[rowIdx, i] * Value > 0)
-                        {
-                            break;
-                        }
-
+                        if (board[rowIdx, i] * Value > 0) break;
                         if (board[rowIdx, i] * Value < 0)
                         {
                             LegalMoves.Add(new Point(i, rowIdx));
@@ -47,24 +42,16 @@ namespace ChineseChess.Source.GameRule.MoveLogic
                     }
                     break;
                 }
-                else
-                {
-                    LegalMoves.Add(new Point(i, rowIdx));
-                }
+                else LegalMoves.Add(new Point(i, rowIdx));
             }
 
             for (int i = Index.X - 1; i >= 0; --i)
             {
                 if (board[rowIdx, i] != 0)
                 {
-                    while (i > 0)
+                    while (i-- > 0)
                     {
-                        --i;
-                        if (board[rowIdx, i] * Value > 0)
-                        {
-                            break;
-                        }
-
+                        if (board[rowIdx, i] * Value > 0) break;
                         if (board[rowIdx, i] * Value < 0)
                         {
                             LegalMoves.Add(new Point(i, rowIdx));
@@ -73,10 +60,7 @@ namespace ChineseChess.Source.GameRule.MoveLogic
                     }
                     break;
                 }
-                else
-                {
-                    LegalMoves.Add(new Point(i, rowIdx));
-                }
+                else LegalMoves.Add(new Point(i, rowIdx));
             }
         }
 
@@ -87,14 +71,9 @@ namespace ChineseChess.Source.GameRule.MoveLogic
             {
                 if (board[i, colIdx] != 0)
                 {
-                    while (i < (int)Rule.ROW - 1)
+                    while (i++ < (int)Rule.ROW - 1)
                     {
-                        ++i;
-                        if (board[i, colIdx] * Value > 0)
-                        {
-                            break;
-                        }
-
+                        if (board[i, colIdx] * Value > 0) break;
                         if (board[i, colIdx] * Value < 0)
                         {
                             LegalMoves.Add(new Point(colIdx, i));
@@ -103,23 +82,16 @@ namespace ChineseChess.Source.GameRule.MoveLogic
                     }
                     break;
                 }
-                else
-                {
-                    LegalMoves.Add(new Point(colIdx, i));
-                }
+                else LegalMoves.Add(new Point(colIdx, i));
             }
 
             for (int i = Index.Y - 1; i >= 0; --i)
             {
                 if (board[i, colIdx] != 0)
                 {
-                    while (i > 0)
+                    while (i-- > 0)
                     {
-                        --i;
-                        if (board[i, colIdx] * Value > 0)
-                        {
-                            break;
-                        }
+                        if (board[i, colIdx] * Value > 0) break;
 
                         if (board[i, colIdx] * Value < 0)
                         {
@@ -129,10 +101,7 @@ namespace ChineseChess.Source.GameRule.MoveLogic
                     }
                     break;
                 }
-                else
-                {
-                    LegalMoves.Add(new Point(colIdx, i));
-                }
+                else LegalMoves.Add(new Point(colIdx, i));
             }
         }
     }

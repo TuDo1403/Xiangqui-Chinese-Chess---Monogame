@@ -40,8 +40,8 @@ namespace ChineseChess.Source.AI
                     var value = Minimax(state, !isMaximizingPlayer, depth - 1);
                     state.Undo();
 
-                    if (isMaximizingPlayer && value >= bestVal ||
-                        !isMaximizingPlayer && value <= bestVal)
+                    if (isMaximizingPlayer && value > bestVal ||
+                        !isMaximizingPlayer && value < bestVal)
                     {
                         bestVal = value;
                         bestMoveFound = (pieceIdx, move);
@@ -54,10 +54,8 @@ namespace ChineseChess.Source.AI
         public int Minimax(BoardState state, bool isMaximizingPlayer,
                            int depth)
         {
-            if (isMaximizingPlayer)
-                return MaxValue(state, isMaximizingPlayer, depth);
-            else
-                return MinValue(state, isMaximizingPlayer, depth);
+            if (isMaximizingPlayer) return MaxValue(state, isMaximizingPlayer, depth);
+            return MinValue(state, isMaximizingPlayer, depth);
         }
 
         private int MinValue(BoardState state, bool isMaximizingPlayer,
@@ -66,7 +64,7 @@ namespace ChineseChess.Source.AI
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = 10000;
+            var bestMove = int.MaxValue;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
@@ -85,7 +83,7 @@ namespace ChineseChess.Source.AI
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = -10000;
+            var bestMove = int.MinValue;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx))
                 {
@@ -101,8 +99,8 @@ namespace ChineseChess.Source.AI
 
         protected static int BoardEvaluator(BoardState board)
         {
-            if (RedWins(board)) return 50000;
-            if (BlackWins(board)) return -50000;
+            if (RedWins(board)) return int.MaxValue;
+            if (BlackWins(board)) return int.MinValue;
 
             var score = 0;
             for (int i = 0; i < (int)Rule.ROW; ++i)

@@ -45,7 +45,7 @@ namespace ChineseChess.Source.GameObjects
                 throw new ArgumentNullException(nameof(spriteBatch));
             if (CurrentFrame < TotalFrames)
                 spriteBatch.DrawString(_spriteFont, _text, _position, color, 0f, 
-                                       Vector2.Zero, 1f, SpriteEffects.None, 1);
+                                     Vector2.Zero, 1f, SpriteEffects.None, 1);
         }
     }
 }

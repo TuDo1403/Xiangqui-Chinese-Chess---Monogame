@@ -42,15 +42,9 @@ namespace ChineseChess.Source.Helper
 
         public static Vector2 GetLegalMovePosition(this Vector2 releasedPosition, List<Point> legalMoves)
         {
-            if (legalMoves == null)
-            {
-                throw new ArgumentNullException(nameof(legalMoves));
-            }
+            if (legalMoves == null) throw new ArgumentNullException(nameof(legalMoves));
 
-            if (legalMoves.Count == 0)
-            {
-                return Vector2.Zero;
-            }
+            if (legalMoves.Count == 0) return Vector2.Zero;
 
             var minDistance = legalMoves.Min(c => Vector2.Distance(releasedPosition, c.ToPosition()));
             var epsilon = 35;

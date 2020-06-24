@@ -11,8 +11,8 @@ namespace ChineseChess.Source.AI.Minimax
 
         protected override (Point, Point) MinimaxRoot(BoardState state, int depth)
         {
-            var alpha = -10000;
-            var beta = 10000;
+            var alpha = int.MinValue;
+            var beta = int.MaxValue;
             var isMaximizingPlayer = Player != Team.BLACK;
             var bestVal = Player == Team.BLACK ? int.MaxValue : int.MinValue;
             var bestMoveFound = (Point.Zero, Point.Zero);
@@ -24,8 +24,8 @@ namespace ChineseChess.Source.AI.Minimax
                     var value = Minimax(state, !isMaximizingPlayer, depth - 1, alpha, beta);
                     state.Undo();
 
-                    if (isMaximizingPlayer && value >= bestVal ||
-                        !isMaximizingPlayer && value <= bestVal)
+                    if (isMaximizingPlayer && value > bestVal ||
+                        !isMaximizingPlayer && value < bestVal)
                     {
                         bestVal = value;
                         bestMoveFound = (pieceIdx, move);
@@ -40,8 +40,7 @@ namespace ChineseChess.Source.AI.Minimax
         {
             if (isMaximizingPlayer)
                 return MaxValue(state, isMaximizingPlayer, depth, alpha, beta);
-            else
-                return MinValue(state, isMaximizingPlayer, depth, alpha, beta);
+            return MinValue(state, isMaximizingPlayer, depth, alpha, beta);
         }
 
         private int MinValue(BoardState state, bool isMaximizingPlayer,
@@ -50,13 +49,13 @@ namespace ChineseChess.Source.AI.Minimax
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = 10000;
+            var bestMove = int.MaxValue;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx, true))
                 {
                     state.SimulateMove(pieceIdx, move);
                     bestMove = Math.Min(bestMove, MaxValue(state, !isMaximizingPlayer,
-                                                           depth - 1, alpha, beta));
+                                                        depth - 1, alpha, beta));
                     state.Undo();
                     beta = Math.Min(beta, bestMove);
                     if (beta <= alpha) return bestMove;
@@ -71,7 +70,7 @@ namespace ChineseChess.Source.AI.Minimax
             ++PositionsEvaluated;
             if (depth == 0 || GameOver(state)) return BoardEvaluator(state);
 
-            var bestMove = -10000;
+            var bestMove = int.MinValue;
             foreach (var pieceIdx in state.GetPieces(isMaximizingPlayer))
                 foreach (var move in state.GetLegalMoves(pieceIdx, true))
                 {

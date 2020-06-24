@@ -11,7 +11,7 @@ namespace ChineseChess.Source.AI.MCTS
 {
     public class Node
     {
-        public int TotalScore { get; set; }
+        public double TotalScore { get; set; }
 
         public int Visits { get; set; }
 
@@ -37,9 +37,6 @@ namespace ChineseChess.Source.AI.MCTS
             FromTo = fromTo;
         }
 
-        public bool IsVisited()
-        {
-            return Visits > 0;
-        }
+        public bool IsVisited() => Visits > 0;
     }
 }

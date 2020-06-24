@@ -160,6 +160,15 @@ namespace ChineseChess.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Draw!.
+        /// </summary>
+        internal static string draw {
+            get {
+                return ResourceManager.GetString("draw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -600 -270 -130 -120 -6000 -120 -130 -270 -600
         ///0 0 0 0 0 0 0 0 0
         ///0 -285 0 0 0 0 0 -285 0

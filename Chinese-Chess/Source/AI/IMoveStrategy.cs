@@ -1,4 +1,6 @@
 ﻿using ChineseChess.Source.GameObjects.Chess;
+using ChineseChess.Source.GameRule;
+using ChineseChess.Source.Players;
 using Microsoft.Xna.Framework;
 
 namespace ChineseChess.Source.AI
@@ -10,5 +12,7 @@ namespace ChineseChess.Source.AI
         int PositionsEvaluated { get; }
 
         string Name { get; }
+
+        Team Player { get; }
     }
 }

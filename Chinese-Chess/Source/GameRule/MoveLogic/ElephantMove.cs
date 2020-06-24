@@ -13,10 +13,7 @@ namespace ChineseChess.Source.GameRule.MoveLogic
 
         public List<Point> FindLegalMoves(BoardState board)
         {
-            if (board == null)
-            {
-                throw new ArgumentNullException(nameof(board));
-            }
+            if (board == null) throw new ArgumentNullException(nameof(board));
 
             Value = board[Index.Y, Index.X];
             var IdxToVector2 = Index.ToVector2();
