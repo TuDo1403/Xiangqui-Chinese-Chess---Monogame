@@ -26,7 +26,7 @@ namespace ChineseChess.Source.Players
 
         private (Point, Point) _prevMove = (Point.Zero, Point.Zero);
 
-        private readonly ComplexityMeasuring _moveInfo;
+        private ComplexityMeasuring _moveInfo;
 
 
         public IMoveStrategy AIAgent { get; set; }
@@ -66,10 +66,10 @@ namespace ChineseChess.Source.Players
             var focusingPiece = Pieces.Where(p => p.Index == _move.Item1)
                                     .SingleOrDefault();
 
-            var epsilon = 20;
+            var epsilon = 50;
             if (Vector2.Distance(focusingPiece.Position.Round(), _move.Item2.ToPosition()) > epsilon)
             {
-                focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.05f);
+                focusingPiece.Position = Vector2.Lerp(focusingPiece.Position, _move.Item2.ToPosition(), 0.025f);
                 focusingPiece.Position = new Vector2((float)Math.Round(focusingPiece.Position.X),
                                                   (float)Math.Round(focusingPiece.Position.Y));
                 focusingPiece.SetBounds();
@@ -109,8 +109,15 @@ namespace ChineseChess.Source.Players
             var move = (Point.Zero, Point.Zero);
             await Task.Run(() =>
             {
+                var watch = Stopwatch.StartNew();
                 move = AIAgent.Search(board, Depth, gameTime);
+                watch.Stop();
                 if (move == (Point.Zero, Point.Zero)) _gameOver = true;
+                //if (AIAgent.Name == "SimpleUCTSearch")
+                //{
+                //    _moveInfo = new ComplexityMeasuring(AIAgent.PositionsEvaluated, watch.ElapsedMilliseconds);
+                //    WriteReport("s-uct.txt");
+                //}
             }).ConfigureAwait(false);
             return move;
         }

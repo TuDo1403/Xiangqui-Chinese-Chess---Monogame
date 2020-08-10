@@ -1,7 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChineseChess.Source.GameRule;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.IO;
+using System.Runtime.Remoting.Messaging;
 
 namespace ChineseChess.Source.Main
 {
@@ -17,9 +20,15 @@ namespace ChineseChess.Source.Main
 
         private Song _themeSong;
 
+        private string[] _players = new string[2];
+
+        private int _searchDepth;
+
+        private string _mode = "";
 
 
-        public ChessGame()
+
+        public ChessGame(string redPlayer, string blackPlayer, int depth=1, string mode="")
         {
             IsMouseVisible = true;
 
@@ -31,6 +40,13 @@ namespace ChineseChess.Source.Main
             IsFixedTimeStep = false;
 
             Content.RootDirectory = "Content";
+
+            _players[0] = blackPlayer;
+            _players[1] = redPlayer;
+
+            _searchDepth = depth;
+
+            if (!string.IsNullOrEmpty(mode)) _mode = mode;
         }
 
         /// <summary>
@@ -43,7 +59,7 @@ namespace ChineseChess.Source.Main
         {
             // TODO: Add your initialization logic here
 
-            _game = ChessBoard.GetInstance();
+            _game = new ChessBoard(_players[1], _players[0], _searchDepth);
             base.Initialize();
         }
 
@@ -91,10 +107,36 @@ namespace ChineseChess.Source.Main
                 Exit();
             }
 
+            if (_game.Winner >= 0 && _game.Winner <= 2)
+            {
+                //WriteReport(_game.Winner);
+                Exit();
+            }
+                
+
             // TODO: Add your update logic here
             _game.Update(Mouse.GetState(), gameTime);
 
             base.Update(gameTime);
+        }
+
+        private void WriteReport(int result)
+        {
+            if (!string.IsNullOrEmpty(_mode))
+            {
+                using (StreamWriter writer = File.AppendText($"{_players[1]}-{_players[0]}-{_searchDepth}-{_mode}.txt"))
+                {
+                    writer.WriteLine(result);
+                }
+            }
+            else
+            {
+                using (StreamWriter writer = File.AppendText($"{_players[1]}-{_players[0]}-{_searchDepth}.txt"))
+                {
+                    writer.WriteLine(result);
+                }
+            }
+            
         }
 
         /// <summary>

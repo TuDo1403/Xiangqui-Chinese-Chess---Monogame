@@ -28,7 +28,6 @@ namespace ChineseChess.Source.Main
 
         private uint _checkCount;
 
-        private readonly int _searchDepth;
 
         private readonly Message[] _messages;
 
@@ -38,35 +37,41 @@ namespace ChineseChess.Source.Main
 
         private Piece _focusingPiece;
 
+        public int Winner { get; set; } = -1;
+
         public Board Board { get; private set; }
 
         public event EventHandler<BoardState> BoardUpdated;
 
 
 
-        public static ChessBoard GetInstance()
+        public static ChessBoard GetInstance(string redPlayer, string blackPlayer, int depth=1)
         {
             if (_instance == null)
             {
-                _instance = new ChessBoard();
+                _instance = new ChessBoard(redPlayer, blackPlayer, depth);
             }
 
             return _instance;
         }
 
 
-        private ChessBoard()
+        public ChessBoard(string redPlayer, string blackPlayer, int depth)
         {
             _gameState = GameState.IDLE;
             _checkCount = 0;
 
-            _turn = new Random().Next(0, 2);
+            //_turn = new Random().Next(0, 2);
+            _turn = 1;
             _messages = new Message[Enum.GetValues(typeof(GameState)).Length];
 
             _players = new Player[2];
-            _searchDepth = 2;
-            _players[(int)Team.BLACK] = new Computer(new MonteCarloTreeSearch(Team.BLACK), _searchDepth);
-            _players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), _searchDepth);
+            _players[(int)Team.BLACK] = PlayerFactory.CreatePlayer(blackPlayer, Team.BLACK, depth);
+            _players[(int)Team.RED] = PlayerFactory.CreatePlayer(redPlayer, Team.RED, depth);
+
+
+            //_players[(int)Team.BLACK] = new Computer(new MinimaxUCT(Team.BLACK), _searchDepth);
+            //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), _searchDepth);
             //_players[(int)Team.RED] = new Human();
             //_players[(int)Team.BLACK] = new Human();
             //_players[(int)Team.RED] = new Computer(new MoveOrdering(Team.RED), 2);
@@ -85,7 +90,7 @@ namespace ChineseChess.Source.Main
                 for (int j = 0; j < (int)Rule.COL; ++j)
                     if (_matrixBoard[i, j] != 0) PutPieceOnBoard(contentManager, new Point(j, i));
 
-            Board = Board.GetInstance(contentManager.Load<Texture2D>("board"));
+            Board = new Board(contentManager.Load<Texture2D>("board"));
             LoadMessage(contentManager);
 
             OnBoardUpdating();
@@ -106,7 +111,7 @@ namespace ChineseChess.Source.Main
         private void PutPieceOnBoard(ContentManager contentManager, Point boardIdx)
         {
             var piece = PieceFactory.CreatePiece(_matrixBoard[boardIdx.Y, boardIdx.X],
-                                              boardIdx, _instance,
+                                              boardIdx, this,
                                               contentManager);
             piece.Focused += Piece_FocusedHandler;
             piece.Moved += Piece_MovedHandler;
@@ -213,6 +218,7 @@ namespace ChineseChess.Source.Main
         {
             var color = Color.Blue;
             _messages[(int)GameState.DRAW].DrawString(spriteBatch, color);
+            Winner = 2;
         }
 
         private void DrawTurnMessage(SpriteBatch spriteBatch)
@@ -239,9 +245,16 @@ namespace ChineseChess.Source.Main
         private void DrawGameOverMessage(SpriteBatch spriteBatch)
         {
             if (_focusingPiece.Value < 0)
+            {
                 _messages[(int)GameState.B_WIN].DrawString(spriteBatch, Color.Black);
+                Winner = 0;
+            }
             else
+            {
                 _messages[(int)GameState.R_WIN].DrawString(spriteBatch, Color.Red);
+                Winner = 1;
+            }
+                
         }
     }
 }

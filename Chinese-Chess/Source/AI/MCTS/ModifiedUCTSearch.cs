@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace ChineseChess.Source.AI.MCTS
 {
-    public class MonteCarloTreeSearch : IMoveStrategy
+    public class ModifiedUCTSearch : IMoveStrategy
     {
         public int PositionsEvaluated { get; protected set; }
 
@@ -18,12 +18,14 @@ namespace ChineseChess.Source.AI.MCTS
 
         public Team Player { get; protected set; }
 
-        private readonly int _simulations = 100;
+        private readonly int _simulations = 300;
 
-        public MonteCarloTreeSearch(Team player)
+        private static Node _rootNode;
+
+        public ModifiedUCTSearch(Team player)
         {
             Player = player;
-            Name = "MonteCarloTreeSearch";
+            Name = "ModifiedUCTSearch";
         }
 
         public (Point, Point) Search(BoardState state, int depth, GameTime gameTime)
@@ -36,22 +38,16 @@ namespace ChineseChess.Source.AI.MCTS
         private (Point, Point) UCTSearch(BoardState state, int depth)
         {
             var currentPlayer = Player == Team.RED;
-            var bestMove = (Point.Zero, Point.Zero);
-            var rootNode = new Node(null, state, (Point.Zero, Point.Zero), currentPlayer);
+            _rootNode = new Node(null, state, (Point.Zero, Point.Zero), currentPlayer);
             for (int i = 0; i < _simulations; ++i)
             {
-                var v = TreePolicy(rootNode);
+                var v = TreePolicy(_rootNode);
                 var vState = v.State.Clone();
                 var reward = DefaultPolicy(vState, v.CurrentPlayer, depth);
                 BackUp(v, reward);
             }
-            var bestChild = BestChild(rootNode);
-            //var bestChild = rootNode.Children.OrderByDescending(n => n.TotalScore)
-            //                               .ThenByDescending(n => n.Visits).ToList()[0];
-            bestMove = bestChild.FromTo;
-            //if (!RedWins(bestChild.State)) bestMove = bestChild.FromTo;
-            //if (bestChild.Children.Where(n => RedWins(n.State)).ToList().Count == 0) bestMove = bestChild.FromTo;
-            return bestMove;
+            var bestChild = BestChild(_rootNode);
+            return bestChild.FromTo;
         }
 
         private static Node TreePolicy(Node v)
@@ -98,16 +94,19 @@ namespace ChineseChess.Source.AI.MCTS
             return nodes[0];
         }
 
-        private static int DefaultPolicy(BoardState vState, bool turn, int depth)
+        private int DefaultPolicy(BoardState vState, bool turn, int depth)
         {
             if (!IsTerminal(vState))
             {
                 var from = Point.Zero; var to = Point.Zero;
                 var a = (from, to);
-                if (turn)
+                if (turn != _rootNode.CurrentPlayer)
                 {
-                    a = new MoveOrdering(Team.RED).Search(vState, depth, null);
+                    var opponent = turn == true ? Team.RED : Team.BLACK;
+                    var ai = new MoveOrdering(opponent);
+                    a = ai.Search(vState, depth, null);
                     if (a == (Point.Zero, Point.Zero)) return int.MinValue + 50000;
+                    PositionsEvaluated += ai.PositionsEvaluated;
                 }    
                 else
                 {
@@ -120,6 +119,7 @@ namespace ChineseChess.Source.AI.MCTS
                 vState.MakeMove(a.from, a.to);
             }
 
+            ++PositionsEvaluated;
             var reward = BoardEvaluator(vState);
             return reward;
         }
@@ -169,8 +169,6 @@ namespace ChineseChess.Source.AI.MCTS
 
         private static int BoardEvaluator(BoardState board)
         {
-            //if (RedWins(board)) return int.MaxValue;
-            //if (BlackWins(board)) return int.MinValue;
             var score = 0;
             for (int i = 0; i < (int)Rule.ROW; ++i)
                 for (int j = 0; j < (int)Rule.COL; ++j)

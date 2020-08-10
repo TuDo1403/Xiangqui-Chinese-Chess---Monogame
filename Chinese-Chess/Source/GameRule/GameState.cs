@@ -1,6 +1,6 @@
 ﻿namespace ChineseChess.Source.GameRule
 {
-    internal enum GameState
+    public enum GameState
     {
         B_WIN,
         R_WIN,

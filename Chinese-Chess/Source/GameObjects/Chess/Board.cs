@@ -13,18 +13,7 @@ namespace ChineseChess.Source.GameObjects.Chess
 
 
 
-        public static Board GetInstance(Texture2D texture)
-        {
-            if (texture == null)
-                throw new ArgumentNullException(nameof(texture));
-
-            if (_instance == null)
-                _instance = new Board(texture);
-
-            return _instance;
-        }
-
-        private Board(Texture2D texture) : base(texture)
+        public Board(Texture2D texture) : base(texture)
         {
             Width = texture.Width;
             Height = texture.Height;
